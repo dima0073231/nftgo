@@ -1,0 +1,27 @@
+<!-- <button id="openModalBtn" data-lang-key="giftsOpenShopButton">Відкрити магазин</button> -->
+<div class="modal-overlay" id="modalOverlay" style="display: none;">
+  <div class="modal">
+<div class="close-btn" id="closeModalBtn">✖</div>  
+    <h2 class="modal-title" data-lang-key="modalTitleBuyGift">Купить подарок</h2>
+
+    <div class="filter-bar">
+      <input type="text" style="background-color: black;" id="searchInput"
+        data-lang-placeholder-key="modalSearchPlaceholder" placeholder="🔍 Назва" />
+      <span class="max-price-label" data-lang-key="modalMaxPriceLabel">Макс. цена TON</span>
+      <span class="gear-icon">⚙️</span>
+    </div>
+
+    <div class="price-options">
+      <button data-price="5">5</button>
+      <button data-price="10">10</button>
+      <button data-price="15">15</button>
+      <button data-price="20">20</button>
+      <button data-price="25" class="active">25</button>
+    </div>
+
+    <div class="grid" id="gridContainer"></div>
+
+
+    <button class="buy-btn" id="buyBtn" data-lang-key="modalBuyButton">BUY ITEMS</button>
+  </div>
+</div>

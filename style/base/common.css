@@ -1,0 +1,17 @@
+button {
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+}
+a {
+  text-decoration: none;
+}
+ul {
+  list-style-type: none;
+}
+section {
+    max-width: 440px;
+}
+body {
+  background-color: #150f27;
+}

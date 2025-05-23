@@ -1,0 +1,105 @@
+<section class="admin">
+  <div class="admin__container">
+    <div class="admin-add">
+      <label class="admin__label admin__label--add-admin">
+        Добавить администратора
+        <input
+          type="text"
+          placeholder="Введите id пользователя"
+          class="admin__input admin-add__input admin-add__input-add"
+        />
+        <button
+          class="admin__btn admin-add__btn admin-add__btn--add"
+          type="button"
+        >
+          Добавить
+        </button>
+      </label>
+      <label class="admin__label admin-add__label">
+        Удалить администратора
+        <input
+          type="text"
+          placeholder="Введите id пользователя"
+          class="admin__input admin-add__input admin-add__input--remove"
+        />
+        <button
+          class="admin__btn admin-add__btn admin-add__btn--remove"
+          type="button"
+        >
+          Удалить
+        </button>
+      </label>
+    </div>
+    <div class="admin-promo">
+      <label class="admin__label admin-promo__label">
+        Добавить Промокод
+        <input
+          type="text"
+          placeholder="Введите промокод"
+          class="admin__input admin-promo__input admin-promo__input--add"
+        />
+      </label>
+      <label class="admin__label admin-promo__label">
+        Добавить награду (в тоннах)
+        <input
+          type="text"
+          placeholder="Введите награду"
+          class="admin__input admin-promo__input admin-promo__input--reward"
+        />
+        <button
+          class="admin__btn admin-promo__btn admin-promo__btn--add"
+          type="button"
+        >
+          Добавить
+        </button>
+      </label>
+
+      <label class="admin__label admin-promo__label">
+        Удалить промокод
+        <input
+          type="text"
+          placeholder="Введите промокод"
+          class="admin__input admin-promo__input admin-promo__input--delete"
+        />
+        <button
+          class="admin__btn admin-promo__btn admin-promo__btn--delete"
+          type="button"
+        >
+          Удалить
+        </button>
+      </label>
+      <button
+        class="admin__btn admin__btn--search admin-promo__btn--get"
+        type="button"
+      >
+        Получить список промокодов
+      </button>
+      <div class="admin-promo-list swiper">
+        <div class="admin-promo-list__swiper-wrapper swiper-wrapper"></div>
+      </div>
+    </div>
+    <div class="admin-balance">
+      <label class="admin__label admin-balance__label">
+        Обновить баланс пользователя
+        <input
+          type="text"
+          placeholder="Введите id пользователя"
+          class="admin__input admin-balance__input admin-balance__input--id"
+        />
+      </label>
+      <label class="admin__label admin-balance__label">
+        <input
+          type="text"
+          placeholder="Введите сумму"
+          class="admin__input admin-balance__input admin-balance__input--summa"
+        />
+        <button
+          class="admin__btn admin-balance__btn admin-balance__btn-update"
+          type="button"
+        >
+          Обновить
+        </button>
+      </label>
+    </div>
+  </div>
+</section>

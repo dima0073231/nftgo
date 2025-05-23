@@ -1,0 +1,213 @@
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 0px;
+  border: none;
+}
+.modal.activess {
+  display: block;
+}
+.modal__content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 380px;
+  height:480px;
+  padding: 15px;
+  background: #150f27;
+  transform: translate(-50%, -50%);
+  animation: fadeIn 0.3s ease;
+border-radius: 15px;
+}
+
+.modal__close {
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #fff;
+  width: 25px;
+  height: 25px;
+}
+
+.btn-ton {
+    border-radius: 10px;
+  background: linear-gradient(90deg, #8845f5 42.65%, #4f288f 100%);
+  box-shadow: 0px 4px 4px 0px rgba(47, 46, 46, 0.25);
+  color: #fff;
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-top: 30px;
+  cursor: pointer;
+  height: 70px
+}
+
+.btn {
+  border-radius: 10px;
+  background: linear-gradient(90deg, #8845f5 42.65%, #4f288f 100%);
+  box-shadow: 0px 4px 4px 0px rgba(47, 46, 46, 0.25);
+  color: #fff;
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-top: 30px;
+  cursor: pointer;
+  height: 70px
+}
+.modal__title {
+  color: #fff;
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px; /* 137.5% */
+  margin-top: 20px;
+}
+.modal-form-ton {
+ display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    height: 251px;
+    border-radius: 10px;
+    background: #231c46;
+    padding: 20px 15px;
+    margin-top: 15px;
+}
+.modal-form-cryptoBot {
+  display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    height: 251px;
+    border-radius: 10px;
+    background: #231c46;
+    padding: 20px 15px;
+    margin-top: 15px;
+}
+.label {
+  margin-top: 15px;
+font-family: Montserrat;
+  color: #fff;
+}
+
+.label:nth-child(2) {
+margin-top: 20px;
+}
+#sumPay-ton {
+  background: #150f27;
+  color: #fff;
+  border-radius: 20px;
+  height: 40px;
+  margin-top: 10px;
+  border: none;
+font-family: Montserrat;
+padding-left: 17px;
+}
+
+#sumPayCryptoBot {
+  background: #150f27;
+  color: #fff;
+  border-radius: 20px;
+  height: 40px;
+  margin-top: 10px;
+  border: none;
+font-family: Montserrat;
+padding-left: 17px;
+}
+
+.modal-btn-container {
+  display: flex;
+  margin-top: 20px;
+  column-gap:38px;
+}
+.modal-btn-container-ton {
+  color: #FFF;
+font-family: Montserrat;
+font-size: 17px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+display: grid;
+place-items: center;
+border-radius: 20px;
+background: linear-gradient(99deg, rgba(136, 69, 245, 0.50) 50.34%, rgba(79, 40, 143, 0.50) 84.99%);
+width: 155px;
+background: #231C46;
+height:104px;
+transition:background .6s ease;
+}
+
+.modal-btn-container-ton:hover {
+background: linear-gradient(99deg, rgba(136, 69, 245, 0.50) 50.34%, rgba(79, 40, 143, 0.50) 84.99%);
+
+}
+.modal-btn-container-ton__img {
+  width: 60px;
+  height: 55px;
+  border-radius: 50px;
+}
+.modal-btn-container-cryptoBot {
+  color: #FFF;
+font-family: Montserrat;
+font-size: 17px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+display: grid;
+place-items: center;
+border-radius: 20px;
+background: #231C46;
+width: 155px;
+height:104px;
+transition:background .6s ease;
+}
+.modal-btn-container-cryptoBot:hover {
+background: linear-gradient(99deg, rgba(136, 69, 245, 0.50) 50.34%, rgba(79, 40, 143, 0.50) 84.99%);
+
+}
+
+.modal-btn-container-cryptoBot__img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50px;
+}
+
+.modal-form-reqeired {
+  display: flex;
+  justify-content: space-between;
+  color: #fff;
+  font-size: 16px;
+font-family: Montserrat;
+  margin-top: 20px;
+}
+
+.btnActive {
+background: linear-gradient(99deg, rgba(136, 69, 245, 0.50) 50.34%, rgba(79, 40, 143, 0.50) 84.99%);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

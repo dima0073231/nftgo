@@ -1,0 +1,45 @@
+<header class="header">
+  <div class="main-wrapper__balance flex">
+    <img
+      src="web/images/giveaway/frog-logo.svg"
+      alt="logo"
+      class="main-wrapper-balance__logo"
+    />
+    <div class="main-balance flex" style="cursor: pointer">
+      0.00 +
+      <img
+        src="web/images/main/ton-icon.svg"
+        alt="Token"
+        class="main-balance__token"
+      />
+    </div>
+    <div class="modal" id="modal">
+      <div class="modal__content">
+        <h2 class="modal__title">Deposit</h2>
+        <button type="button" class="modal__close" id="closeModalHeaderBtn">
+          &times;
+        </button>
+        <div class="modal-btn-container">
+          <button type="button" class="modal-btn-container-ton">
+            <img src="web/images/main/ton-icon.svg" alt="Token" class="modal-btn-container-ton__img">
+            TON
+          </button>
+          <button type="button" class="modal-btn-container-cryptoBot">
+            <img src="web/images/main/59505061.webp" alt="icon-token" class="modal-btn-container-cryptoBot__img">
+            Crypto Bot
+          </button>
+        </div>
+
+
+        <div class="modal-container-ton"></div>
+        <div class="modal-container-cryptoBot"></div>
+      </div>
+    </div>
+    <div class="main-wallet">
+      <div id="ton-connect" class="ton-connect"></div>
+      <button class="main-connect-wallet" data-lang-key="connectWallet">
+        Connect Wallet
+      </button>
+    </div>
+  </div>
+</header>

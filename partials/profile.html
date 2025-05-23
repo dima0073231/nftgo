@@ -1,0 +1,64 @@
+<section class="user-page">
+  <div class="user-page-profile">
+    <img src="web/images/profile/user-avatar.jpg" alt="user-avatar" class="user-page-profile__avatar" />
+    <div class="user-page-profile__data">
+      <h2 class="user-page-profile__name">Test name</h2>
+      <h2 class="user-page-profile__id">User ID: 1234</h2>
+    </div>
+  </div>
+  <div class="user-page-inv">
+    <button class="user-page-inv__btn user-page-inv__btn--inv" type="button" data-lang-key="inventory">
+      <img src="web/images/profile/lock-icon.svg" alt="lock-icon"
+        class="user-page-inv__icon user-page-inv__icon--lock" />
+      <img src="web/images/inventory/gift.svg" alt="lock-icon" class="user-page-inv__icon user-page-inv__icon--inv" />
+      Инвентарь
+    </button>
+    <button class="user-page-inv__btn user-page-inv__btn--promo promo-open-btn" type="button"
+      data-lang-key="activatePromo">
+      <img src="web/images/profile/promo.svg" alt="lock-icon" class="user-page-inv__icon user-page-inv__icon--promo" />
+      Активировать промокод
+    </button>
+    <button class="user-page-inv__btn user-page-inv__btn--admin" type="button" data-lang-key="activateAdmin">
+      <img src="web/images/friends/friends-invation.svg" alt="lock-icon"
+        class="user-page-inv__icon user-page-inv__icon--admin" />
+      Перейти на админку
+    </button>
+  </div>
+  <div class="user-page-change-language">
+    <h2 class="user-page-change-language__title" data-lang-key="selectLanguage">
+      Выбрать язык
+    </h2>
+    <div class="user-page-change-language__switch">
+      <button type="button" class="user-page-change-language__btn active" data-lang="ru" data-lang-key="russian">
+        Русский
+      </button>
+      <button type="button" class="user-page-change-language__btn" data-lang="en" data-lang-key="english">
+        English
+      </button>
+    </div>
+  </div>
+
+  <div class="user-page-game-history">
+    <h3 class="user-page-game-history__title" data-lang-key="gameHistory">
+      История игр
+    </h3>
+    <div class="swiper user-page-game-history__swiper">
+      <div class="swiper-wrapper user-page-game-history__swiper-wrapper"></div>
+    </div>
+  </div>
+  <div class="user-page-inventory">
+    <h2 class="user-page-inventory__title">Инвентарь</h2>
+    <div class="user-page-inventory__empty">
+      <p class="user-page-inventory__empty-text" data-lang-key="userPageInventoryText">
+        Упс! Видимо, вы еще не играли
+      </p>
+      <button class="user-page-inventory__empty-btn" type="button" data-lang-key="navPlay" id="frog-inventory">
+        <span class="user-page-inventory__empty-span" data-lang-key="navPlay">Начать!</span>
+      </button>
+    </div>
+    <div class="inventory-items-container">
+      <div class="inventory-item">
+      </div>
+    </div>
+  </div>
+</section>

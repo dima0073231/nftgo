@@ -1,0 +1,233 @@
+<section class="down-main">
+  <div class="bet-Toggle">
+    <h3 class="bet__title" data-lang-key="betTitle">Выбрать тип ставки</h3>
+    <div class="bal-inv">
+      <button
+        class="bal-inv__btn bal-inv__btn--balance active"
+        type="button"
+        data-target="balance"
+        data-lang-key="betTypeBalance"
+      >
+        <img
+          src="web/images/balance/balance-icon.svg"
+          alt="balance"
+          class="bal-inv__icon"
+        />
+        Баланс
+      </button>
+      <button
+        class="bal-inv__btn bal-inv__btn--inventory"
+        type="button"
+        data-target="inventory"
+        data-lang-key="betTypeInventory"
+      >
+        <img
+          src="web/images/inventory/gift.svg"
+          alt="inventory"
+          class="bal-inv__icon"
+        />
+        Инвентарь
+      </button>
+    </div>
+  </div>
+
+  <div class="bet-switcher">
+    <div class="bet-switcher__balance sw active">
+      <div class="container">
+        <div class="select-bet">
+          <div class="select-bet__field">
+            <div class="select-bet__pages">
+              <div class="select-bet-count">
+                <button class="select-bet-count__btn" type="button" id="plus">
+                  <img
+                    src="web/images/balance/balance-plus-icon.svg"
+                    alt="plus-icon"
+                    class="select-bet-count__icon select-bet-count__icon--plus"
+                  />
+                </button>
+                <div class="select-bet-count__number">0</div>
+                <button class="select-bet-count__btn" type="button" id="minus">
+                  <img
+                    src="web/images/balance/balance-minus-icon.svg"
+                    alt="minuse-icon"
+                    class="select-bet-count__icon select-bet-count__icon--minus"
+                  />
+                </button>
+              </div>
+              <div class="select-bet-change">
+                <button class="select-bet-change__btn" type="button">1</button
+                ><button class="select-bet-change__btn" type="button">5</button
+                ><button class="select-bet-change__btn" type="button">10</button
+                ><button class="select-bet-change__btn" type="button">20</button
+                ><button class="select-bet-change__btn" type="button">
+                  50
+                </button>
+              </div>
+            </div>
+            <button class="select-bet__btn" data-lang-key="placeBetButton">
+              Ставить
+            </button>
+            <button
+              class="stop-btn"
+              id="stop-btn"
+              style="display: none"
+              data-lang-key="takeBetButton"
+            >
+              Забрати виграш
+            </button>
+          </div>
+        </div>
+        <div class="select-bet">
+          <div class="select-bet__field">
+            <div class="select-bet__pages">
+              <div class="select-bet-count">
+                <button
+                  class="select-bet-count__btn"
+                  type="button"
+                  id="plus-alt"
+                >
+                  <img
+                    src="web/images/balance/balance-plus-icon.svg"
+                    alt="plus-icon"
+                    class="select-bet-count__icon select-bet-count__icon--plus"
+                  />
+                </button>
+                <div class="select-bet-count__number">0</div>
+                <button
+                  class="select-bet-count__btn"
+                  type="button"
+                  id="minus-alt"
+                >
+                  <img
+                    src="web/images/balance/balance-minus-icon.svg"
+                    alt="minuse-icon"
+                    class="select-bet-count__icon select-bet-count__icon--minus"
+                  />
+                </button>
+              </div>
+              <div class="select-bet-change">
+                <button class="select-bet-change__btn" type="button">1</button
+                ><button class="select-bet-change__btn" type="button">5</button
+                ><button class="select-bet-change__btn" type="button">10</button
+                ><button class="select-bet-change__btn" type="button">20</button
+                ><button class="select-bet-change__btn" type="button">
+                  50
+                </button>
+              </div>
+            </div>
+            <button class="select-bet__btn" data-lang-key="placeBetButton">
+              Ставить
+            </button>
+            <button
+              class="stop-btn"
+              id="stop-btn"
+              style="display: none"
+              data-lang-key="takeBetButton"
+            >
+              Забрати виграш
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bet-switcher__inventory sw">
+      <div class="inventory-skins">
+        <h2 class="inventory-skins__title" data-lang-key="inventorySkinsTitle">
+          Выбрать скины
+        </h2>
+
+        <div class="inventory-skins-items">
+          <div class="inventory-skins-items-card">
+            <div class="current">
+              <span class="inventory-skins-items-card__current">10</span>
+              <img src="web/images/inventory/ton.svg" alt="ton" />
+            </div>
+            <img
+              src="web/images/inventory/potion-skin.svg"
+              alt="bottle"
+              class="inventory-skins-items-card__img"
+            />
+            <div class="inventory-item__cashout">
+              <img src="web/images/inventory/download.svg" alt="download" />
+            </div>
+            <h3 class="inventory-skins-items-card__title">Potion</h3>
+          </div>
+          <div class="inventory-skins-items-card">
+            <div class="current">
+              <span class="inventory-skins-items-card__current">10</span>
+              <img src="web/images/inventory/ton.svg" alt="ton" />
+            </div>
+            <img
+              src="web/images/inventory/potion-skin.svg"
+              alt="bottle"
+              class="inventory-skins-items-card__img"
+            />
+            <h3 class="inventory-skins-items-card__title">Potion</h3>
+          </div>
+          <div class="inventory-skins-items-card">
+            <div class="current">
+              <span class="inventory-skins-items-card__current">10</span>
+              <img src="web/images/inventory/ton.svg" alt="ton" />
+            </div>
+            <img
+              src="web/images/inventory/potion-skin.svg"
+              alt="bottle"
+              class="inventory-skins-items-card__img"
+            />
+            <h3 class="inventory-skins-items-card__title">Potion</h3>
+          </div>
+        </div>
+        <div class="inventory-skins-items-added">
+          <div class="inventory-skins-items-added-card">
+            <img
+              src="web/images/inventory/added.svg"
+              alt="buy-gift"
+              class="inventory-skins-items-added-card__img"
+            />
+            <h3
+              class="inventory-skins-items-added-card__title"
+              data-lang-key="inventoryBuyGift"
+            >
+              купить подарок
+            </h3>
+          </div>
+          <div class="inventory-skins-items-added-card">
+            <img
+              src="web/images/inventory/added.svg"
+              alt="buy-gift"
+              class="inventory-skins-items-added-card__img"
+            />
+            <h3
+              class="inventory-skins-items-added-card__title"
+              data-lang-key="inventoryBuyGift"
+            >
+              купить подарок
+            </h3>
+          </div>
+          <div class="inventory-skins-items-added-card">
+            <img
+              src="web/images/inventory/added.svg"
+              alt="buy-gift"
+              class="inventory-skins-items-added-card__img"
+            />
+            <h3
+              class="inventory-skins-items-added-card__title"
+              data-lang-key="inventoryBuyGift"
+            >
+              купить подарок
+            </h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bet-count">
+      <h3 class="bet-count__title" data-lang-key="totalBetsPrefix">
+        Всего ставок: <span id="total">0</span>
+      </h3>
+      <div class="swiper bet-count__swiper">
+        <ul class="swiper-wrapper bet-count-list"></ul>
+      </div>
+    </div>
+  </div>
+</section>

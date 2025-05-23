@@ -1,0 +1,270 @@
+.user-page {
+  padding: 29px 20px;
+  margin: 0 auto;
+  max-width: 409px;
+  width: 100%;
+  display: none;
+}
+.user-page-profile {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 24px;
+  margin-bottom: 23px;
+}
+.user-page-profile__avatar {
+  border-radius: 10px;
+  max-width: 83px;
+  width: 100%;
+  height: 83px;
+  background-color: #000;
+}
+.user-page-profile__name {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.35;
+  color: #fff;
+  margin-bottom: 11px;
+}
+.user-page-profile__id {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.69;
+  color: #c2c2c2;
+}
+
+.user-page-inv {
+  margin-bottom: 16px;
+}
+.user-page-inv.open {
+  background-color: #231c46;
+  border-radius: 10px;
+}
+
+/* btns */
+.user-page-inv.open .user-page-inv__btn--inv {
+  border-radius: 10px 10px 0 0;
+  border-bottom: 1px solid #372d6b;
+}
+.user-page-inv.open .user-page-inv__btn--promo {
+  display: flex;
+  border-radius: 0 0 10px 10px;
+}
+
+/* icons */
+.user-page-inv.open .user-page-inv__icon--lock {
+  display: none;
+}
+.user-page-inv.open .user-page-inv__icon--inv {
+  display: block;
+}
+.user-page-inv__btn {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.69;
+  color: #fff;
+
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  background-color: #231c46;
+  padding: 10px 13px;
+  border-radius: 10px;
+  width: 100%;
+
+  display: flex;
+  justify-content: flex-start;
+  gap: 16px;
+}
+.user-page-inv__btn--promo {
+  display: none;
+}
+.user-page-inv__icon {
+  width: 20px;
+  height: 20px;
+}
+.user-page-inv__icon--inv {
+  display: none;
+}
+
+.user-page-change-language {
+  padding: 11px;
+  max-width: 409px;
+  width: 100%;
+
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  background-color: #231c46;
+  border-radius: 10px;
+  margin-bottom: 21px;
+}
+.user-page-change-language__title {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.93;
+  color: #cecece;
+  margin-bottom: 5px;
+}
+.user-page-change-language__switch {
+  background-color: #262352;
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.user-page-change-language__btn {
+  border-radius: 10px;
+  width: 50%;
+  background-color: #262352;
+  padding: 9px 20px;
+
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.37;
+  text-align: center;
+  color: #fff;
+}
+@media (min-width: 410px) {
+  .user-page-change-language__btn {
+    padding: 9px 50px;
+  }
+}
+.user-page-change-language__btn.active {
+  background: linear-gradient(
+    25deg,
+    rgba(97, 0, 255, 0.8) 0%,
+    rgba(179, 132, 255, 0.8) 100%
+  );
+}
+
+/* .user-page-game-history {
+
+} */
+.user-page-game-history__title {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #fff;
+  margin-bottom: 10px;
+}
+.user-page-game-history__swiper-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.user-page-game-history__card {
+  max-width: 404px;
+  height: auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+
+  background-color: #262352;
+  border-radius: 10px;
+  padding: 14px;
+}
+.user-page-game-history__price {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.1;
+  text-align: right;
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  text-align: left;
+}
+.user-page-game-history__diamond {
+  width: 20px;
+  height: 20px;
+}
+.user-page-game-history__data {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.69;
+  text-align: center;
+  color: #fff;
+}
+.user-page-game-history__coefficient {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.69;
+  text-align: right;
+  color: #fff;
+}
+.user-page-game-history__coefficient.win {
+  color: #91fc16;
+}
+.user-page-game-history__coefficient.lose {
+  color: red;
+}
+.user-page-game-history__swiper {
+  height: 210px;
+  overflow: hidden;
+}
+.user-page-inventory {
+   display: none;
+  border-radius: 10px;
+  padding: 0 15px;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+.user-page-inventory.openInvSection {
+  display: block;
+}
+
+.user-page-inventory__empty {
+  display: block;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.user-page-inventory__empty-text {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.69;
+  color: rgba(255, 255, 255, 1);
+  margin-bottom: 34px;
+}
+
+.user-page-inventory__empty-btn {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 100%;
+  color: rgba(136, 69, 245, 1);
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 1);
+  border: none;
+  cursor: pointer;
+  width: 168px;
+  height: 38px;
+  margin: 0 auto;
+}
+
+.user-page-inventory__empty-btn:hover {
+  opacity: 0.9;
+}
+.user-page-inventory__title {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 180%;
+  color: #fff;
+}
+.inventory-items-container{
+  display: none;
+}

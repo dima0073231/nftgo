@@ -1,0 +1,310 @@
+.friends {
+  width: 100%;
+  max-width: 390px;
+  padding: 15px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  display: none;
+}
+
+.promo-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  position: relative;
+}
+
+.promo-text {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.promo-text h2 {
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.35;
+  color: #fff;
+  margin: 0;
+  padding-top: 20px;
+}
+
+.promo-image {
+  position: relative;
+  z-index: 1;
+  transform: translate(0px, 55px);
+}
+
+.promo-image .character-placeholder {
+  width: 123px;
+  height: 135px;
+  display: block;
+}
+
+.invite-section {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+.invite-button-main {
+  border-radius: 10px;
+  padding: 11px 39px;
+  flex-grow: 1;
+  margin-right: 6px;
+  height: 38px;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  background: linear-gradient(90deg, #8845f5 42.65%, #4f288f 100%);
+  font-weight: 700;
+  font-size: 17px;
+  text-align: center;
+  color: #fff;
+}
+
+.invite-button-copy {
+  background: linear-gradient(180deg, #4f288f 0%, #8845f5 100%);
+  padding: 0;
+  border-radius: 10px;
+  width: 49px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.invite-button-copy .icon-placeholder {
+  width: 24px;
+  height: 24px;
+}
+
+.copy-notification {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4caf50;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.copy-notification.show {
+  opacity: 1;
+}
+
+.referral-balance-section {
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  background: #231c46;
+  padding: 15px;
+  margin-top: -7px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.balance-details .label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+  margin: 0 0 5px 0;
+}
+
+.balance-details .amount {
+  font-weight: 500;
+  font-size: 20px;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.balance-details .amount .diamond-icon {
+}
+
+.withdraw-button {
+  background: #fff;
+  font-weight: 600;
+  font-size: 17px;
+  text-align: center;
+  color: #8845f5;
+  border-radius: 10px;
+  width: 129px;
+  height: 38px;
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.promo-code-section {
+  border-radius: 10px;
+}
+
+.activate-promo-button {
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  background: #231c46;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 169%;
+  color: #fff;
+  padding: 15px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  text-align: left;
+  border-radius: 10px;
+}
+.activate-promo-button .icon-placeholder {
+  font-size: 20px;
+}
+
+.bonus-balance-tasks h3 {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 180%;
+  color: #c9c9c9;
+  margin-top: -6px;
+  padding-bottom: 13px;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.task-item {
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  background: #231c46;
+  padding: 12px 15px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-icon-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  font-size: 15px;
+  color: #fff;
+}
+
+.task-icon-text span { /* Added rule to prevent task description text from wrapping */
+  white-space: nowrap;
+}
+
+.task-icon-text .icon-placeholder {
+  font-size: 20px;
+}
+
+.task-progress-reward {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: center;
+}
+
+.task-item .progress-text {
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  background: #231c46;
+  padding: 6px 12px;
+  border-radius: 10px;
+  height: 35px;
+  font-weight: 500;
+  font-size: 14px; 
+  text-align: center;
+  color: #fff;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  white-space: nowrap; /* This was correctly added in the previous step */
+}
+
+.second {
+  margin-right: 10px;
+}
+
+.task-item .reward {
+  font-weight: bold;
+  font-weight: 500;
+  font-size: 20px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.task-item .reward .diamond-icon {
+}
+
+.invited-list-section {
+}
+
+.invited-list-section h4 {
+  font-weight: 600;
+  font-size: 15px;
+  color: #fff;
+  margin-bottom: 10px;
+  padding: 0 10px;
+  text-align: left;
+}
+
+.invited-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding-bottom: 10px;
+}
+
+.invited-columns {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 147%;
+  color: #929292;
+  padding: 10px 10px; 
+}
+
+.invited-body p[data-lang-key="friendsNoInvitedYet"] {
+  text-align: center;
+  padding: 20px 0;
+  color: #929292;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 147%;
+}
+
+.invited-friend-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.invited-friend-profit-icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  margin-left: 4px;
+}

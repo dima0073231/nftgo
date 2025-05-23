@@ -1,0 +1,30 @@
+<div class="modal-overlay is-hidden" id="modalOverlay">
+  <div class="modal-gift">
+    <div class="close-btn" id="closeGiftModalBtn">✖</div>
+    <h2 class="modal-gift__title" data-lang-key="modalTitleBuyGift">Купить подарок</h2>
+
+    <div class="modal-overlay__pages">
+      <div class="custom-header">
+        <input type="text" id="searchInput" class="search-input" data-lang-placeholder-key="modalSearchPlaceholder"
+          placeholder="🔍 Название" />
+        <div class="center-label" data-lang-key="modalMaxPriceLabel">Макс. цена TON</div>
+      </div>
+      <div class="price-options">
+        <button data-min="0" data-max="5"class="price-options__btn">5</button>
+<button data-min="5.01" data-max="10"class="price-options__btn">10</button>
+<button data-min="10.01" data-max="20"class="price-options__btn">15</button>
+<button data-min="20.01" data-max="25" class="price-options__btn">20</button>
+<button data-min="25" data-max="99999" class="price-options__btn">25+</button>
+        
+        <div class="price-options__btn price-options__btn--gear-icon">⚙️</div>
+      </div>
+    </div>
+<div class="grid swiper" id="gridContainer">
+  <div class="swiper-wrapper grid__wrapper"></div>
+  <div class="swiper-scrollbar"></div> 
+</div>
+
+
+    <button class="buy-btn" id="buyBtn" data-lang-key="modalBuyButton">BUY ITEMS</button>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+<section class="friends" id="friends">
+  <div class="promo-banner">
+    <div class="promo-text">
+      <h2 data-lang-html-key="friendsPromoBannerTitle">Получи 10% от<br />депозита вашего друга</h2>
+    </div>
+    <div class="promo-image">
+      <img src="web/images/friends/frog-icon.svg" class="nrc-icon-placeholder nrc-character-placeholder" alt="frog-icon" />
+    </div>
+  </div>
+
+  <div class="invite-section">
+    <button class="invite-button-main" data-lang-key="friendsInviteButton">Пригласить друга</button>
+    <button class="invite-button-copy" id="copyLinkBtn">
+      <img src="web/images/friends/copy-link.svg" class="icon-placeholder" alt="copy-link" />
+    </button>
+    <div id="copyNotification" class="copy-notification" data-lang-key="friendsCopyNotification">
+      Ссылка скопирована
+    </div>
+  </div>
+
+  <div class="referral-balance-section">
+    <div class="balance-details">
+      <p class="label" data-lang-key="friendsReferralBalanceLabel">Referral balance</p>
+      <p class="amount" id="referralTonBalanceAmount">
+        0.00 <img src="web/images/main/ton-icon.svg" class="diamond-icon" alt="ton-icon"/>
+      </p>
+    </div>
+    <button class="withdraw-button" data-lang-key="friendsWithdrawButton">Withdraw</button>
+  </div>
+
+  <div class="promo-code-section">
+    <button class="activate-promo-button promo-open-btn" data-lang-key="activatePromo">
+      <img src="web/images/friends/promo-code.svg" class="icon-placeholder" alt="promo-code"/>
+      Активировать промокод
+    </button>
+  </div>
+
+  <div class="bonus-balance-tasks">
+    <h3 data-lang-key="friendsBonusBalanceTitle">Заработай бонусный баланс</h3>
+    <div class="task-list">
+      <div class="task-item" data-tier-friends="10">
+        <div class="task-icon-text">
+          <img src="web/images/friends/friends-invation.svg" class="icon-placeholder" alt="friends-invation"/>
+          <span data-lang-key="friendsInvite10Task">Пригласи 10 друзей</span>
+        </div>
+        <div class="task-progress-reward">
+          <span class="progress-text">0 / 10</span>
+          <span class="reward">
+            0.05 <img src="web/images/main/ton-icon.svg" class="diamond-icon" alt="ton-icon" />
+          </span>
+        </div>
+      </div>
+
+      <div class="task-item" data-tier-friends="25">
+        <div class="task-icon-text">
+          <img src="web/images/friends/friends-invation.svg" class="icon-placeholder" alt="friends-invation" />
+          <span data-lang-key="friendsInvite25Task">Пригласи 25 друзей</span>
+        </div>
+        <div class="task-progress-reward">
+          <span class="progress-text second">0 / 25</span>
+          <span class="reward">
+            0.1 <img src="web/images/main/ton-icon.svg" class="diamond-icon" alt="ton-icon"/>
+          </span>
+        </div>
+      </div>
+      <div class="task-item" data-tier-friends="50">
+        <div class="task-icon-text">
+          <img src="web/images/friends/friends-invation.svg" class="icon-placeholder" alt="friends-invation" />
+          <span data-lang-key="friendsInvite50Task">Пригласи 50 друзей</span>
+        </div>
+        <div class="task-progress-reward">
+          <span class="progress-text">0 / 50</span>
+          <span class="reward">
+            0.15 <img src="web/images/main/ton-icon.svg" class="diamond-icon" alt="ton-icon"/>
+          </span>
+        </div>
+      </div>
+      <div class="task-item" data-tier-friends="100">
+        <div class="task-icon-text">
+          <img src="web/images/friends/friends-invation.svg" class="icon-placeholder" alt="friends-invation"/>
+          <span data-lang-key="friendsInvite100Task">Пригласи 100 друзей</span>
+        </div>
+        <div class="task-progress-reward">
+          <span class="progress-text">0 / 100</span>
+          <span class="reward">
+            0.2 <img src="web/images/main/ton-icon.svg" class="diamond-icon" alt="ton-icon"/>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="invited-list-section">
+    <div class="invited-header">
+      <h4 data-lang-key="friendsInvitedHeaderPrefix" id="invitedCountHeader">Invited (0)</h4>
+      <div class="invited-columns">
+        <span data-lang-key="friendsInvitedColumnUser">User</span>
+        <span data-lang-key="friendsInvitedColumnProfit">Profit</span>
+      </div>
+    </div>
+    <div class="invited-body" id="invitedFriendsListContainer">
+      <p data-lang-key="friendsNoInvitedYet" id="noInvitedFriendsMessage">You haven't invited any friends yet</p>
+    </div>
+  </div>
+</section>
