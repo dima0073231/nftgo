@@ -1,0 +1,10 @@
+{
+  "url": "https://danikkkkk12.github.io/nftbot",  
+  "name": "Crash Bot",
+  "iconUrl": "https://danikkkkk12.github.io/nftbot/web/images/main/frog-img.png",
+  "termsOfUseUrl": "https://danikkkkk12.github.io/nftbot/terms.html",
+  "privacyPolicyUrl": "https://danikkkkk12.github.io/nftbot/privacy.html",
+  "version": "1.0.0",
+  "network": "mainnet",
+  "appId": "crashbot-ton-dapp"
+}
