@@ -20,6 +20,10 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server started on http://localhost:${PORT}`);
+});
 // Подключение к БД
 connectDB();
 
@@ -76,10 +80,6 @@ function broadcastOnline() {
 }
 
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server started on http://localhost:${PORT}`);
-});
 
 // if (process.env.NODE_ENV === 'development') {
 //   require('./test-auto'); 
