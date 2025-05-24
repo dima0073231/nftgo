@@ -29,7 +29,7 @@ async function connectProfile(telegramId) {
   }
 
   try {
-    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/user");
     if (!response.ok) throw new Error("Ошибка сети");
 
     const users = await response.json();
@@ -137,15 +137,15 @@ const userBetHistoryContainer = document.querySelector(
 // }
 
 // Функция для форматирования даты
-// function getCurrentDateFormatted() {
-//   const today = new Date();
-//   const day = String(today.getDate()).padStart(2, "0");
-//   const month = String(today.getMonth() + 1).padStart(2, "0");
-//   const year = today.getFullYear();
-//   const hours = String(today.getHours()).padStart(2, "0");
-//   const minutes = String(today.getMinutes()).padStart(2, "0");
-//   return `${day}.${month}.${year} ${hours}:${minutes}`;
-// }
+function getCurrentDateFormatted() {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, "0");
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const year = today.getFullYear();
+  const hours = String(today.getHours()).padStart(2, "0");
+  const minutes = String(today.getMinutes()).padStart(2, "0");
+  return `${day}.${month}.${year} ${hours}:${minutes}`;
+}
 
 // Функция для добавления новой ставки в историю
 // function addNewBetToHistory(amount) {
