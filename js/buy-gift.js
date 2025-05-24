@@ -233,7 +233,7 @@ const addToInventory = async function (userId, itemId, count, price) {
 
   try {
     const updateRes = await fetch(
-      `https://nftbotserver.onrender.com/api/users/${userId}/inventory`,
+      `https://nftbot-4yi9.onrender.com/api/users/${userId}/inventory`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

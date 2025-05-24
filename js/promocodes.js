@@ -15,7 +15,7 @@ import { telegramId } from "./profile.js";
 async function enterPromo(tgId, code) {
   try {
     const response = await fetch(
-      "https://nftbotserver.onrender.com/api/promocode/activate",
+      "https://nftbot-4yi9.onrender.com/api/promocode/activate",
       {
         method: "POST",
         headers: {
