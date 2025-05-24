@@ -44,6 +44,18 @@ app.use(express.json());
 connectDB();
 
 // Роуты
+
+app.get('/', (req, res) => {
+  res.json({
+    status: 'API is working',
+    message: 'Welcome to NFTBot API',
+    endpoints: {
+      users: '/api/users',
+      // другие эндпоинты
+    }
+  });
+});
+
 app.post('/api/users', async (req, res) => {
     try {
         const user = new User(req.body); 
