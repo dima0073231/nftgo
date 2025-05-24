@@ -24,7 +24,7 @@ import { telegramId } from "./profile.js";
 
 const isUserAdmin = async function (tgId) {
   try {
-    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
+    const response = await fetch("https://nftbotserver.onrender.com/api/users");
     const users = await response.json();
 
     const user = users.find((user) => String(user.telegramId) === String(tgId));
@@ -43,7 +43,7 @@ const isUserAdmin = async function (tgId) {
 // Додати адміністратора
 const addAdmins = async function (userId) {
   try {
-    const response = await fetch("https://nftbot-4yi9.onrender.com//api/users");
+    const response = await fetch("https://nftbotserver.onrender.com/api/users");
     if (!response.ok)
       throw new Error("Не удалось получить список пользователей");
 
@@ -174,7 +174,7 @@ const addNewPromo = async function (promoCode, reward) {
 const deletePromo = async function (promoCode) {
   try {
     const response = await fetch(
-      `https://nftbot-4yi9.onrender.com/api/promocodes/${promoCode.toUpperCase()}`,
+      `https://nftbot-4yi9.onrender.com/api/promocode/${promoCode.toUpperCase()}`,
       {
         method: "DELETE",
       }
@@ -198,7 +198,7 @@ const showPromocodes = async function () {
 
   try {
     const response = await fetch(
-      "https://nftbot-4yi9.onrender.com/api/promocodes"
+      "https://nftbot-4yi9.onrender.com/api/promocode"
     );
     if (!response.ok) throw new Error("Не вдалося отримати список промокодів");
 
