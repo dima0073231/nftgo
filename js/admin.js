@@ -24,7 +24,7 @@ import { telegramId } from "./profile.js";
 
 const isUserAdmin = async function (tgId) {
   try {
-    const response = await fetch("https://nftbot-4yi9.onrender.com/api/user");
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
     const users = await response.json();
 
     const user = users.find((user) => String(user.telegramId) === String(tgId));
@@ -43,7 +43,7 @@ const isUserAdmin = async function (tgId) {
 // Додати адміністратора
 const addAdmins = async function (userId) {
   try {
-    const response = await fetch("https://nftbot-4yi9.onrender.com//api/user");
+    const response = await fetch("https://nftbot-4yi9.onrender.com//api/users");
     if (!response.ok)
       throw new Error("Не удалось получить список пользователей");
 
@@ -79,7 +79,7 @@ const addAdmins = async function (userId) {
 
 const removeAdmins = async function (userId) {
   try {
-    const response = await fetch("https://nftbot-4yi9.onrender.com/api/user");
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
     if (!response.ok)
       throw new Error("Не удалось получить список пользователей");
 
@@ -114,7 +114,7 @@ const removeAdmins = async function (userId) {
 };
 const updateUserBalance = async function (userId, balance) {
   try {
-    const response = await fetch("https://nftbot-4yi9.onrender.com/api/user");
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
     if (!response.ok)
       throw new Error("Не вдалося отримати список користувачів");
 
@@ -174,7 +174,7 @@ const addNewPromo = async function (promoCode, reward) {
 const deletePromo = async function (promoCode) {
   try {
     const response = await fetch(
-      `https://nftbot-4yi9.onrender.com/api/promocode/${promoCode.toUpperCase()}`,
+      `https://nftbot-4yi9.onrender.com/api/promocodes/${promoCode.toUpperCase()}`,
       {
         method: "DELETE",
       }
@@ -198,7 +198,7 @@ const showPromocodes = async function () {
 
   try {
     const response = await fetch(
-      "https://nftbot-4yi9.onrender.com/api/promocode"
+      "https://nftbot-4yi9.onrender.com/api/promocodes"
     );
     if (!response.ok) throw new Error("Не вдалося отримати список промокодів");
 
