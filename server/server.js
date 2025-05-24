@@ -29,24 +29,27 @@ connectDB();
 
 // Роуты
 app.post('/api/user', async (req, res) => {
-  try {
-    const user = new User(req.body);
-    await user.save();
-    res.status(201).json(user);
-  } catch (err) {
-    console.error('❌ Ошибка при создании пользователя:', err);
-    res.status(500).json({ error: err.message });
-  }
+    try {
+        const user = new User(req.body); 
+        await user.save();
+        res.status(201).json(user);
+        console.log('✅ Пользователь успешно создан:', user.username);
+    } catch (err) {
+        console.error('❌ Ошибка при создании пользователя:', err.message);
+        res.status(400).json({ error: err.message });
+    }
 });
 
+// Маршрут для получения всех пользователей (GET-запрос)
 app.get('/api/user', async (req, res) => {
-  try {
-    const users = await User.find().sort({ createdAt: -1 });
-    res.json(users);
-  } catch (err) {
-    console.error('❌ Ошибка при получении пользователей:', err);
-    res.status(500).json({ error: err.message });
-  }
+    try {
+        const users = await User.find().sort({ createdAt: -1 });
+        res.json(users);
+        console.log(`✅ Отправлен список из ${users.length} пользователей.`);
+    } catch (err) {
+        console.error('❌ Ошибка при получении пользователей:', err.message);
+        res.status(500).json({ error: 'Failed to fetch users' });
+    }
 });
 
 const WebSocket = require('ws');
