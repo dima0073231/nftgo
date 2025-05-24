@@ -6,11 +6,19 @@ const path = require('path');
 const User = require('./api/user'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
 
-const app = express();
+const corsOptions = {
+  origin: 'https://dima0073231.github.io', // Точный домен вашего фронтенда на GitHub Pages
+  methods: ['GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'DELETE'], // Разрешенные HTTP-методы
+  credentials: true, // Разрешить отправку куки и заголовков авторизации
+};
+
+
 
 // Middleware
-app.use(cors());
+const app = express();
+app.use(cors(corsOptions));
 app.use(express.json());
+
 
 // Подключение к БД
 connectDB();
