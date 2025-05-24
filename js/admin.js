@@ -24,7 +24,7 @@ import { telegramId } from "./profile.js";
 
 const isUserAdmin = async function (tgId) {
   try {
-    const response = await fetch('https://nftbot-4y19.onrender.com/api/users', {
+    const response = await fetch('https://nftbot-4yi9.onrender.com/api/users', {
         method: 'GET',
         credentials: 'include', // важно!
         headers: {
@@ -49,7 +49,7 @@ const isUserAdmin = async function (tgId) {
 // Додати адміністратора
 const addAdmins = async function (userId) {
   try {
-    const response = await fetch('https://nftbot-4y19.onrender.com/api/users', {
+    const response = await fetch('https://nftbot-4yi9.onrender.com/api/users', {
           method: 'GET',
           credentials: 'include', // важно!
           headers: {
