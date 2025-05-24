@@ -303,7 +303,12 @@ inventoryBtn.addEventListener("click", async () => {
 
 async function checkInventoryItems(tgId) {
   try {
-    const response = await fetch("https://nftbotserver.onrender.com/api/users");
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users", {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
     if (!response.ok) throw new Error("Не удалось получить пользователей");
     const users = await response.json();
     const user = users.find((user) => String(user.telegramId) === String(tgId));
