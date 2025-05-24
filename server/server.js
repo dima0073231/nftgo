@@ -39,6 +39,11 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // Предварительные запросы
 app.use(express.json());
 
+// WebSocket сервер
+const WebSocket = require('ws');
+const server = app.listen(process.env.PORT || 3000, () => {
+  console.log(`🚀 Server started on http://localhost:${process.env.PORT || 3000}`);
+});
 
 // Подключение к БД
 connectDB();
@@ -79,11 +84,7 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
-// WebSocket сервер
-const WebSocket = require('ws');
-const server = app.listen(process.env.PORT || 3000, () => {
-  console.log(`🚀 Server started on http://localhost:${process.env.PORT || 3000}`);
-});
+
 
 const wss = new WebSocket.Server({ server });
 
