@@ -46,7 +46,7 @@ function broadcastOnline() {
 
 
 // Маршруты
-app.post('/api/users', async (req, res) => {
+app.post('/api/user', async (req, res) => {
   try {
     const user = new User(req.body);
     await user.save();
@@ -56,7 +56,7 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-app.get('/api/users', async (req, res) => {
+app.get('/api/user', async (req, res) => {
   try {
     const users = await User.find().sort({ createdAt: -1 });
     res.json(users);
