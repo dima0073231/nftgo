@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-const User = require('./api/user'); // Модель
+const User = require('./api/users'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
 
 const corsOptions = {
