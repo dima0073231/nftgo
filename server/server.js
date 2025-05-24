@@ -6,24 +6,29 @@ const path = require('path');
 const User = require('./api/users'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
 
+const allowedOrigins = [
+  'https://dima0073231.github.io',
+  'https://dima0073231.github.io/nftgo/',
+  'http://localhost:3000' // для локальной разработки
+];
+
 const corsOptions = {
-  origin: 'https://dima0073231.github.io/nftgo/', // Точный домен вашего фронтенда на GitHub Pages
-  methods: ['GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'DELETE'], // Разрешенные HTTP-методы
-  credentials: true, // Разрешить отправку куки и заголовков авторизации
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
 };
-
-
 
 // Middleware
 const app = express();
 app.use(cors(corsOptions));
 app.use(express.json());
 
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server started on http://localhost:${PORT}`);
-});
 // Подключение к БД
 connectDB();
 
@@ -40,7 +45,6 @@ app.post('/api/user', async (req, res) => {
     }
 });
 
-// Маршрут для получения всех пользователей (GET-запрос)
 app.get('/api/user', async (req, res) => {
     try {
         const users = await User.find().sort({ createdAt: -1 });
@@ -52,16 +56,19 @@ app.get('/api/user', async (req, res) => {
     }
 });
 
+// WebSocket сервер
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8080 });
+const server = app.listen(process.env.PORT || 3000, () => {
+  console.log(`🚀 Server started on http://localhost:${process.env.PORT || 3000}`);
+});
+
+const wss = new WebSocket.Server({ server });
 
 let clients = new Set();
 
 wss.on('connection', (ws) => {
   clients.add(ws);
   console.log('Подключился клиент. Сейчас онлайн:', clients.size);
-
-  // Рассылаем число онлайнов всем
   broadcastOnline();
 
   ws.on('close', () => {
@@ -75,11 +82,11 @@ function broadcastOnline() {
   const count = clients.size;
   const message = JSON.stringify({ online: count });
 
-  for (let client of clients) {
+  clients.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(message);
     }
-  }
+  });
 }
 
 
