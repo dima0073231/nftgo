@@ -52,6 +52,7 @@ app.post('/api/user', async (req, res) => {
     await user.save();
     res.status(201).json(user);
   } catch (err) {
+    console.error('❌ Ошибка при создании пользователя:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -61,6 +62,7 @@ app.get('/api/user', async (req, res) => {
     const users = await User.find().sort({ createdAt: -1 });
     res.json(users);
   } catch (err) {
+    console.error('❌ Ошибка при получении пользователей:', err);
     res.status(500).json({ error: err.message });
   }
 });
