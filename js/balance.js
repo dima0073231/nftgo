@@ -27,7 +27,7 @@ import { telegramId } from "./profile.js";
 // export { getUserName };
 const getBalance = async function (tgId) {
   try {
-    const response = await fetch(`https://nftbot-4yi9.onrender.com/api/users`);
+    const response = await fetch(`https://nftbot-4yi9.onrender.com/api/user`);
     if (!response.ok) throw new Error("Користувача не знайдено");
 
     const users = await response.json();
