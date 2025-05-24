@@ -7,7 +7,7 @@ const User = require('./api/user'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
 
 const corsOptions = {
-  origin: 'https://dima0073231.github.io', // Точный домен вашего фронтенда на GitHub Pages
+  origin: 'https://dima0073231.github.io/nftgo/', // Точный домен вашего фронтенда на GitHub Pages
   methods: ['GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'DELETE'], // Разрешенные HTTP-методы
   credentials: true, // Разрешить отправку куки и заголовков авторизации
 };
