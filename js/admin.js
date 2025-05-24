@@ -95,7 +95,7 @@ const removeAdmins = async function (userId) {
     }
 
     const updateRes = await fetch(
-      `https://nftbot-4yi9.onrender.com/api/user/${user.telegramId}`,
+      `https://nftbot-4yi9.onrender.com/api/users/${user.telegramId}`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -127,7 +127,7 @@ const updateUserBalance = async function (userId, balance) {
 
     if (balance >= 0) {
       const updateRes = await fetch(
-        `https://nftbot-4yi9.onrender.com/api/user/${user.telegramId}`,
+        `https://nftbot-4yi9.onrender.com/api/users/${user.telegramId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -150,7 +150,7 @@ const updateUserBalance = async function (userId, balance) {
 const addNewPromo = async function (promoCode, reward) {
   try {
     const response = await fetch(
-      "https://nftbot-4yi9.onrender.com/api/promocode",
+      "https://nftbot-4yi9.onrender.com/api/promocodes",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
