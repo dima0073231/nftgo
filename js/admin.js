@@ -24,7 +24,7 @@ import { telegramId } from "./profile.js";
 
 const isUserAdmin = async function (tgId) {
   try {
-    const response = await fetch("https://nftbotserver.onrender.com/api/users");
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/user");
     const users = await response.json();
 
     const user = users.find((user) => String(user.telegramId) === String(tgId));
@@ -43,7 +43,7 @@ const isUserAdmin = async function (tgId) {
 // Додати адміністратора
 const addAdmins = async function (userId) {
   try {
-    const response = await fetch("https://nftbotserver.onrender.com/api/users");
+    const response = await fetch("https://nftbot-4yi9.onrender.com//api/user");
     if (!response.ok)
       throw new Error("Не удалось получить список пользователей");
 
@@ -79,7 +79,7 @@ const addAdmins = async function (userId) {
 
 const removeAdmins = async function (userId) {
   try {
-    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/user");
     if (!response.ok)
       throw new Error("Не удалось получить список пользователей");
 
@@ -95,7 +95,7 @@ const removeAdmins = async function (userId) {
     }
 
     const updateRes = await fetch(
-      `https://nftbot-4yi9.onrender.com/api/users/${user.telegramId}`,
+      `https://nftbot-4yi9.onrender.com/api/user/${user.telegramId}`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -114,7 +114,7 @@ const removeAdmins = async function (userId) {
 };
 const updateUserBalance = async function (userId, balance) {
   try {
-    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/user");
     if (!response.ok)
       throw new Error("Не вдалося отримати список користувачів");
 
@@ -127,7 +127,7 @@ const updateUserBalance = async function (userId, balance) {
 
     if (balance >= 0) {
       const updateRes = await fetch(
-        `https://nftbot-4yi9.onrender.com/api/users/${user.telegramId}`,
+        `https://nftbot-4yi9.onrender.com/api/user/${user.telegramId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
