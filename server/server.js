@@ -8,7 +8,7 @@ const connectDB = require('./db/db'); // Подключение к MongoDB
 
 const allowedOrigins = [
   'https://dima0073231.github.io',
-  'https://dima0073231.github.io/nftgo/',
+  'https://dima0073231.github.io/nftgo',
   'http://localhost:3000'
 ];
 
@@ -44,7 +44,7 @@ app.use(express.json());
 connectDB();
 
 // Роуты
-app.post('/api/user', async (req, res) => {
+app.post('/api/users', async (req, res) => {
     try {
         const user = new User(req.body); 
         await user.save();
@@ -56,7 +56,7 @@ app.post('/api/user', async (req, res) => {
     }
 });
 
-app.get('/api/user', async (req, res) => {
+app.get('/api/users', async (req, res) => {
     try {
         const users = await User.find().sort({ createdAt: -1 });
         res.json(users);
