@@ -9,7 +9,7 @@ const connectDB = require('./db/db'); // Подключение к MongoDB
 const allowedOrigins = [
   'https://dima0073231.github.io',
   'https://dima0073231.github.io/nftgo/',
-  'http://localhost:3000'
+  'http://localhost:3000'.
 ];
 
 const corsOptions = {
