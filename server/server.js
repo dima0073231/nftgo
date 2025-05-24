@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('../db/db');
-// const User = require('./api/user');
+const User = require('./api/user');
 const path = require('path');
 
 const app = express();
@@ -43,6 +43,7 @@ function broadcastOnline() {
     }
   }
 }
+
 
 // Маршруты
 app.post('/api/users', async (req, res) => {
