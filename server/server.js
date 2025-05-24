@@ -46,15 +46,8 @@ app.post('/api/users', async (req, res) => {
     }
 });
 
-app.get('/api/users', async (req, res) => {
-    try {
-        const users = await User.find().sort({ createdAt: -1 });
-        res.json(users);
-        console.log(`✅ Отправлен список из ${users.length} пользователей.`);
-    } catch (err) {
-        console.error('❌ Ошибка при получении пользователей:', err.message);
-        res.status(500).json({ error: 'Failed to fetch users' });
-    }
+app.get('/api/users', (req, res) => {
+  res.json([{ test: "API is responding" }]);
 });
 
 // WebSocket сервер
