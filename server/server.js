@@ -1,18 +1,41 @@
+require('dotenv').config();
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const connectDB = require('../db/db');
-const User = require('./api/user');
 const path = require('path');
+const User = require('./api/user'); // Модель
+const connectDB = require('./db/db'); // Подключение к MongoDB
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '..')));
 
 // Подключение к БД
 connectDB();
+
+// Роуты
+app.post('/api/user', async (req, res) => {
+  try {
+    const user = new User(req.body);
+    await user.save();
+    res.status(201).json(user);
+  } catch (err) {
+    console.error('❌ Ошибка при создании пользователя:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/user', async (req, res) => {
+  try {
+    const users = await User.find().sort({ createdAt: -1 });
+    res.json(users);
+  } catch (err) {
+    console.error('❌ Ошибка при получении пользователей:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ port: 8080 });
@@ -44,28 +67,6 @@ function broadcastOnline() {
   }
 }
 
-
-// Маршруты
-app.post('/api/user', async (req, res) => {
-  try {
-    const user = new User(req.body);
-    await user.save();
-    res.status(201).json(user);
-  } catch (err) {
-    console.error('❌ Ошибка при создании пользователя:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.get('/api/user', async (req, res) => {
-  try {
-    const users = await User.find().sort({ createdAt: -1 });
-    res.json(users);
-  } catch (err) {
-    console.error('❌ Ошибка при получении пользователей:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
