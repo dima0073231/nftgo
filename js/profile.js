@@ -90,7 +90,7 @@ const startGameButton = document.querySelector(".user-page-game-history__btn");
 
 async function fetchBetHistory(telegramId) {
   try {
-    const response = await fetch(`/api/users/${telegramId}/history`);
+    const response = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${telegramId}/history`);
     if (!response.ok) throw new Error("Не удалось загрузить историю ставок");
     const data = await response.json();
     return data.history || [];
