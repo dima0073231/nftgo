@@ -316,7 +316,8 @@ import { getUserName } from "./balance.js";
 // Upload bet to server
 async function uploadBetToServer({ telegramId, date, betAmount, coefficient, result }) {
   try {
-    const response = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${telegramId}/history`, {
+    const tgId = Number(telegramId); // Always use Number for DB
+    const response = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${tgId}/history`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ date, betAmount, coefficient, result }),
@@ -330,23 +331,25 @@ async function uploadBetToServer({ telegramId, date, betAmount, coefficient, res
   }
 }
 
-// Add bet to history (local and server)
+// Add bet to history (and optionally to localStorage for faster UI)
 const addBetToHistory = async function (betAmount, coefficient, isWin, telegramId) {
   try {
     const username = await getUserName(telegramId);
     const date = new Date().toISOString();
 
-    // Send to server
+    // Prepare server data
     const betData = {
-      telegramId,
+      telegramId: Number(telegramId), // Always as Number!
       date,
       betAmount,
       coefficient,
       result: isWin ? "win" : "lose"
     };
+
+    // Save to backend DB
     await uploadBetToServer(betData);
 
-    // (Optional) Update local history for fast UI
+    // (Optional) Save to localStorage for instant UI, can remove if only DB needed
     const betHistory = JSON.parse(localStorage.getItem("betHistory")) || [];
     const newEntry = {
       username: username || "Unknown",
@@ -358,7 +361,7 @@ const addBetToHistory = async function (betAmount, coefficient, isWin, telegramI
     betHistory.push(newEntry);
     localStorage.setItem("betHistory", JSON.stringify(betHistory));
 
-    // Update UI
+    // Update UI (optional, only if using local cache)
     addBetCards();
   } catch (err) {
     console.error("Error adding bet to history:", err);
@@ -366,6 +369,7 @@ const addBetToHistory = async function (betAmount, coefficient, isWin, telegramI
 };
 
 function addBetCards() {
+  // Example: update a bet history list from localStorage
   const container = document.querySelector(".bet-count-list");
   if (!container) return;
 
@@ -401,6 +405,7 @@ function addBetCards() {
     betCount.textContent = localBetCount;
   }
 }
+
 
 export { addBetToHistory };
 

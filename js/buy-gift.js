@@ -153,17 +153,16 @@ function renderGifts(minPrice = 0, maxPrice = Infinity) {
 
   gifts
     .filter((gift) => gift.price >= minPrice && gift.price <= maxPrice)
-    .forEach((gift) => {
+    .forEach((gift, idx) => {
       const card = document.createElement("div");
-      card.classList.add("gift-card");
-      card.classList.add("swiper-slide");
+      card.classList.add("gift-card", "swiper-slide");
       card.dataset.name = gift.name;
       card.dataset.price = gift.price;
-      card.dataset.id = gift.id;
+      card.dataset.idx = idx;
 
       card.innerHTML = `
         <div class="card-price">${gift.price} <img src="web/images/inventory/ton.svg" class="gem-icon"></div>
-        <img class="card-price-icon-gift" src="web/images/${gift.image}" alt="${gift.name}" class="card-img">
+        <img class="card-price-icon-gift" src="web/images/${gift.image}" alt="${gift.name}" />
         <div class="card-label">${gift.name}</div>
       `;
 
@@ -179,34 +178,31 @@ function renderGifts(minPrice = 0, maxPrice = Infinity) {
     });
 }
 
+// Изначальный рендер всех подарков
 renderGifts(0, Infinity);
 
-
-new Swiper(".grid", {
-  direction: "vertical",      // Прокрутка вертикальная
-  slidesPerView: 3,           // 3 карточки по горизонтали в строке
-  grid: {
-    rows: 1,                  // 2 строки на одну "страницу"
-    fill: 'row'               // Заполнение по строкам
-  },
-  spaceBetween: 10,
-  mousewheel: true,           // Прокрутка мышью
+// Swiper и его параметры
+const swiper = new Swiper(".grid", {
+  direction: "horizontal",      // Прокрутка горизонтальная (для 3 в ряд)
+  slidesPerView: 3,             // 3 карточки в ряду
+  spaceBetween: 16,
+  mousewheel: true,
   pagination: {
     el: ".swiper-pagination",
     clickable: true,
   },
   breakpoints: {
     0: {
-      slidesPerView: 2,
-      grid: {
-        rows: 3,
-      },
+      slidesPerView: 1,
+      spaceBetween: 8,
     },
     430: {
+      slidesPerView: 2,
+      spaceBetween: 12,
+    },
+    640: {
       slidesPerView: 3,
-      grid: {
-        rows: 2,
-      },
+      spaceBetween: 16,
     },
   },
 });
