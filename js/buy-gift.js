@@ -323,7 +323,7 @@ async function renderInventory(userId) {
       <span class="inventory-item__name">${gift.name}</span>
       <div class="inventory-item__marketplace">
         <div class="inventory-item__cashout">
-          <img src="web/images/inventory/download.svg" alt="download">
+          <img src="web/images/inventory/download.svg" alt="download" id="giftImage">
         </div>
         <div class="inventory-item__sell">
           <img src="web/images/inventory/basket.svg" alt="basket">
@@ -470,3 +470,30 @@ new Swiper(".grid", {
     },
   },
 });
+document.getElementById("giftImage").addEventListener("click", async () => {
+    const giftId = "ID_ПОДАРКА_ТУТ";
+    const token = "ТВОЙ_JWT_ТОКЕН";
+
+    try {
+      const response = await fetch("http://localhost:3000/api/order/gift", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ id_winGift: giftId })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.message || "Ошибка при заказе подарка");
+        return;
+      }
+
+      const data = await response.json();
+      alert(data.dataResults?.order || "Подарок успешно заказан!");
+    } catch (error) {
+      console.error("Ошибка запроса:", error);
+      alert("Ошибка при отправке запроса на сервер");
+    }
+  });
