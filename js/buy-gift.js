@@ -150,50 +150,63 @@ const gifts = [
 // Отрисовка подарков
 function renderGifts(minPrice = 0, maxPrice = Infinity) {
   gridContainer.innerHTML = "";
+
   gifts
-    .filter(gift => gift.price >= minPrice && gift.price <= maxPrice)
-    .forEach(gift => {
+    .filter((gift) => gift.price >= minPrice && gift.price <= maxPrice)
+    .forEach((gift) => {
       const card = document.createElement("div");
-      card.className = "gift-card";
+      card.classList.add("gift-card");
+      card.classList.add("swiper-slide");
+      card.dataset.name = gift.name;
+      card.dataset.price = gift.price;
+      card.dataset.id = gift.id;
+
       card.innerHTML = `
         <div class="card-price">${gift.price} <img src="web/images/inventory/ton.svg" class="gem-icon"></div>
-        <img class="card-price-icon-gift" src="web/images/${gift.image}" alt="${gift.name}">
+        <img class="card-price-icon-gift" src="web/images/${gift.image}" alt="${gift.name}" class="card-img">
         <div class="card-label">${gift.name}</div>
       `;
+
       card.addEventListener("click", () => {
-        document.querySelectorAll(".gift-card").forEach(c => c.classList.remove("selected"));
+        document
+          .querySelectorAll(".gift-card")
+          .forEach((c) => c.classList.remove("selected"));
         card.classList.add("selected");
         selectedItem = gift;
       });
+
       gridContainer.appendChild(card);
     });
 }
 
-// Изначальный рендер всех подарков
 renderGifts(0, Infinity);
 
-// Swiper и его параметры
-const swiper = new Swiper(".grid", {
-  direction: "horizontal",      // Прокрутка горизонтальная (для 3 в ряд)
-  slidesPerView: 3,             // 3 карточки в ряду
-  spaceBetween: 16,
-  mousewheel: true,
+
+new Swiper(".grid", {
+  direction: "vertical",      // Прокрутка вертикальная
+  slidesPerView: 3,           // 3 карточки по горизонтали в строке
+  grid: {
+    rows: 1,                  // 2 строки на одну "страницу"
+    fill: 'row'               // Заполнение по строкам
+  },
+  spaceBetween: 10,
+  mousewheel: true,           // Прокрутка мышью
   pagination: {
     el: ".swiper-pagination",
     clickable: true,
   },
   breakpoints: {
     0: {
-      slidesPerView: 1,
-      spaceBetween: 8,
+      slidesPerView: 2,
+      grid: {
+        rows: 3,
+      },
     },
     430: {
-      slidesPerView: 2,
-      spaceBetween: 12,
-    },
-    640: {
       slidesPerView: 3,
-      spaceBetween: 16,
+      grid: {
+        rows: 2,
+      },
     },
   },
 });
