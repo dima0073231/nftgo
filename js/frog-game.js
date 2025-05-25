@@ -188,11 +188,12 @@ function updateGameState(crashAt) {
   if (currentCoefficient >= crashAt) {
     stopGame();
   }
+  updateBalanceDisplay();
 }
 
 function stopGame() {
   setGameActive(false);
-
+  updateBalanceDisplay();
   clearInterval(gameInterval);
 
   coefficientDisplay.classList.add("crash-glow");
