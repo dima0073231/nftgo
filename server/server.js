@@ -3,50 +3,61 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+
 const User = require('./api/user'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
 
-
-// Middleware
 const app = express();
+
+// ✅ CORS — разрешаем запросы с GitHub Pages
 app.use(cors({
-  origin: 'https://dima0073231.github.io', // ❗️разрешаем только GitHub Pages
-  credentials: true // если ты используешь куки/авторизацию
+  origin: 'https://dima0073231.github.io',
+  credentials: true
 }));
+
+// ✅ Для preflight-запросов (OPTIONS)
+app.options('*', cors({
+  origin: 'https://dima0073231.github.io',
+  credentials: true
+}));
+
+// ✅ Middleware для JSON-тел запросов
 app.use(express.json());
 
 // Подключение к БД
 connectDB();
 
-// Роуты
-app.post('/api/users', async (req, res) => {
-    try {
-        const user = new User(req.body); 
-        await user.save();
-        res.status(201).json(user);
-        console.log('✅ Пользователь успешно создан:', user.username);
-    } catch (err) {
-        console.error('❌ Ошибка при создании пользователя:', err.message);
-        res.status(400).json({ error: err.message });
-    }
+// 📦 Роуты
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await User.find().sort({ createdAt: -1 });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.get('/api/users', async (req, res) => {
-    try {
-        const users = await User.find().sort({ createdAt: -1 });
-        res.json(users);
-        console.log(`✅ Отправлен список из ${users.length} пользователей.`);
-    } catch (err) {
-        console.error('❌ Ошибка при получении пользователей:', err.message);
-        res.status(500).json({ error: 'Failed to fetch users' });
-    }
+app.post('/api/users', async (req, res) => {
+  try {
+    const user = new User(req.body);
+    await user.save();
+    res.status(201).json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+const WebSocket = require('ws');
+// Запуск сервера
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`✅ Сервер запущен на порту ${PORT}`);
 });
 
 // WebSocket сервер
-const WebSocket = require('ws');
-const server = app.listen(process.env.PORT || 3000, () => {
-  console.log(`🚀 Server started on http://localhost:${process.env.PORT || 3000}`);
-});
+
+// const server = app.listen(process.env.PORT || 3000, () => {
+//   console.log(`🚀 Server started on http://localhost:${process.env.PORT || 3000}`);
+// });
 
 const wss = new WebSocket.Server({ server });
 
