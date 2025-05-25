@@ -159,8 +159,8 @@ function startGame() {
 }
 
 function updateGameState(crashAt) {
+  updateBalanceDisplay();
   if (!isGameActive) return;
-
   const speed = getSpeedByCoefficient(currentCoefficient);
   currentCoefficient = parseFloat((currentCoefficient + speed).toFixed(2));
   coefficientDisplay.innerText = `x${currentCoefficient.toFixed(2)}`;
@@ -188,7 +188,7 @@ function updateGameState(crashAt) {
   if (currentCoefficient >= crashAt) {
     stopGame();
   }
-  updateBalanceDisplay();
+
 }
 
 function stopGame() {
@@ -313,24 +313,59 @@ setInterval(() => {
 }, 500);
 import { getUserName } from "./balance.js";
 
-const addBetToHistory = async function (betAmount) {
+async function uploadBetToServer({ telegramId, date, betAmount, coefficient, result }) {
+  try {
+    const response = await fetch(`/api/users/${telegramId}/history`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date, betAmount, coefficient, result }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Ошибка при отправке истории ставок");
+    }
+    // Optionally: remove localStorage update here if you want only server-side history
+  } catch (err) {
+    console.error("Ошибка при загрузке истории ставок на сервер:", err);
+  }
+}
+
+// Accept all needed arguments!
+const addBetToHistory = async function (betAmount, coefficient, isWin, telegramId) {
   try {
     const username = await getUserName(telegramId);
-    const betHistory = JSON.parse(localStorage.getItem("betHistory")) || [];
+    const date = new Date().toISOString();
 
+    // Prepare server data
+    const betData = {
+      telegramId,
+      date,
+      betAmount,
+      coefficient,
+      result: isWin ? "win" : "lose"
+    };
+
+    // Upload to server
+    await uploadBetToServer(betData);
+
+    // Prepare localStorage entry
+    const betHistory = JSON.parse(localStorage.getItem("betHistory")) || [];
     const newEntry = {
       username: username || "Unknown",
       bet: betAmount,
-      time: new Date().toISOString(),
+      coefficient,
+      isWin,
+      date
     };
-
     betHistory.push(newEntry);
     localStorage.setItem("betHistory", JSON.stringify(betHistory));
+
     addBetCards();
   } catch (err) {
     console.error("Error adding bet to history:", err);
   }
 };
+
 
 function addBetCards() {
   const container = document.querySelector(".bet-count-list");

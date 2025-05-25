@@ -88,18 +88,29 @@ const noHistoryMessage = document.querySelector(
 );
 const startGameButton = document.querySelector(".user-page-game-history__btn");
 
-// Инициализация истории ставок
-function initBetHistory() {
-  if (!localStorage.getItem("betHistory")) {
-    localStorage.setItem("betHistory", JSON.stringify([]) || []);
+async function fetchBetHistory(telegramId) {
+  try {
+    const response = await fetch(`/api/users/${telegramId}/history`);
+    if (!response.ok) throw new Error("Не удалось загрузить историю ставок");
+    const data = await response.json();
+    return data.history || [];
+  } catch (err) {
+    console.error("Ошибка при загрузке истории ставок:", err);
+    return [];
   }
+}
 
-  const history = JSON.parse(localStorage.getItem("betHistory"));
+function formatDate(iso) {
+  const d = new Date(iso);
+  return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth()+1).padStart(2, "0")}.${d.getFullYear()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+// Инициализация истории ставок
+async function initBetHistory() {
+  // Instead of localStorage:
+  const history = await fetchBetHistory(telegramId);
 
   if (history.length > 0) {
-    // noHistoryMessage.style.display = "none";
-    // startGameButton.style.display = "none";
-
     userBetHistoryContainer.innerHTML = `
       <div class="swiper-wrapper user-page-game-history__swiper-wrapper">
         ${history
@@ -107,7 +118,7 @@ function initBetHistory() {
             (bet) => `
           <div class="user-page-game-history__card swiper-slide">
             <div class="user-page-game-history__price">
-              ${bet.amount.toFixed(2)}
+              ${Number(bet.betAmount).toFixed(2)}
               <img
                 src="web/images/inventory/ton.svg"
                 alt="diamond"
@@ -115,10 +126,12 @@ function initBetHistory() {
               />
             </div>
             <div class="user-page-game-history__data">
-              Telegram Wallet <span>${bet.date}</span>.
+              Telegram Wallet <span>${formatDate(bet.date)}</span>.
             </div>
-            <div class="user-page-game-history__coefficient ${bet.status}">
-              ${bet.result}
+            <div class="user-page-game-history__coefficient ${bet.result}">
+              ${bet.result === "win"
+                ? `+${(bet.betAmount * bet.coefficient).toFixed(2)} TON (x${Number(bet.coefficient).toFixed(2)})`
+                : `-${Number(bet.betAmount).toFixed(2)} TON`}
             </div>
           </div>
         `
