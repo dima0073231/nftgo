@@ -63,27 +63,27 @@ betBtn.forEach((btn, index) => {
   });
 });
 
-// giftCard.forEach((e) => {
-//   e.addEventListener('click', () => {
-//     betContainer.innerHTML += `
-//     <li class="swiper-slide bet-count-list__item">
-//             <div class="bet-count-list__profile">
-//             <img src="${userProfImg.src}" class="bet-count-list__avatar" alt="avatar">
-//               <h3 class="bet-count-list__username">${userNames.textContent}</h3>
-//             </div>
-//             <div class="bet-count-list__number">
-//             <span class="count">${betValue}</span>
+giftCard.forEach((e) => {
+  e.addEventListener('click', () => {
+    betContainer.innerHTML += `
+    <li class="swiper-slide bet-count-list__item">
+            <div class="bet-count-list__profile">
+            <img src="${userProfImg.src}" class="bet-count-list__avatar" alt="avatar">
+              <h3 class="bet-count-list__username">${userNames.textContent}</h3>
+            </div>
+            <div class="bet-count-list__number">
+            <span class="count">${betValue}</span>
 
-//               <img
-//                 src="web/images/main/ton-icon.svg"
-//                 alt="diamond"
-//                 class="bet-count-list__diamond"
-//               />
-//             </div>
-//           </li>
-//     `
+              <img
+                src="web/images/main/ton-icon.svg"
+                alt="diamond"
+                class="bet-count-list__diamond"
+              />
+            </div>
+          </li>
+    `
 
-//     const currentCount = betContainer.querySelectorAll('.bet-count-list__item').length;
-//     totalBet.textContent = currentCount
-//   })
-// })
+    const currentCount = betContainer.querySelectorAll('.bet-count-list__item').length;
+    totalBet.textContent = currentCount
+  })
+})

@@ -310,64 +310,64 @@ setInterval(() => {
     }
   });
 }, 500);
-// import { getUserName } from "./balance.js";
+import { getUserName } from "./balance.js";
 
-// const addBetToHistory = async function (betAmount) {
-//   try {
-//     const username = await getUserName(telegramId);
-//     const betHistory = JSON.parse(localStorage.getItem("betHistory")) || [];
+const addBetToHistory = async function (betAmount) {
+  try {
+    const username = await getUserName(telegramId);
+    const betHistory = JSON.parse(localStorage.getItem("betHistory")) || [];
 
-//     const newEntry = {
-//       username: username || "Unknown",
-//       bet: betAmount,
-//       time: new Date().toISOString(),
-//     };
+    const newEntry = {
+      username: username || "Unknown",
+      bet: betAmount,
+      time: new Date().toISOString(),
+    };
 
-//     betHistory.push(newEntry);
-//     localStorage.setItem("betHistory", JSON.stringify(betHistory));
-//     addBetCards();
-//   } catch (err) {
-//     console.error("Error adding bet to history:", err);
-//   }
-// };
+    betHistory.push(newEntry);
+    localStorage.setItem("betHistory", JSON.stringify(betHistory));
+    addBetCards();
+  } catch (err) {
+    console.error("Error adding bet to history:", err);
+  }
+};
 
-// function addBetCards() {
-//   const container = document.querySelector(".bet-count-list");
-//   if (!container) return;
+function addBetCards() {
+  const container = document.querySelector(".bet-count-list");
+  if (!container) return;
 
-//   const betHistory = JSON.parse(localStorage.getItem("betHistory")) || [];
-//   const betCount = document.querySelector("#total");
-//   let localBetCount = 0;
-//   container.innerHTML = "";
+  const betHistory = JSON.parse(localStorage.getItem("betHistory")) || [];
+  const betCount = document.querySelector("#total");
+  let localBetCount = 0;
+  container.innerHTML = "";
 
-//   betHistory
-//     .slice()
-//     .reverse()
-//     .forEach((el) => {
-//       container.insertAdjacentHTML(
-//         "beforeend",
-//         `
-//       <li class="swiper-slide bet-count-list__item">
-//         <div class="bet-count-list__profile">
-//           <img
-//             src="web/images/profile/user-avatar.jpg"
-//             alt="user-avatar"
-//             class="bet-count-list__avatar"
-//           />
-//           <h3 class="bet-count-list__username">${el.username}</h3>
-//         </div>
-//         <div class="bet-count-list__number">${el.bet.toFixed(2)}</div>
-//       </li>
-//       `
-//       );
-//       localBetCount += 1;
-//     });
+  betHistory
+    .slice()
+    .reverse()
+    .forEach((el) => {
+      container.insertAdjacentHTML(
+        "beforeend",
+        `
+      <li class="swiper-slide bet-count-list__item">
+        <div class="bet-count-list__profile">
+          <img
+            src="web/images/profile/user-avatar.jpg"
+            alt="user-avatar"
+            class="bet-count-list__avatar"
+          />
+          <h3 class="bet-count-list__username">${el.username}</h3>
+        </div>
+        <div class="bet-count-list__number">${el.bet.toFixed(2)}</div>
+      </li>
+      `
+      );
+      localBetCount += 1;
+    });
 
-//   if (betCount) {
-//     betCount.textContent = localBetCount;
-//   }
-// }
+  if (betCount) {
+    betCount.textContent = localBetCount;
+  }
+}
 
-// export { addBetToHistory };
+export { addBetToHistory };
 
 export { isGameActive, startGame, stopGame, currentCoefficient };
