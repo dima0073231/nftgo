@@ -323,7 +323,7 @@ async function renderInventory(userId) {
       <span class="inventory-item__name">${gift.name}</span>
       <div class="inventory-item__marketplace">
         <div class="inventory-item__cashout">
-          <img src="web/images/inventory/download.svg" alt="download" id="giftImage">
+          <img src="web/images/inventory/download.svg" alt="download">
         </div>
         <div class="inventory-item__sell">
           <img src="web/images/inventory/basket.svg" alt="basket">
@@ -370,77 +370,77 @@ modalOverlay.addEventListener("click", (e) => {
 });
 
 export { renderInventory };
-// const inventorySkinsItems = document.querySelector(".inventory-skins-items");
+const inventorySkinsItems = document.querySelector(".inventory-skins-items");
 
-// function renderGiftsMain(minPrice = 0, maxPrice = Infinity) {
-//   inventorySkinsItems.innerHTML = "";
+function renderGiftsMain(minPrice = 0, maxPrice = Infinity) {
+  inventorySkinsItems.innerHTML = "";
 
-//   gifts
-//     .filter((gift) => gift.price >= minPrice && gift.price <= maxPrice)
-//     .forEach((gift) => {
-//       const card = document.createElement("div");
-//       card.classList.add("inventory-skins-items-card");
-//       card.dataset.name = gift.name;
-//       card.dataset.price = gift.price;
-//       card.dataset.id = gift.id;
+  gifts
+    .filter((gift) => gift.price >= minPrice && gift.price <= maxPrice)
+    .forEach((gift) => {
+      const card = document.createElement("div");
+      card.classList.add("inventory-skins-items-card");
+      card.dataset.name = gift.name;
+      card.dataset.price = gift.price;
+      card.dataset.id = gift.id;
 
-//       card.innerHTML = `
-//         <div class="inventory-skins-items-card">
-//           <div class="current">
-//             <span class="inventory-skins-items-card__current">${gift.price}</span>
-//             <img src="web/images/inventory/ton.svg" alt="ton" />
-//           </div>
-//           <img
-//             src="web/images/${gift.image}"
-//             alt="bottle"
-//             class="inventory-skins-items-card__img"
-//           />
-//           <div class="inventory-item__cashout">
-//             <img src="web/images/inventory/download.svg" alt="download" />
-//           </div>
-//           <h3 class="inventory-skins-items-card__title">${gift.name}</h3>
-//         </div>
-//       `;
+      card.innerHTML = `
+        <div class="inventory-skins-items-card">
+          <div class="current">
+            <span class="inventory-skins-items-card__current">${gift.price}</span>
+            <img src="web/images/inventory/ton.svg" alt="ton" />
+          </div>
+          <img
+            src="web/images/${gift.image}"
+            alt="bottle"
+            class="inventory-skins-items-card__img"
+          />
+          <div class="inventory-item__cashout">
+            <img src="web/images/inventory/download.svg" alt="download" />
+          </div>
+          <h3 class="inventory-skins-items-card__title">${gift.name}</h3>
+        </div>
+      `;
 
-//       const cashoutBtn = card.querySelector(".inventory-item__cashout");
-//       cashoutBtn.addEventListener("click", (e) => {
-//         e.stopPropagation();
+      const cashoutBtn = card.querySelector(".inventory-item__cashout");
+      cashoutBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
 
-//         if (getIsGameActive()) {
-//           alert("Зачекайте завершення поточної гри!");
-//           return;
-//         }
+        if (getIsGameActive()) {
+          alert("Зачекайте завершення поточної гри!");
+          return;
+        }
 
-//         const betValue = gift.price;
+        const betValue = gift.price;
 
-//         if (betValue > balance.value) {
-//           alert("Недостатньо коштів на балансі!");
-//           return;
-//         }
+        if (betValue > balance.value) {
+          alert("Недостатньо коштів на балансі!");
+          return;
+        }
 
-//         balance.value -= betValue;
-//         balancePole.innerHTML = `
-//           ${balance.value.toFixed(2)} 
-//           <img
-//             src="web/images/main/ton-icon.svg"
-//             alt="Token"
-//             class="main-balance__token"
-//           />
-//         `;
+        balance.value -= betValue;
+        balancePole.innerHTML = `
+          ${balance.value.toFixed(2)} 
+          <img
+            src="web/images/main/ton-icon.svg"
+            alt="Token"
+            class="main-balance__token"
+          />
+        `;
 
-//         addBetToHistory(betValue);
+        addBetToHistory(betValue);
 
-//         fieldBet[0].textContent = betValue;
-//         fieldBet[0].dataset.bet = betValue;
+        fieldBet[0].textContent = betValue;
+        fieldBet[0].dataset.bet = betValue;
 
-//         alert(`Ставка ${betValue} TON прийнята!`);
-//       });
+        alert(`Ставка ${betValue} TON прийнята!`);
+      });
 
-//       inventorySkinsItems.appendChild(card);
-//     });
-// }
+      inventorySkinsItems.appendChild(card);
+    });
+}
 
-// renderGiftsMain(0, Infinity);
+renderGiftsMain(0, Infinity);
 
 new Swiper(".grid", {
   direction: "vertical",
@@ -470,30 +470,3 @@ new Swiper(".grid", {
     },
   },
 });
-document.getElementById("giftImage").addEventListener("click", async () => {
-    const giftId = "ID_ПОДАРКА_ТУТ";
-    const token = "ТВОЙ_JWT_ТОКЕН";
-
-    try {
-      const response = await fetch("http://localhost:3000/api/order/gift", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + token
-        },
-        body: JSON.stringify({ id_winGift: giftId })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        alert(errorData.message || "Ошибка при заказе подарка");
-        return;
-      }
-
-      const data = await response.json();
-      alert(data.dataResults?.order || "Подарок успешно заказан!");
-    } catch (error) {
-      console.error("Ошибка запроса:", error);
-      alert("Ошибка при отправке запроса на сервер");
-    }
-  });
