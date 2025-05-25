@@ -88,3 +88,34 @@
   transition: all 0.5s ease;
 }
 
+.gift-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px; /* adjust as needed */
+  margin-bottom: 2rem;
+}
+
+.gift-card {
+  background: #25204a;
+  border-radius: 18px;
+  padding: 10px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: box-shadow 0.2s;
+}
+.gift-card.selected {
+  box-shadow: 0 0 0 2px #6a0dad;
+}
+.gift-card img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin-bottom: 0.5em;
+}
+@media (max-width: 900px) {
+  .gift-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .gift-grid { grid-template-columns: 1fr; }
+}

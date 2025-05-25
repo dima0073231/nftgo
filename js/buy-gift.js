@@ -150,30 +150,21 @@ const gifts = [
 // Отрисовка подарков
 function renderGifts(minPrice = 0, maxPrice = Infinity) {
   gridContainer.innerHTML = "";
-
   gifts
-    .filter((gift) => gift.price >= minPrice && gift.price <= maxPrice)
-    .forEach((gift, idx) => {
+    .filter(gift => gift.price >= minPrice && gift.price <= maxPrice)
+    .forEach(gift => {
       const card = document.createElement("div");
-      card.classList.add("gift-card", "swiper-slide");
-      card.dataset.name = gift.name;
-      card.dataset.price = gift.price;
-      card.dataset.idx = idx;
-
+      card.className = "gift-card";
       card.innerHTML = `
         <div class="card-price">${gift.price} <img src="web/images/inventory/ton.svg" class="gem-icon"></div>
-        <img class="card-price-icon-gift" src="web/images/${gift.image}" alt="${gift.name}" />
+        <img class="card-price-icon-gift" src="web/images/${gift.image}" alt="${gift.name}">
         <div class="card-label">${gift.name}</div>
       `;
-
       card.addEventListener("click", () => {
-        document
-          .querySelectorAll(".gift-card")
-          .forEach((c) => c.classList.remove("selected"));
+        document.querySelectorAll(".gift-card").forEach(c => c.classList.remove("selected"));
         card.classList.add("selected");
         selectedItem = gift;
       });
-
       gridContainer.appendChild(card);
     });
 }
