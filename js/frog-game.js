@@ -313,6 +313,7 @@ setInterval(() => {
 }, 500);
 import { getUserName } from "./balance.js";
 
+// Upload bet to server
 async function uploadBetToServer({ telegramId, date, betAmount, coefficient, result }) {
   try {
     const response = await fetch(`/api/users/${telegramId}/history`, {
@@ -324,19 +325,18 @@ async function uploadBetToServer({ telegramId, date, betAmount, coefficient, res
       const errorData = await response.json();
       throw new Error(errorData.error || "Ошибка при отправке истории ставок");
     }
-    // Optionally: remove localStorage update here if you want only server-side history
   } catch (err) {
     console.error("Ошибка при загрузке истории ставок на сервер:", err);
   }
 }
 
-// Accept all needed arguments!
+// Add bet to history (local and server)
 const addBetToHistory = async function (betAmount, coefficient, isWin, telegramId) {
   try {
     const username = await getUserName(telegramId);
     const date = new Date().toISOString();
 
-    // Prepare server data
+    // Send to server
     const betData = {
       telegramId,
       date,
@@ -344,11 +344,9 @@ const addBetToHistory = async function (betAmount, coefficient, isWin, telegramI
       coefficient,
       result: isWin ? "win" : "lose"
     };
-
-    // Upload to server
     await uploadBetToServer(betData);
 
-    // Prepare localStorage entry
+    // (Optional) Update local history for fast UI
     const betHistory = JSON.parse(localStorage.getItem("betHistory")) || [];
     const newEntry = {
       username: username || "Unknown",
@@ -360,12 +358,12 @@ const addBetToHistory = async function (betAmount, coefficient, isWin, telegramI
     betHistory.push(newEntry);
     localStorage.setItem("betHistory", JSON.stringify(betHistory));
 
+    // Update UI
     addBetCards();
   } catch (err) {
     console.error("Error adding bet to history:", err);
   }
 };
-
 
 function addBetCards() {
   const container = document.querySelector(".bet-count-list");

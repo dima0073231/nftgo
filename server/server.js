@@ -49,9 +49,10 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-app.get('/api/users/:telegramId/history', async (req, res) => {
-  const { telegramId } = req.params;
 
+// GET user bet history
+app.get('/api/users/:telegramId/history', async (req, res) => {
+  const telegramId = Number(req.params.telegramId); // Convert to Number!
   try {
     const user = await User.findOne({ telegramId });
     if (!user) {
@@ -63,26 +64,41 @@ app.get('/api/users/:telegramId/history', async (req, res) => {
   }
 });
 
+// POST user bet history
 app.post('/api/users/:telegramId/history', async (req, res) => {
-  const { telegramId } = req.params;
+  const telegramId = Number(req.params.telegramId); // Convert to Number!
   const { date, betAmount, coefficient, result } = req.body;
 
-  if (!date || !betAmount || !coefficient || !result) {
+  if (!date || betAmount === undefined || coefficient === undefined || !result) {
     return res.status(400).json({ error: 'Недостаточно данных' });
+  }
+
+  const betAmountNum = Number(betAmount);
+  const coefficientNum = Number(coefficient);
+
+  if (
+    isNaN(betAmountNum) ||
+    isNaN(coefficientNum) ||
+    !['win', 'lose'].includes(result)
+  ) {
+    return res.status(400).json({ error: 'Некорректные данные' });
   }
 
   try {
     const user = await User.findOne({ telegramId });
-
     if (!user) {
       return res.status(404).json({ error: 'Пользователь не найден' });
     }
-
-    user.gameHistory.push({ date, betAmount, coefficient, result });
+    user.gameHistory.push({
+      date: new Date(date),
+      betAmount: betAmountNum,
+      coefficient: coefficientNum,
+      result
+    });
     await user.save();
-
     res.status(200).json({ message: 'История добавлена' });
   } catch (err) {
+    console.error('Ошибка при сохранении истории ставки:', err);
     res.status(500).json({ error: err.message });
   }
 });
