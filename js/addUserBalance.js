@@ -2,13 +2,7 @@ const userBalance = document.querySelector(".main-balance");
 import { telegramId } from "./profile.js";
 const changeBalance = async function (userId) {
   try {
-    const response = await fetch('https://nftbot-4yi9.onrender.com/api/users', {
-      method: 'GET',
-      credentials: 'include', // важно!
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await fetch('https://nftbot-4yi9.onrender.com/api/users')
     if (!response.ok)
       throw new Error("Не удалось получить список пользователей");
 

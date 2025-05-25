@@ -6,28 +6,13 @@ const path = require('path');
 const User = require('./api/user'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
 
-// Настройки CORS
-const allowedOrigins = [
-  'https://dima0073231.github.io',
-  'https://dima0073231.github.io/nftgo/',
-  'http://localhost:3000' // для локальной разработки
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'DELETE'],
-  credentials: true,
-};
 
 // Middleware
 const app = express();
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: 'https://dima0073231.github.io', // ❗️разрешаем только GitHub Pages
+  credentials: true // если ты используешь куки/авторизацию
+}));
 app.use(express.json());
 
 // Подключение к БД
@@ -46,8 +31,15 @@ app.post('/api/users', async (req, res) => {
     }
 });
 
-app.get('/api/users', (req, res) => {
-  res.json([{ test: "API is responding" }]);
+app.get('/api/users', async (req, res) => {
+    try {
+        const users = await User.find().sort({ createdAt: -1 });
+        res.json(users);
+        console.log(`✅ Отправлен список из ${users.length} пользователей.`);
+    } catch (err) {
+        console.error('❌ Ошибка при получении пользователей:', err.message);
+        res.status(500).json({ error: 'Failed to fetch users' });
+    }
 });
 
 // WebSocket сервер

@@ -29,13 +29,7 @@ async function connectProfile(telegramId) {
   }
 
   try {
-    const response = await fetch('https://nftbot-4yi9.onrender.com/api/users', {
-        method: 'GET',
-        credentials: 'include', // важно!
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+    const response = await fetch('https://nftbot-4yi9.onrender.com/api/users')
     if (!response.ok) throw new Error("Ошибка сети");
 
     const users = await response.json();
@@ -303,12 +297,7 @@ inventoryBtn.addEventListener("click", async () => {
 
 async function checkInventoryItems(tgId) {
   try {
-    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users", {
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+    const response = await fetch('https://nftbot-4yi9.onrender.com/api/users')
     if (!response.ok) throw new Error("Не удалось получить пользователей");
     const users = await response.json();
     const user = users.find((user) => String(user.telegramId) === String(tgId));
