@@ -16,10 +16,13 @@ app.use(cors({
   origin: 'https://dima0073231.github.io',
   credentials: true
 }));
+
+
 app.options('*', cors({
   origin: 'https://dima0073231.github.io',
   credentials: true
 }));
+
 
 app.use(express.json());
 
@@ -48,7 +51,6 @@ app.post('/api/users', async (req, res) => {
 
 // ✅ Создаём HTTP-сервер вручную (для WebSocket)
 const server = http.createServer(app); // ✅ оборачиваем express в http-сервер
-
 const wss = new WebSocket.Server({ server });
 
 let clients = new Set();
