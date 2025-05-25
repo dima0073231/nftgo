@@ -155,6 +155,7 @@ function startGame() {
 
   const crashAt = generateCrashCoefficient();
   gameInterval = setInterval(() => updateGameState(crashAt), BASE_GAME_SPEED);
+  updateBalanceDisplay();
 }
 
 function updateGameState(crashAt) {
@@ -270,7 +271,11 @@ function addToHistory(coef, isCrash) {
     }, 300);
   }
 }
-
+function updateBalanceDisplay() {
+  if (balancePole) {
+    balancePole.innerHTML = `${balance.value.toFixed(2)} <img src="web/images/main/ton-icon.svg" alt="Token" class="main-balance__token" />`;
+  }
+}
 // Обработчики stopBtns
 stopBtns.forEach((stopBtn, index) => {
   stopBtn.addEventListener("click", () => {
@@ -284,12 +289,7 @@ stopBtns.forEach((stopBtn, index) => {
       const gain = betValue * currentCoefficient;
       balance.value += gain;
       if (balancePole) {
-        balancePole.textContent = balance.value.toFixed(2);
-        const img = document.createElement("img");
-        img.src = "web/images/main/ton-icon.svg";
-        img.alt = "Token";
-        img.className = "main-balance__token";
-        balancePole.appendChild(img);
+        updateBalanceDisplay();
       }
     }
 
