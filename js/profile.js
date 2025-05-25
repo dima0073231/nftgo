@@ -68,7 +68,7 @@ if (document.querySelector(".user-page-game-history__swiper")) {
 
 // Подключаем профиль при загрузке
 
-
+const telegramId = getTelegramId();
 if (telegramId) {
   connectProfile(telegramId);
 } else {
@@ -256,7 +256,7 @@ loadHistoryFromStorage();
 // Инициализация при загрузке страницы
 initBetHistory();
 
-const telegramId = getTelegramId();
+
 if (telegramId) {
   connectProfile(telegramId);
 } else {
