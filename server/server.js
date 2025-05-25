@@ -3,25 +3,24 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const http = require('http');
+const WebSocket = require('ws');
 
 const User = require('./api/user'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
 
 const app = express();
 
-// ✅ CORS — разрешаем запросы с GitHub Pages
+// ✅ CORS
 app.use(cors({
   origin: 'https://dima0073231.github.io',
   credentials: true
 }));
-
-// ✅ Для preflight-запросов (OPTIONS)
 app.options('*', cors({
   origin: 'https://dima0073231.github.io',
   credentials: true
 }));
 
-// ✅ Middleware для JSON-тел запросов
 app.use(express.json());
 
 // Подключение к БД
@@ -46,18 +45,9 @@ app.post('/api/users', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-const WebSocket = require('ws');
-// Запуск сервера
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✅ Сервер запущен на порту ${PORT}`);
-});
 
-// WebSocket сервер
-
-// const server = app.listen(process.env.PORT || 3000, () => {
-//   console.log(`🚀 Server started on http://localhost:${process.env.PORT || 3000}`);
-// });
+// ✅ Создаём HTTP-сервер вручную (для WebSocket)
+const server = http.createServer(app); // ✅ оборачиваем express в http-сервер
 
 const wss = new WebSocket.Server({ server });
 
@@ -85,3 +75,9 @@ function broadcastOnline() {
     }
   });
 }
+
+// 🚀 запуск
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`✅ Сервер запущен на порту ${PORT}`);
+});
