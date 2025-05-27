@@ -67,7 +67,7 @@ document.addEventListener("gameCrash", () => {
   }, 2000);
 });
 
-const socket = new WebSocket('wss://nftbot-4yi9.onrender.com');
+const socket = new WebSocket('https://socketnft.onrender.com');
 
 
 socket.addEventListener("message", (event) => {
