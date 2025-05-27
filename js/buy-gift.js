@@ -145,44 +145,89 @@ const gifts = [
   },
 ];
 
-// Отрисовка подарков
+let giftsSwiper = null;
+
+function initSwiper() {
+  if (giftsSwiper) {
+    giftsSwiper.destroy(); 
+  }
+
+  giftsSwiper = new Swiper(".grid", {
+    direction: "vertical", 
+    slidesPerView: "auto", 
+    freeMode: false, 
+    mousewheel: true, 
+    spaceBetween: 10, 
+    scrollbar: {
+      el: ".buy-gift__swiper-scrollbar",
+      draggable: true,
+    },
+    breakpoints: {
+      0: {
+        slidesPerView: 2, // На мобільних 2 слайди
+        direction: "vertical",
+      },
+      420: {
+        slidesPerView: 3, // На більших екранах 3 слайди
+        direction: "vertical",
+      },
+    },
+  });
+}
+
 function renderGifts(minPrice = 0, maxPrice = Infinity, searchQuery = "") {
   gridContainer.innerHTML = "";
 
-  gifts
-    .filter((gift) => {
-      const priceMatch = gift.price >= minPrice && gift.price <= maxPrice;
-      const nameMatch = gift.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      return priceMatch && nameMatch;
-    })
-    .forEach((gift) => {
-      const card = document.createElement("div");
-      card.classList.add("gift-card");
-      card.classList.add("swiper-slide");
-      card.dataset.name = gift.name;
-      card.dataset.price = gift.price;
-      card.dataset.id = gift.id;
+  const filteredGifts = gifts.filter((gift) => {
+    const priceMatch = gift.price >= minPrice && gift.price <= maxPrice;
+    const nameMatch = gift.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    return priceMatch && nameMatch;
+  });
 
-      card.innerHTML = `
-        <div class="card-price">${gift.price} <img src="web/images/inventory/ton.svg" class="gem-icon"></div>
-        <img class="card-price-icon-gift" src="web/images/${gift.image}" alt="${gift.name}" class="card-img">
-        <div class="card-label">${gift.name}</div>
-      `;
+  if (filteredGifts.length === 0) {
+    gridContainer.innerHTML = `
+      <div class="no-gifts-message">
+        Подарунків не знайдено. Спробуйте змінити критерії пошуку.
+      </div>
+    `;
+    return;
+  }
 
-      card.addEventListener("click", () => {
-        document
-          .querySelectorAll(".gift-card")
-          .forEach((c) => c.classList.remove("selected"));
-        card.classList.add("selected");
-        selectedItem = gift;
-      });
+  filteredGifts.forEach((gift) => {
+    const card = document.createElement("div");
+    card.classList.add("gift-card");
+    card.classList.add("swiper-slide");
+    card.dataset.name = gift.name;
+    card.dataset.price = gift.price;
+    card.dataset.id = gift.id;
 
-      gridContainer.appendChild(card);
+    card.innerHTML = `
+      <div class="card-price">${gift.price} <img src="web/images/inventory/ton.svg" class="gem-icon"></div>
+      <img class="card-price-icon-gift" src="web/images/${gift.image}" alt="${gift.name}" class="card-img">
+      <div class="card-label">${gift.name}</div>
+    `;
+
+    card.addEventListener("click", () => {
+      document
+        .querySelectorAll(".gift-card")
+        .forEach((c) => c.classList.remove("selected"));
+      card.classList.add("selected");
+      selectedItem = gift;
     });
-}
 
+    gridContainer.appendChild(card);
+  });
+
+  if (giftsSwiper) {
+    giftsSwiper.update();
+    giftsSwiper.slideTo(0);
+  }
+  setTimeout(() => {
+    initSwiper();
+  }, 0);
+}
 renderGifts(0, Infinity);
 
 const handleSearch = _.debounce(() => {
@@ -340,7 +385,8 @@ buyBtn.addEventListener("click", () => {
 openModalBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
     modalOverlay.classList.remove("is-hidden");
-    renderGifts(maxPrice);
+    renderGifts(0, Infinity);
+    initSwiper();
   });
 });
 
@@ -431,28 +477,6 @@ export { renderInventory };
 
 // renderGiftsMain(0, Infinity);
 
-new Swiper(".grid", {
-  direction: "vertical",
-  slidesPerView: 3,
-  slidesPerGroup: 3,
-  spaceBetween: 3,
-  mousewheel: true,
-
-  scrollbar: {
-    el: ".buy-gift__swiper-scrollbar",
-  },
-  breakpoints: {
-    0: {
-      slidesPerView: 2,
-      slidesPerGroup: 2,
-    },
-    430: {
-      slidesPerView: 3,
-      slidesPerGroup: 2,
-      spaceBetween: 5,
-    },
-  },
-});
 document.getElementById("giftImage").addEventListener("click", async () => {
   const giftId = "ID_ПОДАРКА_ТУТ";
   const token = "ТВОЙ_JWT_ТОКЕН";
