@@ -209,7 +209,7 @@ async function renderMainInventory(userId) {
       itemElement.className = "inventory-skins-items-card";
 
       itemElement.innerHTML = `
-         <div class="current">
+            <div class="current">
               <span class="inventory-skins-items-card__current">${gift.price}</span>
               <img src="web/images/inventory/ton.svg" alt="ton" />
             </div>
@@ -222,7 +222,6 @@ async function renderMainInventory(userId) {
               <img src="web/images/inventory/download.svg" alt="download" id="giftImage">
             </div>
             <h3 class="inventory-skins-items-card__title">${gift.name}</h3>
-          </div>
       `;
       itemsContainer.appendChild(itemElement);
     });
