@@ -183,7 +183,6 @@ async function renderMainInventory(userId) {
     if (!response.ok) throw new Error("Не удалось получить инвентарь");
 
     const inventory = await response.json();
-    alert(inventory)
 
     if (!inventory.length) {
       return;
@@ -200,10 +199,7 @@ async function renderMainInventory(userId) {
     itemsContainer.innerHTML = "";
 
     inventory.forEach((item) => {
-      const gift = gifts.find((g) => g.name === item.itemId) || {
-        name: item.itemId,
-        image: "default-item.svg",
-      };
+      const gift = gifts.find((g) => g.name === item.itemId);
 
       const itemElement = document.createElement("div");
       itemElement.className = "inventory-skins-items-card";
