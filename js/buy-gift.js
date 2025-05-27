@@ -2,11 +2,9 @@ const closeBtn = document.getElementById("closeGiftModalBtn");
 const gridContainer = document.querySelector(".grid__wrapper");
 const searchInput = document.getElementById("searchInput");
 const buyBtn = document.getElementById("buyBtn");
-// const optionsPrice = document.querySelector('.price-options')
 
-const priceButtons = document.querySelectorAll('.price-options button');
-const priceButtonOver = document.querySelector('price-options__btn')
-
+const priceButtons = document.querySelectorAll(".price-options button");
+const priceButtonOver = document.querySelector("price-options__btn");
 
 const openModalBtns = document.querySelectorAll(
   ".inventory-skins-items-added-card"
@@ -148,11 +146,17 @@ const gifts = [
 ];
 
 // Отрисовка подарков
-function renderGifts(minPrice = 0, maxPrice = Infinity) {
+function renderGifts(minPrice = 0, maxPrice = Infinity, searchQuery = "") {
   gridContainer.innerHTML = "";
 
   gifts
-    .filter((gift) => gift.price >= minPrice && gift.price <= maxPrice)
+    .filter((gift) => {
+      const priceMatch = gift.price >= minPrice && gift.price <= maxPrice;
+      const nameMatch = gift.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      return priceMatch && nameMatch;
+    })
     .forEach((gift) => {
       const card = document.createElement("div");
       card.classList.add("gift-card");
@@ -181,49 +185,34 @@ function renderGifts(minPrice = 0, maxPrice = Infinity) {
 
 renderGifts(0, Infinity);
 
+const handleSearch = _.debounce(() => {
+  const searchQuery = searchInput.value.trim();
+  const activePriceBtn = document.querySelector(".price-options .active");
 
-new Swiper(".grid", {
-  direction: "vertical",      // Прокрутка вертикальная
-  slidesPerView: 3,           // 3 карточки по горизонтали в строке
-  grid: {
-    rows: 1,                  // 2 строки на одну "страницу"
-    fill: 'row'               // Заполнение по строкам
-  },
-  spaceBetween: 10,
-  mousewheel: true,           // Прокрутка мышью
-  pagination: {
-    el: ".swiper-pagination",
-    clickable: true,
-  },
-  breakpoints: {
-    0: {
-      slidesPerView: 2,
-      grid: {
-        rows: 3,
-      },
-    },
-    430: {
-      slidesPerView: 3,
-      grid: {
-        rows: 2,
-      },
-    },
-  },
-});
+  const min = activePriceBtn ? parseFloat(activePriceBtn.dataset.min) : 0;
+  const max = activePriceBtn
+    ? parseFloat(activePriceBtn.dataset.max)
+    : Infinity;
+
+  renderGifts(min, max, searchQuery);
+}, 300);
+
+searchInput.addEventListener("input", handleSearch);
 
 priceButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    // Удаляем активный класс со всех кнопок
     priceButtons.forEach((btn) => btn.classList.remove("active"));
     button.classList.add("active");
 
     const min = parseFloat(button.dataset.min);
     const max = parseFloat(button.dataset.max);
+    const searchQuery = searchInput.value.trim();
 
-    renderGifts(min, max);
+    renderGifts(min, max, searchQuery);
   });
 });
 
+renderGifts(0, Infinity);
 // Покупка подарка
 const addToInventory = async function (userId, itemId, count, price) {
   if (!selectedItem) {
@@ -420,7 +409,7 @@ export { renderInventory };
 
 //         balance.value -= betValue;
 //         balancePole.innerHTML = `
-//           ${balance.value.toFixed(2)} 
+//           ${balance.value.toFixed(2)}
 //           <img
 //             src="web/images/main/ton-icon.svg"
 //             alt="Token"
@@ -446,54 +435,48 @@ new Swiper(".grid", {
   direction: "vertical",
   slidesPerView: 3,
   slidesPerGroup: 3,
-  spaceBetween: 5,
+  spaceBetween: 3,
   mousewheel: true,
-  grid: {
-    rows: 10,
-    fill: "row",
+
+  scrollbar: {
+    el: ".buy-gift__swiper-scrollbar",
   },
   breakpoints: {
     0: {
-      slidesPerView: 2, // 1 строка
+      slidesPerView: 2,
       slidesPerGroup: 2,
-      grid: {
-        rows: 6, // но сохраняем 3 элемента в строке
-      },
     },
     430: {
       slidesPerView: 3,
-      slidesPerGroup: 3,
+      slidesPerGroup: 2,
       spaceBetween: 5,
-      grid: {
-        rows: 10,
-      },
     },
   },
 });
 document.getElementById("giftImage").addEventListener("click", async () => {
-    const giftId = "ID_ПОДАРКА_ТУТ";
-    const token = "ТВОЙ_JWT_ТОКЕН";
+  const giftId = "ID_ПОДАРКА_ТУТ";
+  const token = "ТВОЙ_JWT_ТОКЕН";
 
-    try {
-      const response = await fetch("http://localhost:3000/api/order/gift", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + token
-        },
-        body: JSON.stringify({ id_winGift: giftId })
-      });
+  try {
+    const response = await fetch("http://localhost:3000/api/order/gift", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({ id_winGift: giftId }),
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        alert(errorData.message || "Ошибка при заказе подарка");
-        return;
-      }
-
-      const data = await response.json();
-      alert(data.dataResults?.order || "Подарок успешно заказан!");
-    } catch (error) {
-      console.error("Ошибка запроса:", error);
-      alert("Ошибка при отправке запроса на сервер");
+    if (!response.ok) {
+      const errorData = await response.json();
+      alert(errorData.message || "Ошибка при заказе подарка");
+      return;
     }
-  });
+
+    const data = await response.json();
+    alert(data.dataResults?.order || "Подарок успешно заказан!");
+  } catch (error) {
+    console.error("Ошибка запроса:", error);
+    alert("Ошибка при отправке запроса на сервер");
+  }
+});
