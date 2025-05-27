@@ -402,7 +402,7 @@ modalOverlay.addEventListener("click", (e) => {
   }
 });
 
-export { renderInventory };
+export { renderInventory, gifts };
 // const inventorySkinsItems = document.querySelector(".inventory-skins-items");
 
 // function renderGiftsMain(minPrice = 0, maxPrice = Infinity) {
@@ -474,33 +474,35 @@ export { renderInventory };
 // }
 
 // renderGiftsMain(0, Infinity);
-const giftImage = document.getElementById("giftImage");
-if (giftImage) {
-  addEventListener("click", async () => {
-    const giftId = "ID_ПОДАРКА_ТУТ";
-    const token = "ТВОЙ_JWT_ТОКЕН";
 
-    try {
-      const response = await fetch("http://localhost:3000/api/order/gift", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({ id_winGift: giftId }),
-      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        alert(errorData.message || "Ошибка при заказе подарка");
-        return;
-      }
+// const giftImage = document.getElementById("giftImage");
+// if (giftImage) {
+//   addEventListener("click", async () => {
+//     const giftId = "ID_ПОДАРКА_ТУТ";
+//     const token = "ТВОЙ_JWT_ТОКЕН";
 
-      const data = await response.json();
-      alert(data.dataResults?.order || "Подарок успешно заказан!");
-    } catch (error) {
-      console.error("Ошибка запроса:", error);
-      alert("Ошибка при отправке запроса на сервер");
-    }
-  });
-}
+//     try {
+//       const response = await fetch("http://localhost:3000/api/order/gift", {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: "Bearer " + token,
+//         },
+//         body: JSON.stringify({ id_winGift: giftId }),
+//       });
+
+//       if (!response.ok) {
+//         const errorData = await response.json();
+//         alert(errorData.message || "Ошибка при заказе подарка");
+//         return;
+//       }
+
+//       const data = await response.json();
+//       alert(data.dataResults?.order || "Подарок успешно заказан!");
+//     } catch (error) {
+//       console.error("Ошибка запроса:", error);
+//       alert("Ошибка при отправке запроса на сервер");
+//     }
+//   });
+// }
