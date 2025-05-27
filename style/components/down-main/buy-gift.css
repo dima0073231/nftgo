@@ -20,11 +20,9 @@
   color: white;
   padding: 70px 22px;
   border-radius: 30px;
-  width: 100%;
   max-width: 440px;
   margin-top: 230px;
 
-  overflow-y: auto;
   box-shadow: inset 0 4px 4px 0 rgba(177, 177, 177, 0.25);
   position: relative;
   transform: translateY(0);
@@ -34,7 +32,13 @@
   -ms-overflow-style: none;
   overflow: auto;
   padding-bottom: 0;
+  max-height: 500px;
 }
+/* @media (min-width: 390px) {
+  .modal-gift {
+    padding: 70px 22px;
+  }
+} */
 .modal-overlay.is-hidden .modal {
   transform: translateY(200%);
 }
@@ -265,8 +269,8 @@
   text-align: center;
   color: #9b00f5;
 
-  position: fixed;
-  bottom: 136px;
+  position: absolute;
+  bottom: 19px;
   left: 12px;
   z-index: 22;
   box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
@@ -356,22 +360,20 @@
   border-radius: 5px;
 }
 
-.swiper-wrapper {
-  display: flex;
-  flex-direction: column; /* для вертикального Swiper */
-  flex-wrap: wrap;
-}
-
 .grid {
-  height: 400px; /* Задай фиксированную высоту */
+  min-height: 400px;
+  height: auto;
   overflow: hidden;
 }
 
 .grid__wrapper {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 3px;
+  grid-template-columns: repeat(2, 1fr);
 }
-
-Ч#swiper-wrapper-261f1fc10af8311035 {
-  margin-top: 50px;
+@media (min-width: 420px) {
+  .grid__wrapper {
+    grid-gap: 5px;
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

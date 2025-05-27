@@ -22,12 +22,12 @@
     "js/balance.js",
     "js/inventory.js",
     "js/down-main.js",
-    "js/buy-gift.js",
     "js/crash-game.js",
     "js/nav-bar.js",
     "js/frog-game.js",
     "js/giveaway.js",
     "js/friends.js",
+    "js/buy-gift.js",
   ];
 
   for (const src of scripts) {
