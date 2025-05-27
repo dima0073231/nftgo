@@ -19,11 +19,20 @@ const getUserName = async function (userId) {
       (user) => String(user.telegramId) === String(userId)
     );
 
-    if (user) {
-      return user.username;
+    if (!user) {
+      console.error("Користувача не знайдено");
+      return null;
     }
+
+    if (!user.username) {
+      console.error("У користувача відсутнє ім'я");
+      return null;
+    }
+
+    return user.username;
   } catch (err) {
-    console.log(err);
+    console.error("Помилка при отриманні імені:", err);
+    return null;
   }
 };
 export { getUserName };
