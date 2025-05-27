@@ -346,6 +346,7 @@ async function renderInventory(userId) {
       itemElement.className = "inventory-item";
 
       itemElement.innerHTML = `
+      <div class="inventory-container">
   <div class="inventory-wrap">
     <div class="inventory-item">
       <div class="inventory-item__wrapper flex">
@@ -362,6 +363,7 @@ async function renderInventory(userId) {
         </div>
       </div>
     </div>
+  </div>
   </div>
       `;
       itemsContainer.appendChild(itemElement);
