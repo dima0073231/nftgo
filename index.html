@@ -1,69 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crash Bot</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/3.0.1/modern-normalize.min.css"
+      integrity="sha512-q6WgHqiHlKyOqslT/lgBgodhd03Wp4BEqKeW6nNtlOY4quzyG3VoQKFrieaCeSnuVseNKRGpGeDU3qPmabCANg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+    <link rel="stylesheet" href="style/base/common.css" />
+    <link rel="stylesheet" href="style/base/reset.css" />
+    <link
+      rel="stylesheet"
+      href="style/components/down-main/balance-inventory.css"
+    />
+    <link rel="stylesheet" href="style/components/main.css" />
+    <link rel="stylesheet" href="style/components/down-main/buy-gift.css" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Crash Bot</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/3.0.1/modern-normalize.min.css"
-    integrity="sha512-q6WgHqiHlKyOqslT/lgBgodhd03Wp4BEqKeW6nNtlOY4quzyG3VoQKFrieaCeSnuVseNKRGpGeDU3qPmabCANg=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-  <link rel="stylesheet" href="style/base/common.css" />
-  <link rel="stylesheet" href="style/base/reset.css" />
-  <link rel="stylesheet" href="style/components/down-main/balance-inventory.css" />
-  <link rel="stylesheet" href="style/components/main.css" />
-  <link rel="stylesheet" href="style/components/down-main/buy-gift.css" />
+    <link rel="stylesheet" href="style/components/nav-bar.css" />
+    <link rel="stylesheet" href="style/components/frog-game.css" />
+    <link rel="stylesheet" href="style/components/friends.css" />
 
-  <link rel="stylesheet" href="style/components/nav-bar.css" />
-  <link rel="stylesheet" href="style/components/frog-game.css" />
-  <link rel="stylesheet" href="style/components/friends.css" />
+    <link rel="stylesheet" href="style/components/nav-bar.css" />
+    <link rel="stylesheet" href="style/components/frog-game.css" />
+    <link rel="stylesheet" href="style/components/profile/profile.css" />
+    <link rel="stylesheet" href="style/components/profile/admin.css" />
+    <link rel="stylesheet" href="style/components/profile/promo-modal.css" />
+    <link rel="stylesheet" href="style/components/giveaway.css" />
+    <link rel="stylesheet" href="style/components/modal.css" />
+  </head>
 
-  <link rel="stylesheet" href="style/components/nav-bar.css" />
-  <link rel="stylesheet" href="style/components/frog-game.css" />
-  <link rel="stylesheet" href="style/components/profile/profile.css" />
-  <link rel="stylesheet" href="style/components/profile/admin.css" />
-  <link rel="stylesheet" href="style/components/profile/promo-modal.css" />
-  <link rel="stylesheet" href="style/components/giveaway.css" />
-  <link rel="stylesheet" href="style/components/modal.css" />
-</head>
+  <body>
+    <div class="main-wrapper">
+      <main class="main">
+        <template id="main-content" load="partials/header.html"></template>
+        <template id="main-content" load="partials/main.html"></template>
+        <template
+          id="buy-gift-content"
+          load="partials/buy-gift.html"
+        ></template>
+        <template
+          id="balance-inventory-content"
+          load="partials/down-main.html"
+        ></template>
 
-<body>
-  <div class="main-wrapper">
-    <main class="main">
-      <template id="main-content" load="partials/header.html"></template>
-      <template id="main-content" load="partials/main.html"></template>
-      <template id="buy-gift-content" load="partials/buy-gift.html"></template>
-      <template id="balance-inventory-content" load="partials/down-main.html"></template>
+        <template
+          id="frog-game-content"
+          load="partials/frog-game.html"
+        ></template>
+        <template id="nav-bar-content" load="partials/nav-bar.html"></template>
 
-      <template id="frog-game-content" load="partials/frog-game.html"></template>
-      <template id="nav-bar-content" load="partials/nav-bar.html"></template>
+        <template id="friends-content" load="partials/friends.html"></template>
 
-      <template id="friends-content" load="partials/friends.html"></template>
+        <template id="profile-content" load="partials/profile.html"></template>
+        <template
+          id="promo-modal-content"
+          load="partials/promo-modal.html"
+        ></template>
+        <template
+          id="giveaway-content"
+          load="partials/giveaway.html"
+        ></template>
+        <template id="giveaway-content" load="partials/admin.html"></template>
+      </main>
+    </div>
 
-      <template id="profile-content" load="partials/profile.html"></template>
-      <template id="promo-modal-content" load="partials/promo-modal.html"></template>
-      <template id="giveaway-content" load="partials/giveaway.html"></template>
-      <template id="giveaway-content" load="partials/admin.html"></template>
-    </main>
-  </div>
+    <script src="js/partials-loader.js"></script>
+    <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+    <script
+      src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"
+      async
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 
-  <script src="js/partials-loader.js"></script>
-  <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" async></script>
-  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-
-
-  <!--  <script src="js/main.js"></script>
+    <!--  <script src="js/main.js"></script>
     <script src="js/balance.js"></script>
     <script src="js/buy-gift.js"></script>
     <script src="js/inventory.js"></script>
     <script src="js/crash-game.js"></script>
     <script src="js/nav-bar.js"></script> -->
-
-</body>
-
+  </body>
 </html>

@@ -70,6 +70,7 @@
   border-radius: 12px;
   margin-top: 16px;
   border-bottom: 1px solid #454085;
+  position: relative;
 }
 
 .filter-bar {
@@ -109,9 +110,17 @@
   border-top-left-radius: 10px;
   outline: none;
   font-size: 14px;
-  padding: 10px 18px 10px 22px;
+  padding: 10px 18px;
   position: relative;
 }
+/* .custom-header__icon-search {
+  position: absolute;
+  top: 50%;
+  left: 18px;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+} */
 @media (min-width: 410px) {
   .search-input {
     padding: 10px 18px 10px 38px;
@@ -206,14 +215,13 @@
 }
 
 .card-price {
-  padding: 4px;
-  display: flex;
+  padding: 5px;
+  display: inline-flex;
   align-items: flex-start;
   justify-content: flex-start;
   font-size: 14px;
-  margin-right: 40px;
+  margin-right: 50px;
   background: linear-gradient(#383838, #585858);
-  width: 54px;
   border-radius: 20px;
   gap: 4px;
 }
@@ -272,9 +280,6 @@
 
 .grid__wrapper {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
   flex-wrap: wrap;
 }
 .card-price-icon-gift {
@@ -285,24 +290,28 @@
   max-height: 120px;
   max-width: 128px;
 }
-.inventory-wrap{
+.inventory-wrap {
   display: flex;
   flex-wrap: wrap;
 }
-.inventory-item{
+.inventory-item {
   width: 132px;
   height: 162px;
-  background: linear-gradient(213.72deg, rgba(97, 0, 255, 0.5) 20.44%, rgba(179, 132, 255, 0.5) 96.63%);
+  background: linear-gradient(
+    213.72deg,
+    rgba(97, 0, 255, 0.5) 20.44%,
+    rgba(179, 132, 255, 0.5) 96.63%
+  );
   border-radius: 20px;
   flex-wrap: wrap;
 }
-.inventory-item__img{
+.inventory-item__img {
   width: 80px;
   height: 80px;
   margin-top: 105px;
   margin-left: -34px;
 }
-.inventory-item__name{
+.inventory-item__name {
   display: flex;
   justify-content: center;
   align-self: center;
@@ -311,42 +320,41 @@
   font-weight: 500;
   font-size: 14px;
   line-height: 100%;
-  color: #FFFFFF;
+  color: #ffffff;
 }
-.inventory-item__wrapper{
+.inventory-item__wrapper {
   background: linear-gradient(180deg, #383838 0%, #585858 100%);
   width: 49px;
   height: 24px;
   margin-left: 8px;
   border-radius: 20px;
   gap: 5px;
-   font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-weight: 600;
   font-size: 16px;
   line-height: 100%;
-  color: #FFFFFF;
+  color: #ffffff;
   padding-top: 3px;
 }
-.inventory-item__marketplace{
+.inventory-item__marketplace {
   margin-top: 15px;
   display: flex;
   justify-content: flex-end;
   margin-left: -35px;
   gap: 5px;
 }
-.inventory-item__sell{
+.inventory-item__sell {
   width: 27px;
   height: 27px;
   background-color: red;
   border-radius: 5px;
 }
-.inventory-item__cashout{
+.inventory-item__cashout {
   width: 27px;
   height: 27px;
   background-color: green;
   border-radius: 5px;
 }
-
 
 .swiper-wrapper {
   display: flex;
@@ -364,7 +372,6 @@
   grid-template-columns: repeat(3, 1fr);
 }
 
-
 Ч#swiper-wrapper-261f1fc10af8311035 {
-  margin-top:50px;
+  margin-top: 50px;
 }
