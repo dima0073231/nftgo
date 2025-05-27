@@ -18,30 +18,26 @@
   font-family: "Montserrat", sans-serif;
   background: #2d0057;
   color: white;
-  padding: 70px 22px;
+  padding: 70px 22px 0;
   border-radius: 30px;
   max-width: 440px;
   margin-top: 230px;
 
+  overflow: hidden;
+
   box-shadow: inset 0 4px 4px 0 rgba(177, 177, 177, 0.25);
-  position: relative;
-  transform: translateY(0);
   transition: transform 500ms ease-in-out;
 
   scrollbar-width: none;
   -ms-overflow-style: none;
-  overflow: auto;
   padding-bottom: 0;
-  max-height: 500px;
+  height: 500px;
 }
 /* @media (min-width: 390px) {
   .modal-gift {
     padding: 70px 22px;
   }
 } */
-.modal-overlay.is-hidden .modal {
-  transform: translateY(200%);
-}
 
 .modal::-webkit-scrollbar {
   display: none;
@@ -170,13 +166,13 @@
   border-right: none;
   color: white;
 }
-.grid {
+/* .grid {
   margin-top: 16px;
   height: 550px;
   overflow: hidden;
-}
-@media (min-width: 409px) {
-}
+} */
+/* @media (min-width: 409px) {
+} */
 .gift-card {
   border-radius: 20px;
   padding: 8px;
@@ -268,18 +264,14 @@
   font-size: 17px;
   text-align: center;
   color: #9b00f5;
+  width: calc(100% - 44px);
 
   position: absolute;
-  bottom: 19px;
+  bottom: 90px;
   left: 12px;
   z-index: 22;
   box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
   background-image: linear-gradient(90deg, #fff 0%, #fff 100%);
-}
-@media (min-width: 410px) {
-  .buy-btn {
-    width: 100%;
-  }
 }
 
 .grid__wrapper {
@@ -363,13 +355,15 @@
 .grid {
   min-height: 400px;
   height: auto;
-  overflow: hidden;
+  margin-top: 16px;
 }
 
 .grid__wrapper {
   display: grid;
   grid-gap: 3px;
   grid-template-columns: repeat(2, 1fr);
+  height: auto;
+  overflow: hidden;
 }
 @media (min-width: 420px) {
   .grid__wrapper {
