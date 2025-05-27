@@ -149,15 +149,15 @@ let giftsSwiper = null;
 
 function initSwiper() {
   if (giftsSwiper) {
-    giftsSwiper.destroy(); 
+    giftsSwiper.destroy();
   }
 
   giftsSwiper = new Swiper(".grid", {
-    direction: "vertical", 
-    slidesPerView: "auto", 
-    freeMode: false, 
-    mousewheel: true, 
-    spaceBetween: 10, 
+    direction: "vertical",
+    slidesPerView: "auto",
+    freeMode: false,
+    mousewheel: true,
+    spaceBetween: 10,
     scrollbar: {
       el: ".buy-gift__swiper-scrollbar",
       draggable: true,
@@ -287,7 +287,7 @@ const addToInventory = async function (userId, itemId, count, price) {
     const data = await updateRes.json();
 
     alert("Подарок успешно куплен!");
-    changeBalance(telegramId);
+    await changeBalance(telegramId);
     modalOverlay.classList.add("is-hidden");
     renderInventory(userId);
   } catch (err) {
