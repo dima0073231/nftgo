@@ -314,32 +314,31 @@ setInterval(() => {
 }, 500);
 import { getUserName } from "./balance.js";
 
-// Upload bet to server
-async function uploadBetToServer({
-  telegramId,
-  date,
-  betAmount,
-  coefficient,
-  result,
-}) {
-  try {
-    const tgId = Number(telegramId); // Always use Number for DB
-    const response = await fetch(
-      `https://nftbot-4yi9.onrender.com/api/users/${tgId}/history`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date, betAmount, coefficient, result }),
-      }
-    );
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Ошибка при отправке истории ставок");
-    }
-  } catch (err) {
-    console.error("Ошибка при загрузке истории ставок на сервер:", err);
-  }
-}
+// async function uploadBetToServer({
+//   telegramId,
+//   date,
+//   betAmount,
+//   coefficient,
+//   result,
+// }) {
+//   try {
+//     const tgId = Number(telegramId); // Always use Number for DB
+//     const response = await fetch(
+//       `https://nftbot-4yi9.onrender.com/api/users/${tgId}/history`,
+//       {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ date, betAmount, coefficient, result }),
+//       }
+//     );
+//     if (!response.ok) {
+//       const errorData = await response.json();
+//       throw new Error(errorData.error || "Ошибка при отправке истории ставок");
+//     }
+//   } catch (err) {
+//     console.error("Ошибка при загрузке истории ставок на сервер:", err);
+//   }
+// }
 
 // Add bet to history (and optionally to localStorage for faster UI)
 const addBetToHistory = async function (
@@ -350,36 +349,36 @@ const addBetToHistory = async function (
 ) {
   try {
     const username = await getUserName(telegramId);
-    const date = new Date().toISOString();
 
-    // Prepare server data
+    // Додаткова перевірка перед використанням username
+    if (!username) {
+      alert("Не вдалося отримати ім'я користувача");
+      return;
+    }
+
+    const date = new Date().toISOString();
     const betData = {
-      telegramId: Number(telegramId), // Always as Number!
+      telegramId: Number(telegramId),
       date,
       betAmount,
       coefficient,
       result: isWin ? "win" : "lose",
     };
 
-    // Save to backend DB
-    await uploadBetToServer(betData);
-
-    // (Optional) Save to localStorage for instant UI, can remove if only DB needed
     const betHistory = JSON.parse(localStorage.getItem("betHistory")) || [];
     const newEntry = {
-      username: username || "Unknown",
+      username: username,
       bet: betAmount,
       coefficient,
       isWin,
       date,
     };
+
     betHistory.push(newEntry);
     localStorage.setItem("betHistory", JSON.stringify(betHistory));
-
-    // Update UI (optional, only if using local cache)
     addBetCards();
   } catch (err) {
-    console.error("Error adding bet to history:", err);
+    console.error("Помилка при додаванні ставки:", err);
   }
 };
 
@@ -395,8 +394,8 @@ function addBetCards() {
 
   // Добавляем все элементы и считаем их
   betHistory
-    .slice() // Создаем копию массива, чтобы не мутировать оригинал
-    .reverse() // Переворачиваем для отображения новых ставок сверху
+    .slice()
+    .reverse()
     .forEach((el) => {
       if (el && typeof el.bet === "number" && el.username) {
         container.insertAdjacentHTML(
@@ -422,7 +421,7 @@ function addBetCards() {
     betCount.textContent = container.children.length;
   }
 }
-addBetCards()
+addBetCards();
 export { addBetToHistory };
 
 export { isGameActive, startGame, stopGame, currentCoefficient };
