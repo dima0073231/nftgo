@@ -288,20 +288,19 @@
 }
 .inventory-wrap {
   display: flex;
-  flex-wrap: wrap;
-  width: 440px;
+  flex-wrap: nowrap; /* Отключаем перенос на новую строку */
+  overflow-x: auto;  /* Горизонтальный скролл */
+  gap: 10px;         /* Отступ между элементами */
+  width: 280px;      /* Ширина контейнера (132px * 2 + gap) */
+  padding-bottom: 10px; /* Чтобы скролл-бар не наезжал на контент */
+  scroll-snap-type: x mandatory; 
 }
 .inventory-item {
-  width: 132px;
+   flex: 0 0 132px; /* Фиксированная ширина, нельзя сжимать/растягивать */
   height: 162px;
-  background: linear-gradient(
-    213.72deg,
-    rgba(97, 0, 255, 0.5) 20.44%,
-    rgba(179, 132, 255, 0.5) 96.63%
-  );
+  background: linear-gradient(213.72deg, rgba(97, 0, 255, 0.5) 20.44%, rgba(179, 132, 255, 0.5) 96.63%);
   border-radius: 20px;
-  flex-wrap: wrap;
-  gap: 10px;
+  scroll-snap-align: start; /* Для плавного листания */
 }
 .inventory-item__img {
   width: 80px;
