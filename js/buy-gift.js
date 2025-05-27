@@ -474,31 +474,33 @@ export { renderInventory };
 // }
 
 // renderGiftsMain(0, Infinity);
+const giftImage = document.getElementById("giftImage");
+if (giftImage) {
+  addEventListener("click", async () => {
+    const giftId = "ID_ПОДАРКА_ТУТ";
+    const token = "ТВОЙ_JWT_ТОКЕН";
 
-document.getElementById("giftImage").addEventListener("click", async () => {
-  const giftId = "ID_ПОДАРКА_ТУТ";
-  const token = "ТВОЙ_JWT_ТОКЕН";
+    try {
+      const response = await fetch("http://localhost:3000/api/order/gift", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({ id_winGift: giftId }),
+      });
 
-  try {
-    const response = await fetch("http://localhost:3000/api/order/gift", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-      body: JSON.stringify({ id_winGift: giftId }),
-    });
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.message || "Ошибка при заказе подарка");
+        return;
+      }
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      alert(errorData.message || "Ошибка при заказе подарка");
-      return;
+      const data = await response.json();
+      alert(data.dataResults?.order || "Подарок успешно заказан!");
+    } catch (error) {
+      console.error("Ошибка запроса:", error);
+      alert("Ошибка при отправке запроса на сервер");
     }
-
-    const data = await response.json();
-    alert(data.dataResults?.order || "Подарок успешно заказан!");
-  } catch (error) {
-    console.error("Ошибка запроса:", error);
-    alert("Ошибка при отправке запроса на сервер");
-  }
-});
+  });
+}
