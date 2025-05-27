@@ -16,7 +16,7 @@ const getUserName = async function (userId) {
 
     const users = await response.json();
     const user = users.find(
-      (user) => String(user.telegramId) == String(userId)
+      (user) => String(user.telegramId) === String(userId)
     );
 
     if (user) {
