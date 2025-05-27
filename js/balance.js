@@ -183,6 +183,7 @@ async function renderMainInventory(userId) {
     if (!response.ok) throw new Error("Не удалось получить инвентарь");
 
     const inventory = await response.json();
+    alert(inventory)
 
     if (!inventory.length) {
       return;
