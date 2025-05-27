@@ -149,12 +149,11 @@ let giftsSwiper = null;
 
 function initSwiper() {
   if (giftsSwiper) {
-    giftsSwiper.destroy();
+    giftsSwiper.destroy(true, true); // Додайте true, true для повного очищення
   }
 
   giftsSwiper = new Swiper(".grid", {
     direction: "vertical",
-    slidesPerView: "auto",
     freeMode: false,
     mousewheel: true,
     spaceBetween: 10,
@@ -162,14 +161,13 @@ function initSwiper() {
       el: ".buy-gift__swiper-scrollbar",
       draggable: true,
     },
+    watchOverflow: true,
     breakpoints: {
       0: {
-        slidesPerView: 2, // На мобільних 2 слайди
-        direction: "vertical",
+        slidesPerView: 2,
       },
       420: {
-        slidesPerView: 3, // На більших екранах 3 слайди
-        direction: "vertical",
+        slidesPerView: 3,
       },
     },
   });
