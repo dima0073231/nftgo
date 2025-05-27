@@ -188,7 +188,6 @@ function updateGameState(crashAt) {
   if (currentCoefficient >= crashAt) {
     stopGame();
   }
-
 }
 
 function stopGame() {
@@ -274,7 +273,9 @@ function addToHistory(coef, isCrash) {
 }
 function updateBalanceDisplay() {
   if (balancePole) {
-    balancePole.innerHTML = `${balance.value.toFixed(2)} <img src="web/images/main/ton-icon.svg" alt="Token" class="main-balance__token" />`;
+    balancePole.innerHTML = `${balance.value.toFixed(
+      2
+    )} <img src="web/images/main/ton-icon.svg" alt="Token" class="main-balance__token" />`;
   }
 }
 // Обработчики stopBtns
@@ -314,14 +315,23 @@ setInterval(() => {
 import { getUserName } from "./balance.js";
 
 // Upload bet to server
-async function uploadBetToServer({ telegramId, date, betAmount, coefficient, result }) {
+async function uploadBetToServer({
+  telegramId,
+  date,
+  betAmount,
+  coefficient,
+  result,
+}) {
   try {
     const tgId = Number(telegramId); // Always use Number for DB
-    const response = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${tgId}/history`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date, betAmount, coefficient, result }),
-    });
+    const response = await fetch(
+      `https://nftbot-4yi9.onrender.com/api/users/${tgId}/history`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date, betAmount, coefficient, result }),
+      }
+    );
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || "Ошибка при отправке истории ставок");
@@ -332,7 +342,12 @@ async function uploadBetToServer({ telegramId, date, betAmount, coefficient, res
 }
 
 // Add bet to history (and optionally to localStorage for faster UI)
-const addBetToHistory = async function (betAmount, coefficient, isWin, telegramId) {
+const addBetToHistory = async function (
+  betAmount,
+  coefficient,
+  isWin,
+  telegramId
+) {
   try {
     const username = await getUserName(telegramId);
     const date = new Date().toISOString();
@@ -343,7 +358,7 @@ const addBetToHistory = async function (betAmount, coefficient, isWin, telegramI
       date,
       betAmount,
       coefficient,
-      result: isWin ? "win" : "lose"
+      result: isWin ? "win" : "lose",
     };
 
     // Save to backend DB
@@ -356,7 +371,7 @@ const addBetToHistory = async function (betAmount, coefficient, isWin, telegramI
       bet: betAmount,
       coefficient,
       isWin,
-      date
+      date,
     };
     betHistory.push(newEntry);
     localStorage.setItem("betHistory", JSON.stringify(betHistory));
@@ -369,44 +384,45 @@ const addBetToHistory = async function (betAmount, coefficient, isWin, telegramI
 };
 
 function addBetCards() {
-  // Example: update a bet history list from localStorage
   const container = document.querySelector(".bet-count-list");
   if (!container) return;
 
   const betHistory = JSON.parse(localStorage.getItem("betHistory")) || [];
   const betCount = document.querySelector("#total");
-  let localBetCount = 0;
+
+  // Очищаем контейнер
   container.innerHTML = "";
 
+  // Добавляем все элементы и считаем их
   betHistory
-    .slice()
-    .reverse()
+    .slice() // Создаем копию массива, чтобы не мутировать оригинал
+    .reverse() // Переворачиваем для отображения новых ставок сверху
     .forEach((el) => {
-      container.insertAdjacentHTML(
-        "beforeend",
-        `
-      <li class="swiper-slide bet-count-list__item">
-        <div class="bet-count-list__profile">
-          <img
-            src="web/images/profile/user-avatar.jpg"
-            alt="user-avatar"
-            class="bet-count-list__avatar"
-          />
-          <h3 class="bet-count-list__username">${el.username}</h3>
-        </div>
-        <div class="bet-count-list__number">${el.bet.toFixed(2)}</div>
-      </li>
-      `
-      );
-      localBetCount += 1;
+      if (el && typeof el.bet === "number" && el.username) {
+        container.insertAdjacentHTML(
+          "beforeend",
+          `
+          <li class="swiper-slide bet-count-list__item">
+            <div class="bet-count-list__profile">
+              <img
+                src="web/images/profile/user-avatar.jpg"
+                alt="user-avatar"
+                class="bet-count-list__avatar"
+              />
+              <h3 class="bet-count-list__username">${el.username}</h3>
+            </div>
+            <div class="bet-count-list__number">${el.bet.toFixed(2)}</div>
+          </li>
+          `
+        );
+      }
     });
 
   if (betCount) {
-    betCount.textContent = localBetCount;
+    betCount.textContent = container.children.length;
   }
 }
-
-
+addBetCards()
 export { addBetToHistory };
 
 export { isGameActive, startGame, stopGame, currentCoefficient };
