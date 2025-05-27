@@ -7,7 +7,8 @@ const selectBetBtns = document.querySelectorAll(".select-bet__btn");
 const balancePole = document.querySelector(".main-balance");
 const stopBtns = document.querySelectorAll(".stop-btn");
 import { telegramId } from "./profile.js";
-import { addBetToHistory } from "./frog-game.js";
+import { addBetToHistory, currentCoefficient } from "./frog-game.js";
+import { gifts } from "./buy-gift.js";
 
 const getUserName = async function (userId) {
   try {
@@ -41,7 +42,7 @@ const getBalance = async function (tgId) {
 
     const users = await response.json();
     const user = users.find((user) => String(user.telegramId) === String(tgId));
-    
+
     if (user && user.balance !== undefined) {
       return user.balance;
     } else {
@@ -171,6 +172,66 @@ fieldBet.forEach((field, index) => {
   fieldValues.push(field);
 });
 
+async function renderMainInventory(userId) {
+  const inventorySection = document.querySelector(".user-page-inventory");
+  if (!inventorySection) return;
+
+  try {
+    const response = await fetch(
+      `https://nftbot-4yi9.onrender.com/api/users/${userId}/inventory`
+    );
+    if (!response.ok) throw new Error("Не удалось получить инвентарь");
+
+    const inventory = await response.json();
+
+    if (!inventory.length) {
+      return;
+    }
+    let itemsContainer = inventorySection.querySelector(
+      ".inventory-skins-items"
+    );
+    if (!itemsContainer) {
+      itemsContainer = document.createElement("div");
+      itemsContainer.className = "inventory-skins-items";
+      inventorySection.appendChild(itemsContainer);
+    }
+
+    itemsContainer.innerHTML = "";
+
+    inventory.forEach((item) => {
+      const gift = gifts.find((g) => g.name === item.itemId) || {
+        name: item.itemId,
+        image: "default-item.svg",
+      };
+
+      const itemElement = document.createElement("div");
+      itemElement.className = "inventory-skins-items-card";
+
+      itemElement.innerHTML = `
+         <div class="current">
+              <span class="inventory-skins-items-card__current">${gift.price}</span>
+              <img src="web/images/inventory/ton.svg" alt="ton" />
+            </div>
+            <img
+              src="web/images/${gift.image}"
+              alt="bottle"
+              class="inventory-skins-items-card__img"
+            />
+            <div class="inventory-item__cashout">
+              <img src="web/images/inventory/download.svg" alt="download" id="giftImage">
+            </div>
+            <h3 class="inventory-skins-items-card__title">${gift.name}</h3>
+          </div>
+      `;
+      itemsContainer.appendChild(itemElement);
+    });
+  } catch (err) {
+    console.error("Ошибка при загрузке инвентаря:", err);
+  }
+}
+renderMainInventory(telegramId);
+// const giftBetBtns = document.querySelectorAll(".inventory-skins-item__cashout");
+// giftBetBtns.forEach((btn) => {});
 // Экспортируем необходимые переменные и функции
 export { changeBet, fieldValues, balance, bet };
 
