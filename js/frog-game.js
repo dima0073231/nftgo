@@ -348,7 +348,11 @@ const addBetToHistory = async function (
   telegramId
 ) {
   try {
-    const username = await getUserName(telegramId);
+    const domUsername = document.querySelector(
+      ".user-page-profile__name"
+    ).textContent;
+    const username = domUsername;
+    // const username = await getUserName(telegramId);
 
     // Додаткова перевірка перед використанням username
     if (!username) {

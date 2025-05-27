@@ -15,9 +15,7 @@ const getUserName = async function (userId) {
     if (!response.ok) throw new Error("Ошибка сети");
 
     const users = await response.json();
-    const user = users.find(
-      (user) => String(user.telegramId) === String(userId)
-    );
+    const user = users.find((user) => String(user.telegramId) === String(tgId));
 
     if (!user) {
       console.error("Користувача не знайдено");
@@ -43,7 +41,7 @@ const getBalance = async function (tgId) {
 
     const users = await response.json();
     const user = users.find((user) => String(user.telegramId) === String(tgId));
-
+    
     if (user && user.balance !== undefined) {
       return user.balance;
     } else {
