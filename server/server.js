@@ -115,6 +115,7 @@ function broadcastOnline() {
     }
   });
 }
+app.get('/users/:param')  // Ошибка: после `:` нет имени параметра
 
 // 🚀 запуск
 const PORT = process.env.PORT || 3000;
