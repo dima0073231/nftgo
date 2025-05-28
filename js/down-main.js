@@ -38,7 +38,7 @@ if (betToggle) {
   console.warn("Элемент .bet-toggle не найден");
 }
 toggleInvBtn.addEventListener("click", () => {
-  renderMainInventory(telegramIdF);
+  renderMainInventory(telegramId);
 });
 
 betBtn.forEach((btn, index) => {
