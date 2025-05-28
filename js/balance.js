@@ -219,7 +219,7 @@ async function renderMainInventory(userId) {
             <button type="button" class="inventory-item__cashout inventory-down-main-item__cashout">
               <img src="web/images/inventory/download.svg" alt="download" id="giftImage">
             </button>
-            <h3 class="inventory-skins-items-card__title">${gift.name}</h3>
+            <h3 class="inventory-skins-items-card__title">${gift.name} x${item.count}</h3>
       `;
       itemsContainer.appendChild(itemElement);
     });
@@ -228,15 +228,7 @@ async function renderMainInventory(userId) {
   }
 }
 giftBetBtns.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    if (!bet) return;
-    const itemEl = btn.closest(".inventory-skins-items-card");
-    const priceDom = itemEl.querySelector(
-      ".inventory-skins-items-card__current"
-    );
-    const price = Number(priceDom);
-
-  });
+  btn.addEventListener("click", () => {});
 });
 export { changeBet, fieldValues, balance, bet, renderMainInventory };
 
