@@ -262,6 +262,7 @@ function saveHistoryEntry(entry) {
 // Коли приходить результат гри
 window.addEventListener("betResult", (event) => {
   const { isWin, coefficient, totalBet } = event.detail;
+  if (totalBet <= 0) return;
   const date = new Date().toLocaleDateString();
 
   const entry = { isWin, coefficient, totalBet, date };
