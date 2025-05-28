@@ -86,7 +86,133 @@ app.post('/api/users/:telegramId/history', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+const { ethers } = require('ethers');
+require('dotenv').config();
 
+// Настройки блокчейна
+const provider = new ethers.providers.JsonRpcProvider(process.env.BLOCKCHAIN_PROVIDER_URL);
+const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+
+// Роут для пополнения баланса
+app.post('/addbalance', async (req, res) => {
+    try {
+        const { address, transactionHash } = req.body;
+        
+        // Проверяем транзакцию
+        const tx = await provider.getTransaction(transactionHash);
+        if (!tx) {
+            return res.status(400).send('Transaction not found');
+        }
+        
+        // Ждем подтверждения транзакции
+        const receipt = await tx.wait();
+        
+        // Проверяем что транзакция успешна и адрес получателя - наш
+        if (receipt.status !== 1 || tx.to.toLowerCase() !== wallet.address.toLowerCase()) {
+            return res.status(400).send('Invalid transaction');
+        }
+        
+        // Получаем сумму перевода (в wei)
+        const value = tx.value;
+        const amountInEth = ethers.utils.formatEther(value);
+        
+        // Обновляем баланс пользователя
+        await User.updateOne(
+            { address: address.toLowerCase() },
+            { $inc: { balance: parseFloat(amountInEth) } }
+        );
+        
+        res.send({ success: true, newBalance: amountInEth });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+const Transaction = require('./models/Transaction');
+
+// Обновленный роут /addbalance
+app.post('/addbalance', async (req, res) => {
+    try {
+        const { address, transactionHash } = req.body;
+        
+        // Проверяем есть ли уже такая транзакция
+        const existingTx = await Transaction.findOne({ txHash: transactionHash });
+        if (existingTx) {
+            return res.status(400).send('Transaction already processed');
+        }
+        
+        // Создаем запись о транзакции
+        const txRecord = new Transaction({
+            userAddress: address.toLowerCase(),
+            txHash: transactionHash,
+            status: 'pending'
+        });
+        await txRecord.save();
+        
+        // Проверяем транзакцию в блокчейне
+        const tx = await provider.getTransaction(transactionHash);
+        if (!tx) {
+            await txRecord.updateOne({ status: 'failed' });
+            return res.status(400).send('Transaction not found');
+        }
+        
+        // Ждем подтверждения
+        const receipt = await tx.wait();
+        
+        // Проверяем валидность
+        if (receipt.status !== 1 || tx.to.toLowerCase() !== wallet.address.toLowerCase()) {
+            await txRecord.updateOne({ status: 'failed' });
+            return res.status(400).send('Invalid transaction');
+        }
+        
+        // Получаем сумму
+        const value = tx.value;
+        const amountInEth = ethers.utils.formatEther(value);
+        
+        // Обновляем баланс и запись о транзакции
+        await Promise.all([
+            User.updateOne(
+                { address: address.toLowerCase() },
+                { $inc: { balance: parseFloat(amountInEth) } }
+            ),
+            txRecord.updateOne({
+                status: 'completed',
+                amount: parseFloat(amountInEth),
+                blockNumber: receipt.blockNumber
+            })
+        ]);
+        
+        res.send({ success: true, newBalance: amountInEth });
+    } catch (error) {
+        console.error(error);
+        if (txRecord) {
+            await txRecord.updateOne({ status: 'failed' });
+        }
+        res.status(500).send('Server error');
+    }
+});
+app.get('/testdb', async (req, res) => {
+    try {
+        const users = await User.find();
+        const txs = await Transaction.find();
+        res.send({ users, txs });
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+// Новый роут для получения истории транзакций
+app.get('/transactions/:address', async (req, res) => {
+    try {
+        const transactions = await Transaction.find({ 
+            userAddress: req.params.address.toLowerCase() 
+        }).sort({ timestamp: -1 });
+        
+        res.send(transactions);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
 // ✅ Создаём HTTP-сервер вручную (для WebSocket)
 const server = http.createServer(app); // ✅ оборачиваем express в http-сервер
 const wss = new WebSocket.Server({ server });
