@@ -346,25 +346,28 @@ async function renderInventory(userId) {
       itemElement.className = "inventory-item";
 
       itemElement.innerHTML = `
-      <div class="inventory-container">
-  <div class="inventory-wrap">
-    <div class="inventory-item">
-      <div class="inventory-item__wrapper flex">
-        <span class="inventory-item__wrapper">${gift.price}</span>
-        <img src="web/images/${gift.image}" alt="${gift.name}" class="inventory-item__img"  />
-      </div>
-      <span class="inventory-item__name">${gift.name}</span>
-      <div class="inventory-item__marketplace">
-        <div class="inventory-item__cashout">
-          <img src="web/images/inventory/download.svg" alt="download" id="giftImage" width="25px" height="25px">
+<div class="swiper inventory-swiper" style="height: 400px;">
+  <div class="swiper-wrapper">
+    <div class="swiper-slide">
+      <div class="inventory-wrap">
+        <div class="inventory-item">
+          <div class="inventory-item__wrapper flex">
+            <span class="inventory-item__wrapper">${gift.price}</span>
+            <img src="web/images/${gift.image}" alt="${gift.name}" class="inventory-item__img" />
+          </div>
+          <span class="inventory-item__name">${gift.name}</span>
+          <div class="inventory-item__marketplace">
+            <div class="inventory-item__cashout">
+              <img src="web/images/inventory/download.svg" alt="download" id="giftImage" width="25px" height="25px">
+            </div>
+            <div class="inventory-item__sell">
+              <img src="web/images/inventory/basket.svg" alt="basket" width="30px" height="30px">
+            </div>
+          </div>
         </div>
-        <div class="inventory-item__sell">
-          <img src="web/images/inventory/basket.svg" alt="basket" width="30px" height="30px" >
         </div>
-      </div>
-    </div>
   </div>
-  </div>
+</div>
       `;
       itemsContainer.appendChild(itemElement);
     });
