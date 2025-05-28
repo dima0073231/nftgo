@@ -286,68 +286,63 @@
   max-height: 120px;
   max-width: 128px;
 }
-/* Основной контейнер */
-.inventory-container {
-  width: 426px; /* (132px + 10px) * 3 */
-  height: 400px; /* Фиксированная высота для скролла */
+.inventory-container{
+  width: 284px; /* 132px*2 + 10px*2 gap */
+  height: 400px; /* Фиксированная высота скролла */
   overflow-y: auto; /* Вертикальный скролл */
   padding: 5px;
-}
 
-/* Сетка карточек */
+}
 .inventory-wrap {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 колонки */
-  gap: 10px;
+   display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 2 колонки */
+  gap: 10px; /* Отступ между элементами */
 }
-
-/* Стили карточки (ваши оригинальные с исправлениями) */
 .inventory-item {
-  width: 132px;
+   width: 132px;
   height: 162px;
   background: linear-gradient(213.72deg, rgba(97, 0, 255, 0.5) 20.44%, rgba(179, 132, 255, 0.5) 96.63%);
   border-radius: 20px;
-  position: relative;
-  overflow: hidden;
+  position: relative; /* Для позиционирования внутренних элементов */
+  overflow: hidden; /* Чтобы ничего не выходило за границы */
 }
-
-/* Исправленные стили для контента карточки */
 .inventory-item__img {
   width: 80px;
   height: 80px;
-  display: block;
-  margin: 15px auto 0; /* Центрирование */
+  margin-top: 105px;
+  margin-left: -34px;
 }
-
 .inventory-item__name {
-  display: block;
-  text-align: center;
-  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  margin-top: 80px;
   font-family: "Montserrat", sans-serif;
   font-weight: 500;
   font-size: 14px;
+  line-height: 100%;
   color: #ffffff;
 }
-
-/* Остальные ваши стили остаются без изменений */
 .inventory-item__wrapper {
   background: linear-gradient(180deg, #383838 0%, #585858 100%);
   width: 49px;
   height: 24px;
   margin-left: 8px;
   border-radius: 20px;
+  gap: 5px;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
   font-size: 16px;
+  line-height: 100%;
   color: #ffffff;
   padding-top: 3px;
 }
-
 .inventory-item__marketplace {
+ 
   display: flex;
-  justify-content: center;
+  padding-left: 12px;
+ padding-top: 5px;
   gap: 40px;
-  padding-top: 5px;
 }
 .inventory-item__sell {
   width: 35px;
