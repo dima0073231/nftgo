@@ -195,7 +195,6 @@ async function renderMainInventory(userId) {
     //   itemsContainer.className = "inventory-skins-items";
     //   inventorySection.appendChild(itemsContainer);
     // }
-    al
 
     itemsContainer.innerHTML = "";
 
