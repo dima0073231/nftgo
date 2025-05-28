@@ -372,6 +372,7 @@ new Swiper(".inventory-swiper", {
   slidesPerView: "auto",
   freeMode: true,
   mousewheel: true,
+  spaceBetween: 10,
 });
 
 buyBtn.addEventListener("click", () => {
