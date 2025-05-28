@@ -190,6 +190,7 @@ async function renderMainInventory(userId) {
     let itemsContainer = document.querySelector(
       ".inventory-skins-items"
     );
+    alert(`${itemsContainer} вроде існує`)
     // if (!itemsContainer) {
     //   itemsContainer = document.createElement("div");
     //   itemsContainer.className = "inventory-skins-items";
@@ -220,6 +221,7 @@ async function renderMainInventory(userId) {
             <h3 class="inventory-skins-items-card__title">${gift.name}</h3>
       `;
       itemsContainer.appendChild(itemElement);
+      alert('вроде додалось')
     });
   } catch (err) {
     console.error("Ошибка при загрузке инвентаря:", err);
