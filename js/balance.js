@@ -238,3 +238,9 @@ new Swiper(".bet-count__swiper", {
   freeMode: true,
   mousewheel: true,
 });
+new Swiper(".down-main-inventory__swiper", {
+  direction: "horizontal",
+  slidesPerView: "auto",
+  freeMode: true,
+  mousewheel: true,
+});

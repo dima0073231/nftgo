@@ -110,7 +110,9 @@
   column-gap: 6px;
 }
 .inventory-skins-items-card {
+  cursor: pointer;
   flex: 1 1 calc((100% - 14px) / 3);
+  min-width: 120px;
   border-radius: 20px;
   background: linear-gradient(
     214deg,
