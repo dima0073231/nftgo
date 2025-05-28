@@ -10,6 +10,8 @@ const balancePole = document.querySelector(".main-balance");
 const fieldBet = document.querySelectorAll(".select-bet-count__number");
 import { balance } from "./balance.js";
 import { telegramId } from "./profile.js";
+let currentBetType = "money"; // 'money' або 'gift'
+let currentGiftBet = null; // { itemId: string, count: number, price: number }
 
 const setBalanceToBd = async function (tgId) {
   try {
@@ -207,9 +209,9 @@ function stopGame() {
   const gameCrashEvent = new Event("gameCrash");
   document.dispatchEvent(gameCrashEvent);
 
-  // Определяем результат игры (выигрыш или проигрыш)
   let isWin = false;
   let totalBet = 0;
+
   fieldBet.forEach((field) => {
     const bet = parseFloat(field.dataset.bet || "0");
 
@@ -217,18 +219,27 @@ function stopGame() {
       totalBet += bet;
       isWin = false;
 
-      // Обнуляємо програну ставку
       field.textContent = "0";
       field.dataset.bet = "0";
     }
   });
+
+  if (currentBetType === "gift" && currentGiftBet) {
+    removeGiftFromInventory(
+      telegramId,
+      currentGiftBet.itemId,
+      currentGiftBet.count
+    );
+    currentGiftBet = null;
+  }
 
   window.dispatchEvent(
     new CustomEvent("betResult", {
       detail: {
         isWin: isWin,
         coefficient: currentCoefficient,
-        totalBet: totalBet.toFixed(2),
+        totalBet: totalBet?.toFixed(2) || "0",
+        betType: currentBetType,
       },
     })
   );
@@ -281,6 +292,9 @@ function updateBalanceDisplay() {
 // Обработчики stopBtns
 stopBtns.forEach((stopBtn, index) => {
   stopBtn.addEventListener("click", () => {
+    if (currentBetType === "gift" && currentGiftBet) {
+      cashoutGiftBet();
+    }
     const field = fieldBet[index];
     if (!field) return;
 
@@ -312,6 +326,30 @@ setInterval(() => {
     }
   });
 }, 500);
+export function cashoutGiftBet() {
+  if (currentBetType !== "gift" || !currentGiftBet || !isGameActive) return;
+
+  const winAmount =
+    currentGiftBet.price * currentCoefficient - currentGiftBet.price;
+  balance.value += winAmount;
+  updateBalanceDisplay();
+
+  addGiftToInventory(telegramId, currentGiftBet.itemId, currentGiftBet.count);
+
+  window.dispatchEvent(
+    new CustomEvent("giftCashout", {
+      detail: {
+        itemId: currentGiftBet.itemId,
+        count: currentGiftBet.count,
+        winAmount: winAmount,
+        coefficient: currentCoefficient,
+      },
+    })
+  );
+
+  currentGiftBet = null;
+  currentBetType = "money";
+}
 import { getUserName } from "./balance.js";
 
 // async function uploadBetToServer({

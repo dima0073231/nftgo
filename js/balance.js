@@ -174,7 +174,47 @@ fieldBet.forEach((field, index) => {
   }
   fieldValues.push(field);
 });
+async function removeGiftFromInventory(userId, itemId, count = 1) {
+  try {
+    const response = await fetch(
+      `https://nftbot-4yi9.onrender.com/api/users/${userId}/inventory/remove`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemId, countToRemove: count }),
+      }
+    );
 
+    if (!response.ok) throw new Error("Помилка при видаленні подарунка");
+    return await response.json();
+  } catch (err) {
+    console.error("removeGiftFromInventory error:", err);
+    return null;
+  }
+}
+
+async function addGiftToInventory(userId, itemId, count = 1) {
+  try {
+    const response = await fetch(
+      `https://nftbot-4yi9.onrender.com/api/users/${userId}/inventory`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          itemId,
+          count,
+          price: gifts.find((g) => g.name === itemId)?.price || 0,
+        }),
+      }
+    );
+
+    if (!response.ok) throw new Error("Помилка при додаванні подарунка");
+    return await response.json();
+  } catch (err) {
+    console.error("addGiftToInventory error:", err);
+    return null;
+  }
+}
 async function renderMainInventory(userId) {
   // const inventorySection = document.querySelector(".user-page-inventory");
   // if (!inventorySection) return;
@@ -227,9 +267,39 @@ async function renderMainInventory(userId) {
     console.error("Ошибка при загрузке инвентаря:", err);
   }
 }
-giftBetBtns.forEach((btn) => {
-  btn.addEventListener("click", () => {});
+document.addEventListener("click", async (e) => {
+  if (e.target.closest(".inventory-item__cashout") && !getIsGameActive()) {
+    const card = e.target.closest(".inventory-skins-items-card");
+    if (!card) return;
+
+    const titleElement = card.querySelector(
+      ".inventory-skins-items-card__title"
+    );
+    if (!titleElement) return;
+
+    const titleText = titleElement.textContent;
+    const itemName = titleText.split(" x")[0];
+    const itemCount = parseInt(titleText.split(" x")[1]) || 1;
+
+    const gift = gifts.find((g) => g.name === itemName);
+    if (!gift) return;
+
+    // Встановлюємо тип ставки як подарунок
+    currentBetType = "gift";
+    currentGiftBet = {
+      itemId: itemName,
+      count: 1,
+      price: gift.price,
+    };
+
+    // Запускаємо гру
+    startGame();
+
+    // Відображаємо повідомлення про ставку подарунком
+    alert(`Ставка подарунком "${itemName}" прийнята!`);
+  }
 });
+
 export { changeBet, fieldValues, balance, bet, renderMainInventory };
 
 // Инициализация слайдера Swiper
@@ -245,4 +315,3 @@ new Swiper(".down-main-inventory__swiper", {
   freeMode: true,
   mousewheel: true,
 });
-
