@@ -360,10 +360,6 @@
    padding: 5px 5px 5px 5px;
   
 }
-.swiper-slide {
-  display: flex;
-  flex-direction: column;
-}
  
 
 .grid {
