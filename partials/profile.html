@@ -1,26 +1,55 @@
 <section class="user-page">
   <div class="user-page-profile">
-    <img src="web/images/profile/user-avatar.jpg" alt="user-avatar" class="user-page-profile__avatar" />
+    <img
+      src="web/images/profile/user-avatar.jpg"
+      alt="user-avatar"
+      class="user-page-profile__avatar"
+    />
     <div class="user-page-profile__data">
       <h2 class="user-page-profile__name">Test name</h2>
       <h2 class="user-page-profile__id">User ID: 1234</h2>
     </div>
   </div>
   <div class="user-page-inv">
-    <button class="user-page-inv__btn user-page-inv__btn--inv" type="button" data-lang-key="inventory">
-      <img src="web/images/profile/lock-icon.svg" alt="lock-icon"
-        class="user-page-inv__icon user-page-inv__icon--lock" />
-      <img src="web/images/inventory/gift.svg" alt="lock-icon" class="user-page-inv__icon user-page-inv__icon--inv" />
+    <button
+      class="user-page-inv__btn user-page-inv__btn--inv"
+      type="button"
+      data-lang-key="inventory"
+    >
+      <img
+        src="web/images/profile/lock-icon.svg"
+        alt="lock-icon"
+        class="user-page-inv__icon user-page-inv__icon--lock"
+      />
+      <img
+        src="web/images/inventory/gift.svg"
+        alt="lock-icon"
+        class="user-page-inv__icon user-page-inv__icon--inv"
+      />
       Инвентарь
     </button>
-    <button class="user-page-inv__btn user-page-inv__btn--promo promo-open-btn" type="button"
-      data-lang-key="activatePromo">
-      <img src="web/images/profile/promo.svg" alt="lock-icon" class="user-page-inv__icon user-page-inv__icon--promo" />
+    <button
+      class="user-page-inv__btn user-page-inv__btn--promo promo-open-btn"
+      type="button"
+      data-lang-key="activatePromo"
+    >
+      <img
+        src="web/images/profile/promo.svg"
+        alt="lock-icon"
+        class="user-page-inv__icon user-page-inv__icon--promo"
+      />
       Активировать промокод
     </button>
-    <button class="user-page-inv__btn user-page-inv__btn--admin" type="button" data-lang-key="activateAdmin">
-      <img src="web/images/friends/friends-invation.svg" alt="lock-icon"
-        class="user-page-inv__icon user-page-inv__icon--admin" />
+    <button
+      class="user-page-inv__btn user-page-inv__btn--admin"
+      type="button"
+      data-lang-key="activateAdmin"
+    >
+      <img
+        src="web/images/friends/friends-invation.svg"
+        alt="lock-icon"
+        class="user-page-inv__icon user-page-inv__icon--admin"
+      />
       Перейти на админку
     </button>
   </div>
@@ -29,10 +58,20 @@
       Выбрать язык
     </h2>
     <div class="user-page-change-language__switch">
-      <button type="button" class="user-page-change-language__btn active" data-lang="ru" data-lang-key="russian">
+      <button
+        type="button"
+        class="user-page-change-language__btn active"
+        data-lang="ru"
+        data-lang-key="russian"
+      >
         Русский
       </button>
-      <button type="button" class="user-page-change-language__btn" data-lang="en" data-lang-key="english">
+      <button
+        type="button"
+        class="user-page-change-language__btn"
+        data-lang="en"
+        data-lang-key="english"
+      >
         English
       </button>
     </div>
@@ -49,22 +88,55 @@
   <div class="user-page-inventory">
     <h2 class="user-page-inventory__title">Инвентарь</h2>
     <div class="user-page-inventory__empty">
-      <p class="user-page-inventory__empty-text" data-lang-key="userPageInventoryText">
+      <p
+        class="user-page-inventory__empty-text"
+        data-lang-key="userPageInventoryText"
+      >
         Упс! Видимо, вы еще не играли
       </p>
-      <button class="user-page-inventory__empty-btn" type="button" data-lang-key="navPlay" id="frog-inventory">
-        <span class="user-page-inventory__empty-span" data-lang-key="navPlay">Начать!</span>
+      <button
+        class="user-page-inventory__empty-btn"
+        type="button"
+        data-lang-key="navPlay"
+        id="frog-inventory"
+      >
+        <span class="user-page-inventory__empty-span" data-lang-key="navPlay"
+          >Начать!</span
+        >
       </button>
     </div>
     <div class="swiper inventory-swiper">
-    <div class="inventory-items-container swiper-wrapper">
-
-      <div class="inventory-item">
+      <div class="inventory-items-container swiper-wrapper">
+        <!-- <div class="inventory-item swiper-slide">
+          <div class="inventory-item__wrapper flex">
+            <span class="inventory-item__price">${gift.price}</span>
+            <img
+              src="web/images/giveaway/gift/1.png"
+              alt="smth"
+              class="inventory-item__img"
+            />
+          </div>
+          <span class="inventory-item__name">${gift.name}</span>
+          <div class="inventory-item__marketplace">
+            <div class="inventory-item__cashout">
+              <img
+                src="web/images/inventory/download.svg"
+                alt="download"
+                width="25px"
+                height="25px"
+              />
+            </div>
+            <div class="inventory-item__sell">
+              <img
+                src="web/images/inventory/basket.svg"
+                alt="basket"
+                width="30px"
+                height="30px"
+              />
+            </div>
+          </div>
+        </div> -->
       </div>
     </div>
-    </div>
   </div>
-  
-  
-  
 </section>

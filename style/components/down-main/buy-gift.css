@@ -298,10 +298,7 @@
   grid-template-columns: repeat(3, 1fr); /* 2 колонки */
   gap: 10px; /* Отступ между элементами */
 }
-.inventory-swiper{
-  width: 300px;
-  height: 100px;
-}
+
 .inventory-item {
 
    width: 132px;

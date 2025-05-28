@@ -360,9 +360,7 @@ async function renderInventory(userId) {
         <div class="inventory-item__sell">
           <img src="web/images/inventory/basket.svg" alt="basket" width="30px" height="30px">
         </div>
-      </div>
-    </div>
-    
+      </div>    
       `;
       itemsContainer.appendChild(itemElement);
     });
