@@ -187,10 +187,7 @@ async function renderMainInventory(userId) {
     if (!inventory.length) {
       return;
     }
-    let itemsContainer = document.querySelector(
-      ".inventory-skins-items"
-    );
-    alert(`${itemsContainer} вроде існує`)
+    let itemsContainer = document.querySelector(".inventory-skins-items");
     // if (!itemsContainer) {
     //   itemsContainer = document.createElement("div");
     //   itemsContainer.className = "inventory-skins-items";
@@ -203,7 +200,8 @@ async function renderMainInventory(userId) {
       const gift = gifts.find((g) => g.name === item.itemId);
 
       const itemElement = document.createElement("div");
-      itemElement.className = "inventory-skins-items-card";
+      itemElement.classList.add("inventory-skins-items-card");
+      itemElement.classList.add("swiper-slide");
 
       itemElement.innerHTML = `
             <div class="current">
@@ -215,19 +213,18 @@ async function renderMainInventory(userId) {
               alt="bottle"
               class="inventory-skins-items-card__img"
             />
-            <div class="inventory-item__cashout">
+            <button type="button" class="inventory-item__cashout">
               <img src="web/images/inventory/download.svg" alt="download" id="giftImage">
-            </div>
+            </button>
             <h3 class="inventory-skins-items-card__title">${gift.name}</h3>
       `;
       itemsContainer.appendChild(itemElement);
-      alert('вроде додалось')
     });
   } catch (err) {
     console.error("Ошибка при загрузке инвентаря:", err);
   }
 }
-export { renderMainInventory }
+export { renderMainInventory };
 // const giftBetBtns = document.querySelectorAll(".inventory-skins-item__cashout");
 // giftBetBtns.forEach((btn) => {});
 // Экспортируем необходимые переменные и функции
