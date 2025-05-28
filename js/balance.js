@@ -173,8 +173,8 @@ fieldBet.forEach((field, index) => {
 });
 
 async function renderMainInventory(userId) {
-  const inventorySection = document.querySelector(".user-page-inventory");
-  if (!inventorySection) return;
+  // const inventorySection = document.querySelector(".user-page-inventory");
+  // if (!inventorySection) return;
 
   try {
     const response = await fetch(
@@ -187,14 +187,15 @@ async function renderMainInventory(userId) {
     if (!inventory.length) {
       return;
     }
-    let itemsContainer = inventorySection.querySelector(
+    let itemsContainer = document.querySelector(
       ".inventory-skins-items"
     );
-    if (!itemsContainer) {
-      itemsContainer = document.createElement("div");
-      itemsContainer.className = "inventory-skins-items";
-      inventorySection.appendChild(itemsContainer);
-    }
+    // if (!itemsContainer) {
+    //   itemsContainer = document.createElement("div");
+    //   itemsContainer.className = "inventory-skins-items";
+    //   inventorySection.appendChild(itemsContainer);
+    // }
+    al
 
     itemsContainer.innerHTML = "";
 
