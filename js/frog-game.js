@@ -326,7 +326,7 @@ setInterval(() => {
     }
   });
 }, 500);
-export function cashoutGiftBet() {
+function cashoutGiftBet() {
   if (currentBetType !== "gift" || !currentGiftBet || !isGameActive) return;
 
   const winAmount =
@@ -334,7 +334,9 @@ export function cashoutGiftBet() {
   balance.value += winAmount;
   updateBalanceDisplay();
 
-  addGiftToInventory(telegramId, currentGiftBet.itemId, currentGiftBet.count);
+  addGiftToInventory(telegramId, currentGiftBet.itemId, currentGiftBet.count)
+    .then(() => renderMainInventory(telegramId))
+    .catch((err) => console.error("Помилка при поверненні подарунка:", err));
 
   window.dispatchEvent(
     new CustomEvent("giftCashout", {
@@ -464,6 +466,12 @@ function addBetCards() {
   }
 }
 addBetCards();
-export { addBetToHistory };
-
-export { isGameActive, startGame, stopGame, currentCoefficient };
+export {
+  isGameActive,
+  startGame,
+  stopGame,
+  currentCoefficient,
+  currentBetType,
+  currentGiftBet,
+  cashoutGiftBet,
+};

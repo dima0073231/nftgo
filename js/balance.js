@@ -1,5 +1,3 @@
-import { getIsGameActive } from "./frog-game.js";
-
 const fixedBetBtns = document.querySelectorAll(".select-bet-change__btn");
 const changeBetBtns = document.querySelectorAll(".select-bet-count__btn");
 const fieldBet = document.querySelectorAll(".select-bet-count__number");
@@ -10,9 +8,14 @@ const giftBetBtns = document.querySelectorAll(
   ".inventory-down-main-item__cashout"
 );
 import { telegramId } from "./profile.js";
-import { addBetToHistory, currentCoefficient } from "./frog-game.js";
 import { gifts } from "./buy-gift.js";
-
+import {
+  getIsGameActive,
+  startGame,
+  currentBetType,
+  currentGiftBet,
+  cashoutGiftBet,
+} from "./frog-game.js";
 const getUserName = async function (userId) {
   try {
     const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
@@ -247,20 +250,21 @@ async function renderMainInventory(userId) {
       itemElement.classList.add("swiper-slide");
 
       itemElement.innerHTML = `
-            <div class="current">
-              <span class="inventory-skins-items-card__current">${gift.price}</span>
-              <img src="web/images/inventory/ton.svg" alt="ton" />
-            </div>
-            <img
-              src="web/images/${gift.image}"
-              alt="bottle"
-              class="inventory-skins-items-card__img"
-            />
-            <button type="button" class="inventory-item__cashout inventory-down-main-item__cashout">
-              <img src="web/images/inventory/download.svg" alt="download" id="giftImage">
-            </button>
-            <h3 class="inventory-skins-items-card__title">${gift.name} x${item.count}</h3>
-      `;
+  <div class="current">
+    <span class="inventory-skins-items-card__current">${gift.price}</span>
+    <img src="web/images/inventory/ton.svg" alt="ton" />
+  </div>
+  <img
+    src="web/images/${gift.image}"
+    alt="bottle"
+    class="inventory-skins-items-card__img"
+  />
+  <button type="button" class="inventory-item__cashout inventory-down-main-item__cashout" 
+    data-item-id="${gift.name}" data-item-price="${gift.price}">
+    <img src="web/images/inventory/download.svg" alt="download">
+  </button>
+  <h3 class="inventory-skins-items-card__title">${gift.name} x${item.count}</h3>
+`;
       itemsContainer.appendChild(itemElement);
     });
   } catch (err) {
@@ -268,38 +272,54 @@ async function renderMainInventory(userId) {
   }
 }
 document.addEventListener("click", async (e) => {
-  if (e.target.closest(".inventory-item__cashout") && !getIsGameActive()) {
-    const card = e.target.closest(".inventory-skins-items-card");
-    if (!card) return;
+  const cashoutBtn = e.target.closest(".inventory-item__cashout");
+  if (!cashoutBtn || getIsGameActive()) return;
 
-    const titleElement = card.querySelector(
-      ".inventory-skins-items-card__title"
-    );
-    if (!titleElement) return;
+  const card = cashoutBtn.closest(".inventory-skins-items-card");
+  if (!card) return;
 
-    const titleText = titleElement.textContent;
-    const itemName = titleText.split(" x")[0];
-    const itemCount = parseInt(titleText.split(" x")[1]) || 1;
+  const titleElement = card.querySelector(".inventory-skins-items-card__title");
+  if (!titleElement) return;
 
-    const gift = gifts.find((g) => g.name === itemName);
-    if (!gift) return;
+  const titleText = titleElement.textContent.trim();
+  const [itemName, itemCountStr] = titleText.split(" x");
+  const itemCount = parseInt(itemCountStr) || 1;
 
-    // Встановлюємо тип ставки як подарунок
-    currentBetType = "gift";
-    currentGiftBet = {
-      itemId: itemName,
-      count: 1,
-      price: gift.price,
-    };
-
-    // Запускаємо гру
-    startGame();
-
-    // Відображаємо повідомлення про ставку подарунком
-    alert(`Ставка подарунком "${itemName}" прийнята!`);
+  const gift = gifts.find((g) => g.name === itemName);
+  if (!gift) {
+    console.error("Подарунок не знайдено:", itemName);
+    return;
   }
-});
 
+  // Перевіряємо, чи є достатньо подарунків
+  if (itemCount < 1) {
+    alert("Недостатньо подарунків для ставки");
+    return;
+  }
+
+  // Встановлюємо тип ставки як подарунок
+  currentBetType = "gift";
+  currentGiftBet = {
+    itemId: itemName,
+    count: 1,
+    price: gift.price,
+  };
+
+  const removed = await removeGiftFromInventory(telegramId, itemName, 1);
+  if (!removed) {
+    alert("Помилка при видаленні подарунка");
+    return;
+  }
+
+  // Оновлюємо інвентар
+  await renderMainInventory(telegramId);
+
+  startGame();
+
+  alert(
+    `Ставка подарунком "${itemName}" прийнята! Натисніть "Забрати" до падіння коефіцієнта`
+  );
+});
 export { changeBet, fieldValues, balance, bet, renderMainInventory };
 
 // Инициализация слайдера Swiper
