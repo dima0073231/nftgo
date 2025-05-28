@@ -41,9 +41,6 @@ const setBalanceToBd = async function (tgId) {
 const LINE_WIDTH = 380;
 const BASE_GAME_SPEED = 200;
 const maxHistoryItems = 7;
-let isRegularBetActive = false;
-let isGiftBetActive = false;
-let currentGiftBet = null;
 
 // Инициализация
 coefficientDisplay.style.opacity = "0";
@@ -133,10 +130,6 @@ function getSpeedByCoefficient(coef) {
 function startGame() {
   if (gameInterval) clearInterval(gameInterval);
 
-  const hasActiveBets = isRegularBetActive || isGiftBetActive;
-  if (!hasActiveBets) {
-    console.log("Немає активних ставок");
-  }
   coefficientDisplay.classList.remove("crash-glow");
   coefficientDisplay.style.color = "#ffffff";
   coefficientDisplay.style.opacity = "1";
@@ -229,40 +222,7 @@ function stopGame() {
       field.dataset.bet = "0";
     }
   });
-  if (isGiftBetActive && currentGiftBet) {
-    const gift = currentGiftBet;
-    totalBet += gift.price;
 
-    // Якщо гравець встиг забрати виграш до краху
-    if (!isGameActive) {
-      isWin = true;
-      balance.value += gift.price * currentCoefficient;
-
-      window.dispatchEvent(
-        new CustomEvent("giftBetWin", {
-          detail: {
-            giftName: gift.name,
-            coefficient: currentCoefficient,
-            winAmount: (gift.price * currentCoefficient).toFixed(2),
-          },
-        })
-      );
-    } else {
-      isWin = false;
-
-      window.dispatchEvent(
-        new CustomEvent("giftBetLose", {
-          detail: {
-            giftName: gift.name,
-            coefficient: currentCoefficient,
-          },
-        })
-      );
-    }
-
-    isGiftBetActive = false;
-    currentGiftBet = null;
-  }
   window.dispatchEvent(
     new CustomEvent("betResult", {
       detail: {
@@ -272,6 +232,7 @@ function stopGame() {
       },
     })
   );
+
   if (telegramId) {
     setBalanceToBd(telegramId);
   }
@@ -282,59 +243,6 @@ function stopGame() {
     if (progressLine) progressLine.style.opacity = "0";
     if (frogGif) frogGif.style.opacity = "0";
   }, 2000);
-}
-selectBetBtns.forEach((selectBtn, index) => {
-  selectBtn.addEventListener("click", () => {
-    if (isGiftBetActive) {
-      alert(
-        "Ви вже зробили ставку подарунком. Неможливо зробити звичайну ставку."
-      );
-      return;
-    }
-
-    const field = fieldBet[index];
-    if (!field) return;
-
-    const currentValue = Number(field.textContent) || 0;
-    if (currentValue === 0) {
-      alert("Сделайте ставку");
-      return;
-    } else if (currentValue > balance.value) {
-      alert("Недостаточно средств на балансе");
-      field.textContent = "0";
-      return;
-    }
-
-    isRegularBetActive = true;
-    balance.value -= currentValue;
-    field.dataset.bet = currentValue;
-    field.textContent = "0";
-
-    updateBalanceDisplay();
-    startGame();
-  });
-});
-export function makeGiftBet(gift) {
-  if (isRegularBetActive) {
-    alert(
-      "Ви вже зробили звичайну ставку. Неможливо зробити ставку подарунком."
-    );
-    return false;
-  }
-
-  if (isGiftBetActive) {
-    alert("Ви вже зробили ставку подарунком.");
-    return false;
-  }
-
-  currentGiftBet = gift;
-  isGiftBetActive = true;
-
-  if (!getIsGameActive()) {
-    startGame();
-  }
-
-  return true;
 }
 function addToHistory(coef, isCrash) {
   const div = document.createElement("div");
@@ -363,7 +271,7 @@ function addToHistory(coef, isCrash) {
     }, 300);
   }
 }
-export function updateBalanceDisplay() {
+function updateBalanceDisplay() {
   if (balancePole) {
     balancePole.innerHTML = `${balance.value.toFixed(
       2
@@ -371,41 +279,24 @@ export function updateBalanceDisplay() {
   }
 }
 // Обработчики stopBtns
-stopBtns.forEach((stopBtn) => {
+stopBtns.forEach((stopBtn, index) => {
   stopBtn.addEventListener("click", () => {
-    if (!getIsGameActive()) return;
+    const field = fieldBet[index];
+    if (!field) return;
 
-    if (isRegularBetActive) {
-      fieldBet.forEach((field) => {
-        const betValue = parseFloat(field.dataset.bet || "0");
-        if (betValue > 0) {
-          const gain = betValue * currentCoefficient;
-          balance.value += gain;
-          field.textContent = "0";
-          field.dataset.bet = "0";
-        }
-      });
-      isRegularBetActive = false;
-    } else if (isGiftBetActive && currentGiftBet) {
-      const gain = currentGiftBet.price * currentCoefficient;
+    const betValue = parseFloat(field.dataset.bet);
+    if (!betValue || betValue <= 0) return;
+
+    if (isGameActive) {
+      const gain = betValue * currentCoefficient;
       balance.value += gain;
-
-      window.dispatchEvent(
-        new CustomEvent("giftBetWin", {
-          detail: {
-            giftName: currentGiftBet.name,
-            coefficient: currentCoefficient,
-            winAmount: gain.toFixed(2),
-          },
-        })
-      );
-
-      isGiftBetActive = false;
-      currentGiftBet = null;
+      if (balancePole) {
+        updateBalanceDisplay();
+      }
     }
 
-    updateBalanceDisplay();
-    setGameActive(false);
+    field.textContent = "0";
+    field.dataset.bet = "0";
   });
 });
 

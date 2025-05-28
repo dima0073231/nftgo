@@ -10,11 +10,7 @@ const giftBetBtns = document.querySelectorAll(
   ".inventory-down-main-item__cashout"
 );
 import { telegramId } from "./profile.js";
-import {
-  addBetToHistory,
-  currentCoefficient,
-  updateBalanceDisplay,
-} from "./frog-game.js";
+import { addBetToHistory, currentCoefficient } from "./frog-game.js";
 import { gifts } from "./buy-gift.js";
 
 const getUserName = async function (userId) {
@@ -232,76 +228,7 @@ async function renderMainInventory(userId) {
   }
 }
 giftBetBtns.forEach((btn) => {
-  btn.addEventListener("click", async () => {
-    try {
-      const card = btn.closest(".inventory-skins-items-card");
-      if (!card) return;
-
-      const titleElement = card.querySelector(
-        ".inventory-skins-items-card__title"
-      );
-      if (!titleElement) return;
-
-      const [giftName, giftCountStr] = titleElement.textContent.split(" x");
-      const giftCount = parseInt(giftCountStr);
-
-      if (isNaN(giftCount) || giftCount <= 0) {
-        alert("У вас немає цього подарунка");
-        return;
-      }
-
-      const giftPriceElement = card.querySelector(
-        ".inventory-skins-items-card__current"
-      );
-      if (!giftPriceElement) return;
-
-      const giftPrice = parseFloat(giftPriceElement.textContent);
-      if (isNaN(giftPrice)) return;
-
-      const gift = gifts.find((g) => g.name === giftName);
-      if (!gift) return;
-
-      const confirmBet = confirm(
-        `Ви дійсно хочете зробити ставку подарунком "${gift.name}" вартістю ${gift.price}?`
-      );
-      if (!confirmBet) return;
-
-      const response = await fetch(
-        `https://nftbot-4yi9.onrender.com/api/users/${telegramId}/inventory/remove`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            itemId: gift.name,
-            countToRemove: 1,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.error || "Помилка при використанні подарунка"
-        );
-      }
-
-      const success = makeGiftBet(gift);
-      if (success) {
-        // Оновлюємо інвентар після успішної ставки
-        await renderMainInventory(telegramId);
-
-        // Оновлюємо баланс (якщо потрібно)
-        const updatedBalance = await getBalance(telegramId);
-        if (updatedBalance !== null) {
-          balance.value = updatedBalance;
-          updateBalanceDisplay();
-        }
-      }
-    } catch (err) {
-      console.error("Помилка при ставці подарунком:", err);
-      alert(err.message || "Сталася помилка");
-    }
-  });
+  btn.addEventListener("click", () => {});
 });
 export { changeBet, fieldValues, balance, bet, renderMainInventory };
 
@@ -318,3 +245,4 @@ new Swiper(".down-main-inventory__swiper", {
   freeMode: true,
   mousewheel: true,
 });
+
