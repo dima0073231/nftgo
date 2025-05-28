@@ -346,9 +346,8 @@ async function renderInventory(userId) {
       itemElement.className = "inventory-item";
 
       itemElement.innerHTML = `
-     <div class="inventory-container">
-  <div class="inventory-wrap">
-    <div class="inventory-item">
+   
+    <div class="inventory-item swiper-slide">
       <div class="inventory-item__wrapper flex">
         <span class="inventory-item__price">${gift.price}</span>
         <img src="web/images/${gift.image}" alt="${gift.name}" class="inventory-item__img">
@@ -363,9 +362,7 @@ async function renderInventory(userId) {
         </div>
       </div>
     </div>
-    <!-- Другие карточки будут добавляться здесь -->
-  </div>
-</div>
+    
       `;
       itemsContainer.appendChild(itemElement);
     });
@@ -373,6 +370,12 @@ async function renderInventory(userId) {
     console.error("Ошибка при загрузке инвентаря:", err);
   }
 }
+new Swiper(".inventory-swiper", {
+  direction: "horizontal",
+  slidesPerView: "auto",
+  freeMode: true,
+  mousewheel: true,
+});
 
 buyBtn.addEventListener("click", () => {
   if (!selectedItem) {
