@@ -343,11 +343,11 @@ async function renderInventory(userId) {
       };
 
       const itemElement = document.createElement("div");
-      itemElement.className = "inventory-item";
+      itemElement.classList.add('inventory-item');
+      itemElement.classList.add('swiper-slide');
 
       itemElement.innerHTML = `
    
-    <div class="inventory-item swiper-slide">
       <div class="inventory-item__wrapper flex">
         <span class="inventory-item__price">${gift.price}</span>
         <img src="web/images/${gift.image}" alt="${gift.name}" class="inventory-item__img">
@@ -360,7 +360,6 @@ async function renderInventory(userId) {
         <div class="inventory-item__sell">
           <img src="web/images/inventory/basket.svg" alt="basket" width="30px" height="30px">
         </div>
-      </div>    
       `;
       itemsContainer.appendChild(itemElement);
     });
