@@ -29,7 +29,7 @@ async function connectProfile(telegramId) {
   }
 
   try {
-    const response = await fetch('https://nftbot-4yi9.onrender.com/api/users')
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
     if (!response.ok) throw new Error("Ошибка сети");
 
     const users = await response.json();
@@ -90,7 +90,9 @@ const startGameButton = document.querySelector(".user-page-game-history__btn");
 
 async function fetchBetHistory(telegramId) {
   try {
-    const response = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${telegramId}/history`);
+    const response = await fetch(
+      `https://nftbot-4yi9.onrender.com/api/users/${telegramId}/history`
+    );
     if (!response.ok) throw new Error("Не удалось загрузить историю ставок");
     const data = await response.json();
     return data.history || [];
@@ -102,7 +104,12 @@ async function fetchBetHistory(telegramId) {
 
 function formatDate(iso) {
   const d = new Date(iso);
-  return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth()+1).padStart(2, "0")}.${d.getFullYear()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  return `${String(d.getDate()).padStart(2, "0")}.${String(
+    d.getMonth() + 1
+  ).padStart(2, "0")}.${d.getFullYear()} ${String(d.getHours()).padStart(
+    2,
+    "0"
+  )}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
 // Инициализация истории ставок
@@ -129,9 +136,13 @@ async function initBetHistory() {
               Telegram Wallet <span>${formatDate(bet.date)}</span>.
             </div>
             <div class="user-page-game-history__coefficient ${bet.result}">
-              ${bet.result === "win"
-                ? `+${(bet.betAmount * bet.coefficient).toFixed(2)} TON (x${Number(bet.coefficient).toFixed(2)})`
-                : `-${Number(bet.betAmount).toFixed(2)} TON`}
+              ${
+                bet.result === "win"
+                  ? `+${(bet.betAmount * bet.coefficient).toFixed(
+                      2
+                    )} TON (x${Number(bet.coefficient).toFixed(2)})`
+                  : `-${Number(bet.betAmount).toFixed(2)} TON`
+              }
             </div>
           </div>
         `
@@ -175,7 +186,7 @@ function addNewBetToHistory(amount) {
 
 // Функция для обновления результата ставки
 function updateBetResult(isWin, coefficient) {
-  const history = JSON.parse(localStorage.getItem("betHistory"));
+  const history = JSON.parse(localStorage.getItem("betHistory")) || [];
   if (history.length > 0 && history[0].status === "pending") {
     const betAmount = history[0].amount;
     history[0].status = isWin ? "win" : "lose";
@@ -269,7 +280,6 @@ loadHistoryFromStorage();
 // Инициализация при загрузке страницы
 initBetHistory();
 
-
 if (telegramId) {
   connectProfile(telegramId);
 } else {
@@ -310,7 +320,7 @@ inventoryBtn.addEventListener("click", async () => {
 
 async function checkInventoryItems(tgId) {
   try {
-    const response = await fetch('https://nftbot-4yi9.onrender.com/api/users')
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
     if (!response.ok) throw new Error("Не удалось получить пользователей");
     const users = await response.json();
     const user = users.find((user) => String(user.telegramId) === String(tgId));
