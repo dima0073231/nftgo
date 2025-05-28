@@ -225,7 +225,7 @@ async function renderMainInventory(userId) {
     console.error("Ошибка при загрузке инвентаря:", err);
   }
 }
-renderMainInventory(telegramId);
+export { renderMainInventory }
 // const giftBetBtns = document.querySelectorAll(".inventory-skins-item__cashout");
 // giftBetBtns.forEach((btn) => {});
 // Экспортируем необходимые переменные и функции
