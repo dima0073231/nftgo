@@ -1,73 +1,73 @@
-// const mainBalance = document.querySelector(".main-balance");
-// const mainConnectWallet = document.querySelector(".main-connect-wallet");
-// const modal = document.getElementById("modal");
-// const openBtn = document.getElementById("openModalBtn");
-// const closeBtn = document.getElementById("closeModalHeaderBtn");
+const mainBalance = document.querySelector(".main-balance");
+const mainConnectWallet = document.querySelector(".main-connect-wallet");
+const modal = document.getElementById("modal");
+const openBtn = document.getElementById("openModalBtn");
+const closeBtn = document.getElementById("closeModalHeaderBtn");
 
-// const btnTon = document.querySelector('.modal-btn-container-ton')
-// const btnCryptoBot = document.querySelector('.modal-btn-container-cryptoBot')
-// const btnTonContainer = document.querySelector('.modal-container-ton')
-// const btnCryptoBotContainer = document.querySelector('.modal-container-cryptoBot')
+const btnTon = document.querySelector('.modal-btn-container-ton')
+const btnCryptoBot = document.querySelector('.modal-btn-container-cryptoBot')
+const btnTonContainer = document.querySelector('.modal-container-ton')
+const btnCryptoBotContainer = document.querySelector('.modal-container-cryptoBot')
 
-// const tonConnect = new TON_CONNECT_UI.TonConnectUI({
-//   manifestUrl: "https://danikkkkk12.github.io/nftbot/tonconnect-manifest.json",
-//   buttonRootId: "ton-connect",
-// });
+const tonConnect = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl: "https://github.com/dima0073231/nftgo/blob/main/tonconnect-manifest.json",
+  buttonRootId: "ton-connect",
+});
 
-// async function getBalance(address) {
-//   try {
-//     const response = await fetch(
-//       `https://toncenter.com/api/v2/getAddressInformation?address=${address}`
-//     );
-//     const data = await response.json();
+async function getBalance(address) {
+  try {
+    const response = await fetch(
+      `https://toncenter.com/api/v2/getAddressInformation?address=${address}`
+    );
+    const data = await response.json();
 
-//     if (data.ok && data.result && data.result.balance !== undefined) {
-//       return data.result.balance;
-//     } else {
-//       throw new Error("Ошибка получения баланса");
-//     }
-//   } catch (error) {
-//     console.error("Ошибка запроса баланса:", error);
-//     throw error;
-//   }
-// }
+    if (data.ok && data.result && data.result.balance !== undefined) {
+      return data.result.balance;
+    } else {
+      throw new Error("Ошибка получения баланса");
+    }
+  } catch (error) {
+    console.error("Ошибка запроса баланса:", error);
+    throw error;
+  }
+}
 
-// function shortenAddress(address) {
-//   return address.slice(0, 5) + '...' + address.slice(-4);
-// }
+function shortenAddress(address) {
+  return address.slice(0, 5) + '...' + address.slice(-4);
+}
 
 
-// async function updateBalance() {
-//   if (tonConnect.wallet && tonConnect.wallet.account) {
-//     try {
-//       const address = tonConnect.wallet.account.address;
-//       const balanceNano = await getBalance(address);
-//       const balanceTon = (balanceNano / 1e9).toFixed(2);
-//       if (mainBalance) {
-//         mainBalance.innerHTML = `
-//           ${balanceTon} <img src="web/images/main/ton-icon.svg" alt="Token" class="main-balance__token">
-//         `;
-//       }
-//     } catch (err) {
-//       console.error("Не удалось получить баланс:", err);
-//     }
-//   }
-// }
+async function updateBalance() {
+  if (tonConnect.wallet && tonConnect.wallet.account) {
+    try {
+      const address = tonConnect.wallet.account.address;
+      const balanceNano = await getBalance(address);
+      const balanceTon = (balanceNano / 1e9).toFixed(2);
+      if (mainBalance) {
+        mainBalance.innerHTML = `
+          ${balanceTon} <img src="web/images/main/ton-icon.svg" alt="Token" class="main-balance__token">
+        `;
+      }
+    } catch (err) {
+      console.error("Не удалось получить баланс:", err);
+    }
+  }
+}
 
-// tonConnect.onStatusChange(async (walletInfo) => {
-//   if (walletInfo && walletInfo.account && walletInfo.account.address) {
-//     const address = walletInfo.account.address;
-//     const shortAddr = shortenAddress(address);
+tonConnect.onStatusChange(async (walletInfo) => {
+  if (walletInfo && walletInfo.account && walletInfo.account.address) {
+    const address = walletInfo.account.address;
+    const shortAddr = shortenAddress(address);
 
-//     if (mainConnectWallet) {
-//       mainConnectWallet.innerText = shortAddr;
-//       mainConnectWallet.disabled = true; 
-//       mainConnectWallet.style.cursor = "default";
-//     }
+    if (mainConnectWallet) {
+      mainConnectWallet.innerText = shortAddr;
+      mainConnectWallet.disabled = true; 
+      mainConnectWallet.style.cursor = "default";
+    }
 
-//     await updateBalance();
-//   }
-// });
+    await updateBalance();
+  }
+});
 
 
 
@@ -168,19 +168,19 @@
 //   }
 // }, 10000);
 
-const mainBalance = document.querySelector(".main-balance");
-const mainConnectWallet = document.querySelector(".main-connect-wallet");
-const modal = document.getElementById("modal");
-const closeBtn = document.getElementById("closeModalHeaderBtn");
-const btnTon = document.querySelector('.modal-btn-container-ton');
-const btnCryptoBot = document.querySelector('.modal-btn-container-cryptoBot');
-const btnTonContainer = document.querySelector('.modal-container-ton');
-const btnCryptoBotContainer = document.querySelector('.modal-container-cryptoBot');
+// const mainBalance = document.querySelector(".main-balance");
+// const mainConnectWallet = document.querySelector(".main-connect-wallet");
+// const modal = document.getElementById("modal");
+// const closeBtn = document.getElementById("closeModalHeaderBtn");
+// const btnTon = document.querySelector('.modal-btn-container-ton');
+// const btnCryptoBot = document.querySelector('.modal-btn-container-cryptoBot');
+// const btnTonContainer = document.querySelector('.modal-container-ton');
+// const btnCryptoBotContainer = document.querySelector('.modal-container-cryptoBot');
 
-const tonConnect = new TON_CONNECT_UI.TonConnectUI({
-  manifestUrl: "https://danikkkkk12.github.io/nftbot/tonconnect-manifest.json",
-  buttonRootId: "ton-connect",
-});
+// const tonConnect = new TON_CONNECT_UI.TonConnectUI({
+//   manifestUrl: "https://github.com/dima0073231/nftgo/blob/main/tonconnect-manifest.json",
+//   buttonRootId: "ton-connect",
+// });
 
 function getUserTelegramId() {
   return localStorage.getItem("telegramId"); // Замени на свою реалізацію, якщо треба
