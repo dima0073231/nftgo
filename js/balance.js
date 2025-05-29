@@ -291,12 +291,14 @@ function setupGiftBetHandlers() {
     }
 
     const card = cashoutBtn.closest('.inventory-skins-items-card');
+    alert(card)
     if (!card) {
       console.error('Не знайдено картку подарунка');
       return;
     }
 
     const titleElement = card.querySelector('.inventory-skins-items-card__title');
+    alert(titleElement)
     if (!titleElement) {
       console.error('Не знайдено заголовок подарунка');
       return;
