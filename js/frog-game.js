@@ -14,7 +14,7 @@ const giftBetBtns = document.querySelectorAll(
   ".inventory-down-main-item__cashout"
 );
 
-const setBalanceToBd = async function (tgId) {
+export const setBalanceToBd = async function (tgId) {
   try {
     const response = await fetch(`https://nftbot-4yi9.onrender.com/api/users`);
     if (!response.ok) throw new Error("Користувача не знайдено");
