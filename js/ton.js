@@ -14,6 +14,15 @@ const tonConnect = new TON_CONNECT_UI.TonConnectUI({
   buttonRootId: "ton-connect",
 });
 
+mainConnectWallet.addEventListener('click', async () => {
+  try {
+    const connectedWallet = await tonConnect.connectWallet();
+    console.log("Кошелек подключен:", connectedWallet);
+  } catch (error) {
+    console.error("Ошибка подключения кошелька:", error);
+  }
+});
+
 async function getBalance(address) {
   try {
     const response = await fetch(
@@ -220,22 +229,22 @@ function shortenAddress(address) {
   return address.slice(0, 5) + '...' + address.slice(-4);
 }
 
-async function updateBalance() {
-  if (tonConnect.wallet && tonConnect.wallet.account) {
-    try {
-      const address = tonConnect.wallet.account.address;
-      const balanceNano = await getBalance(address);
-      const balanceTon = (balanceNano / 1e9).toFixed(2);
-      if (mainBalance) {
-        mainBalance.innerHTML = `
-          ${balanceTon} <img src="web/images/main/ton-icon.svg" alt="Token" class="main-balance__token">
-        `;
-      }
-    } catch (err) {
-      console.error("Не удалось получить баланс:", err);
-    }
-  }
-}
+// async function updateBalance() {
+//   if (tonConnect.wallet && tonConnect.wallet.account) {
+//     try {
+//       const address = tonConnect.wallet.account.address;
+//       const balanceNano = await getBalance(address);
+//       const balanceTon = (balanceNano / 1e9).toFixed(2);
+//       if (mainBalance) {
+//         mainBalance.innerHTML = `
+//           ${balanceTon} <img src="web/images/main/ton-icon.svg" alt="Token" class="main-balance__token">
+//         `;
+//       }
+//     } catch (err) {
+//       console.error("Не удалось получить баланс:", err);
+//     }
+//   }
+// }
 
 tonConnect.onStatusChange(async (walletInfo) => {
   if (walletInfo && walletInfo.account && walletInfo.account.address) {
@@ -343,6 +352,8 @@ btnCryptoBot.addEventListener('click', () => {
     window.open(url, "_blank");
   });
 });
+
+
 
 function toggleActive() {
   if (modal) {
