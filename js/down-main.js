@@ -41,31 +41,31 @@ toggleInvBtn.addEventListener("click", () => {
   renderMainInventory(telegramId);
 });
 
-// betBtn.forEach((btn, index) => {
-//   btn.addEventListener("click", () => {
-//     const betValue = Number(fieldBet[index].textContent);
-//     const userName = userNames.textContent.trim();
-//     const userAvatar = userProfImg.src;
+betBtn.forEach((btn, index) => {
+  btn.addEventListener("click", () => {
+    const betValue = Number(fieldBet[index].textContent);
+    const userName = userNames.textContent.trim();
+    const userAvatar = userProfImg.src;
 
-//     if (bet) {
-//       betContainer.innerHTML += `
-//        <li class="swiper-slide bet-count-list__item">
-//         <div class="bet-count-list__profile">
-//           <img src="${userAvatar}" class="bet-count-list__avatar" alt="avatar">
-//           <h3 class="bet-count-list__username">${userName}</h3>
-//         </div>
-//         <div class="bet-count-list__number">
-//           <span class="count">${bet}</span>
-//           <img src="web/images/main/ton-icon.svg" alt="diamond" class="bet-count-list__diamond" />
-//         </div>
-//       </li>
-//     `;
-//     }
+    if (bet) {
+      betContainer.innerHTML += `
+       <li class="swiper-slide bet-count-list__item">
+        <div class="bet-count-list__profile">
+          <img src="${userAvatar}" class="bet-count-list__avatar" alt="avatar">
+          <h3 class="bet-count-list__username">${userName}</h3>
+        </div>
+        <div class="bet-count-list__number">
+          <span class="count">${bet}</span>
+          <img src="web/images/main/ton-icon.svg" alt="diamond" class="bet-count-list__diamond" />
+        </div>
+      </li>
+    `;
+    }
 
-//     const total = document.querySelectorAll(".bet-count-list__item").length;
-//     totalBet.textContent = total;
-//   });
-// });
+    const total = document.querySelectorAll(".bet-count-list__item").length;
+    totalBet.textContent = total;
+  });
+});
 
 // giftCard.forEach((e) => {
 //   e.addEventListener("click", () => {
