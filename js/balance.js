@@ -227,9 +227,7 @@ async function renderMainInventory(userId) {
     console.error("Ошибка при загрузке инвентаря:", err);
   }
 }
-giftBetBtns.forEach((btn) => {
-  btn.addEventListener("click", () => {});
-});
+renderMainInventory(telegramId)
 export { changeBet, fieldValues, balance, bet, renderMainInventory };
 
 // Инициализация слайдера Swiper
