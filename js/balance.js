@@ -274,6 +274,7 @@ async function renderMainInventory(userId) {
 }
 function setupGiftBetHandlers() {
   document.addEventListener("click", async (e) => {
+    alert('Was click')
     const cashoutBtn = e.target.closest(".inventory-down-main-item__cashout");
     if (!cashoutBtn || getIsGameActive()) return;
 
