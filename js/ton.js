@@ -8,18 +8,18 @@ const btnTon = document.querySelector('.modal-btn-container-ton')
 const btnCryptoBot = document.querySelector('.modal-btn-container-cryptoBot')
 const btnTonContainer = document.querySelector('.modal-container-ton')
 const btnCryptoBotContainer = document.querySelector('.modal-container-cryptoBot')
+import { TonConnect } from "@tonconnect/sdk";
 
-const tonConnect = new TON_CONNECT_UI.TonConnectUI({
+const tonConnect = new TonConnect({
   manifestUrl: "https://dima0073231.github.io/nftgo/tonconnect-manifest.json",
-  buttonRootId: "ton-connect",
 });
-
 mainConnectWallet.addEventListener('click', async () => {
   try {
-    const connectedWallet = await tonConnect.connectWallet();
-    console.log("Кошелек подключен:", connectedWallet);
-  } catch (error) {
-    console.error("Ошибка подключения кошелька:", error);
+    await tonConnect.connect();
+    const wallet = tonConnect.wallet;
+    console.log("Кошелек:", wallet);
+  } catch (e) {
+    console.error("Ошибка подключения:", e);
   }
 });
 
@@ -195,20 +195,20 @@ function getUserTelegramId() {
   return localStorage.getItem("telegramId"); // Замени на свою реалізацію, якщо треба
 }
 
-async function getBalance(address) {
-  try {
-    const response = await fetch(`https://toncenter.com/api/v2/getAddressInformation?address=${address}`);
-    const data = await response.json();
-    if (data.ok && data.result && data.result.balance !== undefined) {
-      return data.result.balance;
-    } else {
-      throw new Error("Ошибка получения баланса");
-    }
-  } catch (error) {
-    console.error("Ошибка запроса баланса:", error);
-    throw error;
-  }
-}
+// async function getBalance(address) {
+//   try {
+//     const response = await fetch(`https://toncenter.com/api/v2/getAddressInformation?address=${address}`);
+//     const data = await response.json();
+//     if (data.ok && data.result && data.result.balance !== undefined) {
+//       return data.result.balance;
+//     } else {
+//       throw new Error("Ошибка получения баланса");
+//     }
+//   } catch (error) {
+//     console.error("Ошибка запроса баланса:", error);
+//     throw error;
+//   }
+// }
 
 async function setBalanceToBd(tgId, newBalance) {
   try {
