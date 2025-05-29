@@ -10,7 +10,7 @@ const btnTonContainer = document.querySelector('.modal-container-ton')
 const btnCryptoBotContainer = document.querySelector('.modal-container-cryptoBot')
 
 const tonConnect = new TON_CONNECT_UI.TonConnectUI({
-  manifestUrl: "https://raw.githubusercontent.com/dima0073231/nftgo/main/tonconnect-manifest.json",
+  manifestUrl: "https://dima0073231.github.io/nftgo/tonconnect-manifest.json",
   buttonRootId: "ton-connect",
 });
 

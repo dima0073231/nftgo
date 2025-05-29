@@ -1,9 +1,9 @@
 {
-  "url": "https://github.com/dima0073231/nftgo",  
+  "url": "https://dima0073231.github.io/nftgo/",
   "name": "Crash Bot",
-  "iconUrl": "https://github.com/dima0073231/nftgo/web/images/main/frog-img.png",
-  "termsOfUseUrl": "https://github.com/dima0073231/nftgo/terms.html",
-  "privacyPolicyUrl": "https://github.com/dima0073231/nftgo/privacy.html",
+  "iconUrl": "https://dima0073231.github.io/nftgo/web/images/main/frog-img.png",
+  "termsOfUseUrl": "https://dima0073231.github.io/nftgo/terms.html",
+  "privacyPolicyUrl": "https://dima0073231.github.io/nftgo/privacy.html",
   "version": "1.0.0",
   "network": "mainnet",
   "appId": "crashbot-ton-dapp"
