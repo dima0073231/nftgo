@@ -118,7 +118,7 @@ function changeBet(field, fixedBtns, changeBtns, selectBtn) {
     } else if (currentValue <= balance.value) {
       bet = currentValue;
       balance.value -= bet;
-      addBetToHistory(bet);
+      // addBetToHistory(bet);
       balancePole.innerHTML = `
       ${balance.value.toFixed(2)}
       <img
