@@ -310,7 +310,7 @@
   width: 80px;
   height: 80px;
   position: relative;
-  right: 15px;
+  right: 5px;
 }
 .inventory-item__name {
   display: flex;
@@ -371,7 +371,7 @@
   color: #fff;
 }
 .inventory-item__wrapper {
-  width: 49px;
+  width: 70px;
   height: 24px;
   gap: 5px;
   font-family: "Montserrat", sans-serif;
@@ -385,7 +385,6 @@
 .inventory-item__price {
   border-radius: 20px;
   background: linear-gradient(180deg, #383838 0%, #585858 100%);
-  width: 49px;
   height: 24px;
   display: flex;
   align-items: center;
