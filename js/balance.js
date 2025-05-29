@@ -1,3 +1,5 @@
+import { getIsGameActive } from "./frog-game.js";
+
 const fixedBetBtns = document.querySelectorAll(".select-bet-change__btn");
 const changeBetBtns = document.querySelectorAll(".select-bet-count__btn");
 const fieldBet = document.querySelectorAll(".select-bet-count__number");
@@ -8,14 +10,8 @@ const giftBetBtns = document.querySelectorAll(
   ".inventory-down-main-item__cashout"
 );
 import { telegramId } from "./profile.js";
+import { addBetToHistory, currentCoefficient } from "./frog-game.js";
 import { gifts } from "./buy-gift.js";
-import {
-  getIsGameActive,
-  startGame,
-  currentBetType,
-  currentGiftBet,
-  cashoutGiftBet,
-} from "./frog-game.js";
 
 const getUserName = async function (userId) {
   try {
@@ -23,9 +19,7 @@ const getUserName = async function (userId) {
     if (!response.ok) throw new Error("Ошибка сети");
 
     const users = await response.json();
-    const user = users.find(
-      (user) => String(user.telegramId) === String(userId)
-    );
+    const user = users.find((user) => String(user.telegramId) === String(tgId));
 
     if (!user) {
       console.error("Користувача не знайдено");
@@ -121,7 +115,7 @@ function changeBet(field, fixedBtns, changeBtns, selectBtn) {
     } else if (currentValue <= balance.value) {
       bet = currentValue;
       balance.value -= bet;
-      // addBetToHistory(bet);
+      addBetToHistory(bet);
       balancePole.innerHTML = `
       ${balance.value.toFixed(2)}
       <img
@@ -180,47 +174,7 @@ fieldBet.forEach((field, index) => {
   }
   fieldValues.push(field);
 });
-async function removeGiftFromInventory(userId, itemId, count = 1) {
-  try {
-    const response = await fetch(
-      `https://nftbot-4yi9.onrender.com/api/users/${userId}/inventory/remove`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ itemId, countToRemove: count }),
-      }
-    );
 
-    if (!response.ok) throw new Error("Помилка при видаленні подарунка");
-    return await response.json();
-  } catch (err) {
-    console.error("removeGiftFromInventory error:", err);
-    return null;
-  }
-}
-
-async function addGiftToInventory(userId, itemId, count = 1) {
-  try {
-    const response = await fetch(
-      `https://nftbot-4yi9.onrender.com/api/users/${userId}/inventory`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          itemId,
-          count,
-          price: gifts.find((g) => g.name === itemId)?.price || 0,
-        }),
-      }
-    );
-
-    if (!response.ok) throw new Error("Помилка при додаванні подарунка");
-    return await response.json();
-  } catch (err) {
-    console.error("addGiftToInventory error:", err);
-    return null;
-  }
-}
 async function renderMainInventory(userId) {
   // const inventorySection = document.querySelector(".user-page-inventory");
   // if (!inventorySection) return;
@@ -253,126 +207,30 @@ async function renderMainInventory(userId) {
       itemElement.classList.add("swiper-slide");
 
       itemElement.innerHTML = `
-  <div class="current">
-    <span class="inventory-skins-items-card__current">${gift.price}</span>
-    <img src="web/images/inventory/ton.svg" alt="ton" />
-  </div>
-  <img
-    src="web/images/${gift.image}"
-    alt="bottle"
-    class="inventory-skins-items-card__img"
-  />
-  <button type="button" class="inventory-item__cashout inventory-down-main-item__cashout" 
-    data-item-id="${gift.name}" data-item-price="${gift.price}">
-    <img src="web/images/inventory/download.svg" alt="download">
-  </button>
-  <h3 class="inventory-skins-items-card__title">${gift.name} x${item.count}</h3>
-`;
+            <div class="current">
+              <span class="inventory-skins-items-card__current">${gift.price}</span>
+              <img src="web/images/inventory/ton.svg" alt="ton" />
+            </div>
+            <img
+              src="web/images/${gift.image}"
+              alt="bottle"
+              class="inventory-skins-items-card__img"
+            />
+            <button type="button" class="inventory-item__cashout inventory-down-main-item__cashout">
+              <img src="web/images/inventory/download.svg" alt="download" id="giftImage">
+            </button>
+            <h3 class="inventory-skins-items-card__title">${gift.name} x${item.count}</h3>
+      `;
       itemsContainer.appendChild(itemElement);
     });
   } catch (err) {
     console.error("Ошибка при загрузке инвентаря:", err);
   }
 }
-function setupGiftBetHandlers() {
-  document.addEventListener("click", async (e) => {
-    const cashoutBtn = e.target.closest(".inventory-down-main-item__cashout");
-    if (!cashoutBtn) return;
-
-    console.log("Клік на кнопку ставки подарунком виявлено");
-
-    if (getIsGameActive()) {
-      alert("Зачекайте завершення поточної гри");
-      return;
-    }
-
-    const card = cashoutBtn.closest(".inventory-skins-items-card");
-    if (!card) {
-      console.error("Не знайдено картку подарунка");
-      return;
-    }
-
-    const titleElement = card.querySelector(".inventory-skins-items-card__title");
-    if (!titleElement) {
-      console.error("Не знайдено заголовок подарунка");
-      return;
-    }
-
-    const titleText = titleElement.textContent.trim();
-    const [itemName, itemCountStr] = titleText.split(" x");
-    const itemCount = parseInt(itemCountStr) || 1;
-
-    console.log(`Знайдено подарунок: ${itemName}, кількість: ${itemCount}`);
-
-    const gift = gifts.find((g) => g.name === itemName);
-    if (!gift) {
-      console.error("Подарунок не знайдено:", itemName);
-      alert("Помилка: подарунок не знайдено");
-      return;
-    }
-
-    if (itemCount < 1) {
-      alert("Недостатньо подарунків для ставки");
-      return;
-    }
-
-    const confirmBet = confirm(
-      `Ви дійсно хочете зробити ставку подарунком "${itemName}"?`
-    );
-    if (!confirmBet) return;
-
-    try {
-      console.log(`Спроба видалити подарунок ${itemName} з інвентаря`);
-      const removed = await removeGiftFromInventory(telegramId, itemName, 1);
-
-      if (!removed) {
-        throw new Error("Не вдалося видалити подарунок");
-      }
-
-      // Оновлюємо інвентар перед початком гри
-      await renderMainInventory(telegramId);
-
-      // Встановлюємо ставку подарунком
-      currentBetType = "gift";
-      currentGiftBet = {
-        itemId: itemName,
-        count: 1,
-        price: gift.price,
-      };
-
-      // Запускаємо гру
-      startGame();
-
-      alert(`Ставка подарунком "${itemName}" прийнята! Гра почалась...`);
-    } catch (err) {
-      console.error("Помилка при ставці подарунком:", err);
-      alert(`Сталася помилка при обробці ставки: ${err.message}`);
-
-      // Спроба повернути подарунок, якщо щось пішло не так
-      try {
-        await addGiftToInventory(telegramId, itemName, 1);
-        await renderMainInventory(telegramId);
-      } catch (restoreErr) {
-        console.error("Помилка при відновленні подарунка:", restoreErr);
-      }
-
-      currentGiftBet = null;
-      currentBetType = "money";
-    }
-  });
-}
-setupGiftBetHandlers();
-if (telegramId) {
-  renderMainInventory(telegramId);
-}
-export {
-  changeBet,
-  fieldValues,
-  balance,
-  bet,
-  renderMainInventory,
-  addGiftToInventory,
-};
+giftBetBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {});
+});
+export { changeBet, fieldValues, balance, bet, renderMainInventory };
 
 // Инициализация слайдера Swiper
 new Swiper(".bet-count__swiper", {

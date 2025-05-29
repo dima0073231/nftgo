@@ -8,11 +8,8 @@ const selectBetBtns = document.querySelectorAll(".select-bet__btn");
 const stopBtns = document.querySelectorAll(".stop-btn");
 const balancePole = document.querySelector(".main-balance");
 const fieldBet = document.querySelectorAll(".select-bet-count__number");
-import { balance, addGiftToInventory, renderMainInventory } from "./balance.js";
+import { balance } from "./balance.js";
 import { telegramId } from "./profile.js";
-import { gifts } from "./buy-gift.js";
-let currentBetType = "money"; // 'money' або 'gift'
-let currentGiftBet = null; // { itemId: string, count: number, price: number }
 
 const setBalanceToBd = async function (tgId) {
   try {
@@ -91,10 +88,7 @@ function setGameActive(active) {
   isGameActive = active;
   toggleButtons();
 }
-export function setGiftBet(gift) {
-  currentBetType = "gift";
-  currentGiftBet = gift;
-}
+
 export function getIsGameActive() {
   return isGameActive;
 }
@@ -213,46 +207,31 @@ function stopGame() {
   const gameCrashEvent = new Event("gameCrash");
   document.dispatchEvent(gameCrashEvent);
 
+  // Определяем результат игры (выигрыш или проигрыш)
   let isWin = false;
   let totalBet = 0;
-
-  // Обробка грошових ставок
   fieldBet.forEach((field) => {
     const bet = parseFloat(field.dataset.bet || "0");
+
     if (bet > 0) {
       totalBet += bet;
       isWin = false;
+
+      // Обнуляємо програну ставку
       field.textContent = "0";
       field.dataset.bet = "0";
     }
   });
 
-  // Обробка ставки подарунком
-  if (currentBetType === "gift" && currentGiftBet) {
-    // Не списуємо гроші, оскільки це ставка подарунком
-    window.dispatchEvent(
-      new CustomEvent("betResult", {
-        detail: {
-          isWin: isWin,
-          coefficient: currentCoefficient,
-          totalBet: 0, // Для ставки подарунком totalBet = 0
-          betType: currentBetType,
-        },
-      })
-    );
-  } else {
-    // Обробка звичайної грошової ставки
-    window.dispatchEvent(
-      new CustomEvent("betResult", {
-        detail: {
-          isWin: isWin,
-          coefficient: currentCoefficient,
-          totalBet: totalBet?.toFixed(2) || "0",
-          betType: currentBetType,
-        },
-      })
-    );
-  }
+  window.dispatchEvent(
+    new CustomEvent("betResult", {
+      detail: {
+        isWin: isWin,
+        coefficient: currentCoefficient,
+        totalBet: totalBet.toFixed(2),
+      },
+    })
+  );
 
   if (telegramId) {
     setBalanceToBd(telegramId);
@@ -265,7 +244,6 @@ function stopGame() {
     if (frogGif) frogGif.style.opacity = "0";
   }, 2000);
 }
-
 function addToHistory(coef, isCrash) {
   const div = document.createElement("div");
   div.classList.add("main-coefficients__coefficient");
@@ -303,9 +281,6 @@ function updateBalanceDisplay() {
 // Обработчики stopBtns
 stopBtns.forEach((stopBtn, index) => {
   stopBtn.addEventListener("click", () => {
-    if (currentBetType === "gift" && currentGiftBet) {
-      cashoutGiftBet();
-    }
     const field = fieldBet[index];
     if (!field) return;
 
@@ -337,49 +312,6 @@ setInterval(() => {
     }
   });
 }, 500);
-async function cashoutGiftBet() {
-  if (currentBetType !== 'gift' || !currentGiftBet || !isGameActive) return;
-
-  try {
-    const winAmount = currentGiftBet.price * currentCoefficient;
-    balance.value += winAmount;
-    updateBalanceDisplay();
-
-    window.dispatchEvent(new CustomEvent('giftCashoutSuccess', {
-      detail: {
-        itemId: currentGiftBet.itemId,
-        count: currentGiftBet.count,
-        winAmount: winAmount,
-        coefficient: currentCoefficient,
-        originalPrice: currentGiftBet.price
-      }
-    }));
-
-    await setBalanceToBd(telegramId);
-    
-    try {
-      await addGiftToInventory(telegramId, currentGiftBet.itemId, currentGiftBet.count);
-      await renderMainInventory(telegramId);
-    } catch (restoreErr) {
-      console.error('Помилка при поверненні подарунка:', restoreErr);
-    }
-    
-  } catch (err) {
-    console.error('Помилка при кешауті подарунка:', err);
-    
-    try {
-      await addGiftToInventory(telegramId, currentGiftBet.itemId, currentGiftBet.count);
-      await renderMainInventory(telegramId);
-    } catch (restoreErr) {
-      console.error('Помилка відновлення подарунка:', restoreErr);
-    }
-    
-  } finally {
-    currentGiftBet = null;
-    currentBetType = 'money';
-  }
-}
-
 import { getUserName } from "./balance.js";
 
 // async function uploadBetToServer({
@@ -408,19 +340,7 @@ import { getUserName } from "./balance.js";
 //   }
 // }
 
-document.addEventListener("giftCashout", (e) => {
-  const { itemId, count, winAmount, coefficient } = e.detail;
-
-  addGiftToInventory(telegramId, itemId, count).then(() =>
-    renderMainInventory(telegramId)
-  );
-
-  alert(
-    `Ви виграли ${winAmount.toFixed(
-      2
-    )} TON з коефіцієнтом ${coefficient.toFixed(2)}!`
-  );
-});
+// Add bet to history (and optionally to localStorage for faster UI)
 const addBetToHistory = async function (
   betAmount,
   coefficient,
@@ -506,12 +426,6 @@ function addBetCards() {
   }
 }
 addBetCards();
-export {
-  isGameActive,
-  startGame,
-  stopGame,
-  currentCoefficient,
-  currentBetType,
-  currentGiftBet,
-  cashoutGiftBet,
-};
+export { addBetToHistory };
+
+export { isGameActive, startGame, stopGame, currentCoefficient };
