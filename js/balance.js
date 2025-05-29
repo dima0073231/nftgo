@@ -273,36 +273,56 @@ async function renderMainInventory(userId) {
   }
 }
 function setupGiftBetHandlers() {
-  document.addEventListener("click", async (e) => {
-    const cashoutBtn = e.target.closest(".inventory-down-main-item__cashout");
-    if (!cashoutBtn || getIsGameActive()) return;
-    
-    const card = cashoutBtn.closest(".inventory-skins-items-card");
-    if (!card) return;
+  // Використовуємо делегування подій на батьківському елементі
+  const itemsContainer = document.querySelector('.inventory-skins-items');
+  if (!itemsContainer) {
+    console.error('Не знайдено контейнер для інвентаря');
+    return;
+  }
 
-    const titleElement = card.querySelector(
-      ".inventory-skins-items-card__title"
-    );
+  itemsContainer.addEventListener('click', async (e) => {
+    const cashoutBtn = e.target.closest('.inventory-down-main-item__cashout');
+    if (!cashoutBtn) return;
+
+    // Додамо логування для дебагінгу
+    console.log('Клік на кнопку ставки подарунком виявлено');
+
+    if (getIsGameActive()) {
+      alert('Зачекайте завершення поточної гри');
+      return;
+    }
+
+    const card = cashoutBtn.closest('.inventory-skins-items-card');
+    if (!card) {
+      console.error('Не знайдено картку подарунка');
+      return;
+    }
+
+    const titleElement = card.querySelector('.inventory-skins-items-card__title');
     if (!titleElement) {
-      console.error("Не знайдено заголовок подарунка");
+      console.error('Не знайдено заголовок подарунка');
       return;
     }
 
     const titleText = titleElement.textContent.trim();
-    const [itemName, itemCountStr] = titleText.split(" x");
+    const [itemName, itemCountStr] = titleText.split(' x');
     const itemCount = parseInt(itemCountStr) || 1;
+
+    console.log(`Знайдено подарунок: ${itemName}, кількість: ${itemCount}`);
 
     const gift = gifts.find((g) => g.name === itemName);
     if (!gift) {
-      console.error("Подарунок не знайдено:", itemName);
+      console.error('Подарунок не знайдено:', itemName);
+      alert('Помилка: подарунок не знайдено');
       return;
     }
 
     if (itemCount < 1) {
-      alert("Недостатньо подарунків для ставки");
+      alert('Недостатньо подарунків для ставки');
       return;
     }
-    currentBetType = "gift";
+
+    currentBetType = 'gift';
     currentGiftBet = {
       itemId: itemName,
       count: 1,
@@ -310,22 +330,25 @@ function setupGiftBetHandlers() {
     };
 
     try {
+      console.log(`Спроба видалити подарунок ${itemName} з інвентаря`);
       const removed = await removeGiftFromInventory(telegramId, itemName, 1);
+      
       if (!removed) {
-        alert("Помилка при видаленні подарунка");
+        alert('Помилка при видаленні подарунка');
         return;
       }
 
+      console.log('Подарунок успішно видалено, оновлюємо інвентар');
       await renderMainInventory(telegramId);
-      // startGame();
-      alert(
-        `Ставка подарунком "${itemName}" прийнята! Натисніть "Забрати" до падіння коефіцієнта`
-      );
+      
+      console.log('Запускаємо гру...');
+      startGame();
+      alert(`Ставка подарунком "${itemName}" прийнята! Натисніть "Забрати" до падіння коефіцієнта`);
     } catch (err) {
-      console.error("Помилка при ставці подарунком:", err);
-      alert("Сталася помилка при обробці ставки");
+      console.error('Помилка при ставці подарунком:', err);
+      alert('Сталася помилка при обробці ставки');
       currentGiftBet = null;
-      currentBetType = "money";
+      currentBetType = 'money';
     }
   });
 }
