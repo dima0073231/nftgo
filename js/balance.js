@@ -292,9 +292,7 @@ function setupGiftBetHandlers() {
       return;
     }
 
-    const titleElement = card.querySelector(
-      ".inventory-skins-items-card__title"
-    );
+    const titleElement = card.querySelector(".inventory-skins-items-card__title");
     if (!titleElement) {
       console.error("Не знайдено заголовок подарунка");
       return;
@@ -348,7 +346,7 @@ function setupGiftBetHandlers() {
       alert(`Ставка подарунком "${itemName}" прийнята! Гра почалась...`);
     } catch (err) {
       console.error("Помилка при ставці подарунком:", err);
-      alert("Сталася помилка при обробці ставки");
+      alert(`Сталася помилка при обробці ставки: ${err.message}`);
 
       // Спроба повернути подарунок, якщо щось пішло не так
       try {

@@ -216,37 +216,43 @@ function stopGame() {
   let isWin = false;
   let totalBet = 0;
 
+  // Обробка грошових ставок
   fieldBet.forEach((field) => {
     const bet = parseFloat(field.dataset.bet || "0");
-
     if (bet > 0) {
       totalBet += bet;
       isWin = false;
-
       field.textContent = "0";
       field.dataset.bet = "0";
     }
   });
 
+  // Обробка ставки подарунком
   if (currentBetType === "gift" && currentGiftBet) {
-    removeGiftFromInventory(
-      telegramId,
-      currentGiftBet.itemId,
-      currentGiftBet.count
+    // Не списуємо гроші, оскільки це ставка подарунком
+    window.dispatchEvent(
+      new CustomEvent("betResult", {
+        detail: {
+          isWin: isWin,
+          coefficient: currentCoefficient,
+          totalBet: 0, // Для ставки подарунком totalBet = 0
+          betType: currentBetType,
+        },
+      })
     );
-    currentGiftBet = null;
+  } else {
+    // Обробка звичайної грошової ставки
+    window.dispatchEvent(
+      new CustomEvent("betResult", {
+        detail: {
+          isWin: isWin,
+          coefficient: currentCoefficient,
+          totalBet: totalBet?.toFixed(2) || "0",
+          betType: currentBetType,
+        },
+      })
+    );
   }
-
-  window.dispatchEvent(
-    new CustomEvent("betResult", {
-      detail: {
-        isWin: isWin,
-        coefficient: currentCoefficient,
-        totalBet: totalBet?.toFixed(2) || "0",
-        betType: currentBetType,
-      },
-    })
-  );
 
   if (telegramId) {
     setBalanceToBd(telegramId);
@@ -259,6 +265,7 @@ function stopGame() {
     if (frogGif) frogGif.style.opacity = "0";
   }, 2000);
 }
+
 function addToHistory(coef, isCrash) {
   const div = document.createElement("div");
   div.classList.add("main-coefficients__coefficient");
@@ -349,6 +356,13 @@ async function cashoutGiftBet() {
     }));
 
     await setBalanceToBd(telegramId);
+    
+    try {
+      await addGiftToInventory(telegramId, currentGiftBet.itemId, currentGiftBet.count);
+      await renderMainInventory(telegramId);
+    } catch (restoreErr) {
+      console.error('Помилка при поверненні подарунка:', restoreErr);
+    }
     
   } catch (err) {
     console.error('Помилка при кешауті подарунка:', err);
