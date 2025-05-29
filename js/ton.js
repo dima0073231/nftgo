@@ -195,20 +195,20 @@ function getUserTelegramId() {
   return localStorage.getItem("telegramId"); // Замени на свою реалізацію, якщо треба
 }
 
-async function getBalance(address) {
-  try {
-    const response = await fetch(`https://toncenter.com/api/v2/getAddressInformation?address=${address}`);
-    const data = await response.json();
-    if (data.ok && data.result && data.result.balance !== undefined) {
-      return data.result.balance;
-    } else {
-      throw new Error("Ошибка получения баланса");
-    }
-  } catch (error) {
-    console.error("Ошибка запроса баланса:", error);
-    throw error;
-  }
-}
+// async function getBalance(address) {
+//   try {
+//     const response = await fetch(`https://toncenter.com/api/v2/getAddressInformation?address=${address}`);
+//     const data = await response.json();
+//     if (data.ok && data.result && data.result.balance !== undefined) {
+//       return data.result.balance;
+//     } else {
+//       throw new Error("Ошибка получения баланса");
+//     }
+//   } catch (error) {
+//     console.error("Ошибка запроса баланса:", error);
+//     throw error;
+//   }
+// }
 
 async function setBalanceToBd(tgId, newBalance) {
   try {
