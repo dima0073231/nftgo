@@ -17,7 +17,6 @@ let maxPrice = parseInt(
 );
 import { telegramId } from "./profile.js";
 import { changeBalance } from "./addUserBalance.js";
-import { renderMainInventory } from "./balance.js";
 let selectedItem = null;
 
 const gifts = [
@@ -289,7 +288,6 @@ const addToInventory = async function (userId, itemId, count, price) {
     await changeBalance(telegramId);
     modalOverlay.classList.add("is-hidden");
     renderInventory(userId);
-    renderMainInventory(userId);
   } catch (err) {
     console.error("Ошибка:", err.message);
     alert("Ошибка при покупке: " + err.message);
