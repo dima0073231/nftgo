@@ -8,8 +8,11 @@ const selectBetBtns = document.querySelectorAll(".select-bet__btn");
 const stopBtns = document.querySelectorAll(".stop-btn");
 const balancePole = document.querySelector(".main-balance");
 const fieldBet = document.querySelectorAll(".select-bet-count__number");
-import { balance } from "./balance.js";
+import { balance, renderMainInventory } from "./balance.js";
 import { telegramId } from "./profile.js";
+const giftBetBtns = document.querySelectorAll(
+  ".inventory-down-main-item__cashout"
+);
 
 const setBalanceToBd = async function (tgId) {
   try {
@@ -82,7 +85,46 @@ function toggleButtons() {
     }
   });
 }
+async function handleGiftBet(giftId) {
+  if (getIsGameActive()) {
+    alert("Зачекайте, поки завершиться поточна гра");
+    return false;
+  }
 
+  const gift = gifts.find((g) => g.name === giftId);
+  if (!gift) {
+    alert("Подарунок не знайдено");
+    return false;
+  }
+
+  try {
+    const response = await fetch(
+      `https://nftbot-4yi9.onrender.com/api/users/${telegramId}/inventory/remove`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemId: giftId, countToRemove: 1 }),
+      }
+    );
+
+    if (!response.ok) throw new Error("Не вдалося зробити ставку подарунком");
+
+    localStorage.setItem(
+      "activeGiftBet",
+      JSON.stringify({
+        giftId,
+        price: gift.price,
+      })
+    );
+
+    window.dispatchEvent(new CustomEvent("giftBetPlaced"));
+    return true;
+  } catch (err) {
+    console.error("Помилка при ставці подарунком:", err);
+    alert("Помилка при ставці подарунком");
+    return false;
+  }
+}
 // Запускаем toggleButtons при смене состояния игры
 function setGameActive(active) {
   isGameActive = active;
@@ -130,6 +172,9 @@ function getSpeedByCoefficient(coef) {
 function startGame() {
   if (gameInterval) clearInterval(gameInterval);
 
+  if (localStorage.getItem("activeGiftBet")) {
+    return;
+  }
   coefficientDisplay.classList.remove("crash-glow");
   coefficientDisplay.style.color = "#ffffff";
   coefficientDisplay.style.opacity = "1";
@@ -194,6 +239,9 @@ function stopGame() {
   setGameActive(false);
   updateBalanceDisplay();
   clearInterval(gameInterval);
+
+  const giftBetEvent = new CustomEvent("checkGiftBet");
+  document.dispatchEvent(giftBetEvent);
 
   coefficientDisplay.classList.add("crash-glow");
   coefficientDisplay.style.color = "#ff0000";
@@ -278,7 +326,93 @@ function updateBalanceDisplay() {
     )} <img src="web/images/main/ton-icon.svg" alt="Token" class="main-balance__token" />`;
   }
 }
-// Обработчики stopBtns
+if (giftBetBtns.length > 0) {
+  giftBetBtns.forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const giftItem = e.target.closest(".inventory-skins-items-card");
+      if (!giftItem) return;
+
+      const giftTitle = giftItem.querySelector(
+        ".inventory-skins-items-card__title"
+      );
+      if (!giftTitle) return;
+
+      const giftId = giftTitle.textContent.split(" x")[0].trim();
+      const success = await handleGiftBet(giftId);
+
+      if (success) {
+        // Оновлюємо інвентар після успішної ставки
+        renderMainInventory(telegramId);
+      }
+    });
+  });
+}
+document.addEventListener("checkGiftBet", async () => {
+  const activeGiftBet = localStorage.getItem("activeGiftBet");
+  if (!activeGiftBet) return;
+
+  const { giftId, price } = JSON.parse(activeGiftBet);
+  const gift = gifts.find((g) => g.name === giftId);
+
+  if (!gift) {
+    console.error("Подарунок не знайдено");
+    return;
+  }
+
+  const winAmount = gift.price * currentCoefficient - gift.price;
+
+  try {
+    const response = await fetch(
+      `https://nftbot-4yi9.onrender.com/api/users/${telegramId}/balance`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ balance: balance.value + winAmount }),
+      }
+    );
+
+    if (!response.ok) throw new Error("Помилка при оновленні балансу");
+
+    balance.value += winAmount;
+    updateBalanceDisplay();
+    localStorage.removeItem("activeGiftBet");
+
+    addToHistory(currentCoefficient, false);
+    addBetToHistory(gift.price, currentCoefficient, true, telegramId);
+  } catch (err) {
+    console.error("Помилка при обробці виграшу подарунком:", err);
+    await fetch(
+      `https://nftbot-4yi9.onrender.com/api/users/${telegramId}/inventory`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemId: giftId, count: 1, price: 0 }),
+      }
+    );
+    renderMainInventory(telegramId);
+  }
+});
+
+document.addEventListener("gameCrash", () => {
+  const activeGiftBet = localStorage.getItem("activeGiftBet");
+  if (activeGiftBet) {
+    const { giftId } = JSON.parse(activeGiftBet);
+
+    // Повертаємо подарунок у разі краху
+    fetch(
+      `https://nftbot-4yi9.onrender.com/api/users/${telegramId}/inventory`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemId: giftId, count: 1, price: 0 }),
+      }
+    ).then(() => {
+      localStorage.removeItem("activeGiftBet");
+      renderMainInventory(telegramId);
+    });
+  }
+});
+
 stopBtns.forEach((stopBtn, index) => {
   stopBtn.addEventListener("click", () => {
     const field = fieldBet[index];

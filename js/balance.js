@@ -76,13 +76,18 @@ getBalance(telegramId).then((bal) => {
 let bet;
 
 function updateButtonsState() {
-  const disabled = getIsGameActive();
+  const gameActive = getIsGameActive();
+  const hasGiftBet = !!localStorage.getItem('activeGiftBet');
 
-  fixedBetBtns.forEach((btn) => (btn.disabled = disabled));
-  changeBetBtns.forEach((btn) => (btn.disabled = disabled));
-  selectBetBtns.forEach((btn) => (btn.disabled = disabled));
+  fixedBetBtns.forEach(btn => btn.disabled = gameActive || hasGiftBet);
+  changeBetBtns.forEach(btn => btn.disabled = gameActive || hasGiftBet);
+  selectBetBtns.forEach(btn => btn.disabled = gameActive || hasGiftBet);
+  
+  // Блокуємо кнопки подарунків під час звичайної ставки
+  giftBetBtns.forEach(btn => {
+    btn.disabled = gameActive || fieldValues.some(f => parseFloat(f.dataset.bet || '0') > 0);
+  });
 }
-
 setInterval(updateButtonsState, 100);
 
 stopBtns.forEach((btn) => {
