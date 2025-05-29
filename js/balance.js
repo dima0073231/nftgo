@@ -274,7 +274,7 @@ async function renderMainInventory(userId) {
 }
 function setupGiftBetHandlers() {
   document.addEventListener("click", async (e) => {
-    const cashoutBtn = e.target.closest(".inventory-item__cashout");
+    const cashoutBtn = e.target.closest(".inventory-down-main-item__cashout");
     if (!cashoutBtn || getIsGameActive()) return;
 
     const card = cashoutBtn.closest(".inventory-skins-items-card");
@@ -325,11 +325,15 @@ function setupGiftBetHandlers() {
     } catch (err) {
       console.error("Помилка при ставці подарунком:", err);
       alert("Сталася помилка при обробці ставки");
+      currentGiftBet = null;
+      currentBetType = "money";
     }
   });
 }
-
-renderMainInventory(telegramId).then(setupGiftBetHandlers);
+setupGiftBetHandlers();
+if (telegramId) {
+  renderMainInventory(telegramId);
+}
 export {
   changeBet,
   fieldValues,
