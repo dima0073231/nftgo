@@ -327,26 +327,26 @@ setInterval(() => {
   });
 }, 500);
 function cashoutGiftBet() {
-  if (currentBetType !== "gift" || !currentGiftBet || !isGameActive) return;
+  if (currentBetType !== 'gift' || !currentGiftBet || !isGameActive) return;
 
-  const winAmount =
-    currentGiftBet.price * currentCoefficient - currentGiftBet.price;
+  const winAmount = currentGiftBet.price * currentCoefficient;
   balance.value += winAmount;
   updateBalanceDisplay();
 
-  window.dispatchEvent(
-    new CustomEvent("giftCashout", {
-      detail: {
-        itemId: currentGiftBet.itemId,
-        count: currentGiftBet.count,
-        winAmount: winAmount,
-        coefficient: currentCoefficient,
-      },
-    })
-  );
+  window.dispatchEvent(new CustomEvent('giftCashout', {
+    detail: {
+      itemId: currentGiftBet.itemId,
+      count: currentGiftBet.count,
+      winAmount: winAmount,
+      coefficient: currentCoefficient,
+      originalPrice: currentGiftBet.price
+    }
+  }));
 
+  renderMainInventory(telegramId);
+  
   currentGiftBet = null;
-  currentBetType = "money";
+  currentBetType = 'money';
 }
 
 import { getUserName } from "./balance.js";
@@ -377,7 +377,19 @@ import { getUserName } from "./balance.js";
 //   }
 // }
 
-// Add bet to history (and optionally to localStorage for faster UI)
+document.addEventListener("giftCashout", (e) => {
+  const { itemId, count, winAmount, coefficient } = e.detail;
+
+  addGiftToInventory(telegramId, itemId, count).then(() =>
+    renderMainInventory(telegramId)
+  );
+
+  alert(
+    `Ви виграли ${winAmount.toFixed(
+      2
+    )} TON з коефіцієнтом ${coefficient.toFixed(2)}!`
+  );
+});
 const addBetToHistory = async function (
   betAmount,
   coefficient,

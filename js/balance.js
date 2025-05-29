@@ -23,7 +23,7 @@ const getUserName = async function (userId) {
     if (!response.ok) throw new Error("Ошибка сети");
 
     const users = await response.json();
-    const user = users.find((user) => String(user.telegramId) === String(tgId));
+    const user = users.find((user) => String(user.telegramId) === String(userId));
 
     if (!user) {
       console.error("Користувача не знайдено");
@@ -328,7 +328,7 @@ function setupGiftBetHandlers() {
     };
 
     try {
-      alert(`Спроба видалити подарунок ${itemName} з інвентаря`);
+      console.log(`Спроба видалити подарунок ${itemName} з інвентаря`);
       const removed = await removeGiftFromInventory(telegramId, itemName, 1);
       
       if (!removed) {
@@ -336,7 +336,7 @@ function setupGiftBetHandlers() {
         return;
       }
 
-      alert('Подарунок успішно видалено, оновлюємо інвентар');
+      console.log('Подарунок успішно видалено, оновлюємо інвентар');
       await renderMainInventory(telegramId);
       
       console.log('Запускаємо гру...');
