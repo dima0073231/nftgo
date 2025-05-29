@@ -23,7 +23,9 @@ const getUserName = async function (userId) {
     if (!response.ok) throw new Error("Ошибка сети");
 
     const users = await response.json();
-    const user = users.find((user) => String(user.telegramId) === String(userId));
+    const user = users.find(
+      (user) => String(user.telegramId) === String(userId)
+    );
 
     if (!user) {
       console.error("Користувача не знайдено");
@@ -273,78 +275,91 @@ async function renderMainInventory(userId) {
   }
 }
 function setupGiftBetHandlers() {
-  document.addEventListener('click', async (e) => {
-    const cashoutBtn = e.target.closest('.inventory-down-main-item__cashout');
+  document.addEventListener("click", async (e) => {
+    const cashoutBtn = e.target.closest(".inventory-down-main-item__cashout");
     if (!cashoutBtn) return;
 
-    console.log('Клік на кнопку ставки подарунком виявлено');
+    console.log("Клік на кнопку ставки подарунком виявлено");
 
     if (getIsGameActive()) {
-      alert('Зачекайте завершення поточної гри');
+      alert("Зачекайте завершення поточної гри");
       return;
     }
 
-    const card = cashoutBtn.closest('.inventory-skins-items-card');
+    const card = cashoutBtn.closest(".inventory-skins-items-card");
     if (!card) {
-      console.error('Не знайдено картку подарунка');
+      console.error("Не знайдено картку подарунка");
       return;
     }
 
-    const titleElement = card.querySelector('.inventory-skins-items-card__title');
+    const titleElement = card.querySelector(
+      ".inventory-skins-items-card__title"
+    );
     if (!titleElement) {
-      console.error('Не знайдено заголовок подарунка');
+      console.error("Не знайдено заголовок подарунка");
       return;
     }
 
     const titleText = titleElement.textContent.trim();
-    const [itemName, itemCountStr] = titleText.split(' x');
+    const [itemName, itemCountStr] = titleText.split(" x");
     const itemCount = parseInt(itemCountStr) || 1;
 
     console.log(`Знайдено подарунок: ${itemName}, кількість: ${itemCount}`);
 
     const gift = gifts.find((g) => g.name === itemName);
     if (!gift) {
-      console.error('Подарунок не знайдено:', itemName);
-      alert('Помилка: подарунок не знайдено');
+      console.error("Подарунок не знайдено:", itemName);
+      alert("Помилка: подарунок не знайдено");
       return;
     }
 
     if (itemCount < 1) {
-      alert('Недостатньо подарунків для ставки');
+      alert("Недостатньо подарунків для ставки");
       return;
     }
 
-    const confirmBet = confirm(`Ви дійсно хочете зробити ставку подарунком "${itemName}"?`);
+    const confirmBet = confirm(
+      `Ви дійсно хочете зробити ставку подарунком "${itemName}"?`
+    );
     if (!confirmBet) return;
 
     try {
       console.log(`Спроба видалити подарунок ${itemName} з інвентаря`);
       const removed = await removeGiftFromInventory(telegramId, itemName, 1);
-      
+
       if (!removed) {
-        alert('Помилка при видаленні подарунка');
-        return;
+        throw new Error("Не вдалося видалити подарунок");
       }
 
-      alert('Подарунок успішно видалено, оновлюємо інвентар');
+      // Оновлюємо інвентар перед початком гри
       await renderMainInventory(telegramId);
-      
+
       // Встановлюємо ставку подарунком
-      currentBetType = 'gift';
+      currentBetType = "gift";
       currentGiftBet = {
         itemId: itemName,
         count: 1,
         price: gift.price,
       };
 
-      alert(`Ставка подарунком "${itemName}" прийнята! Очікуйте початку гри...`);
-      
-      // Не запускаємо гру тут, гра запуститься автоматично після завершення анімації ракети
+      // Запускаємо гру
+      startGame();
+
+      alert(`Ставка подарунком "${itemName}" прийнята! Гра почалась...`);
     } catch (err) {
-      console.error('Помилка при ставці подарунком:', err);
-      alert('Сталася помилка при обробці ставки');
+      console.error("Помилка при ставці подарунком:", err);
+      alert("Сталася помилка при обробці ставки");
+
+      // Спроба повернути подарунок, якщо щось пішло не так
+      try {
+        await addGiftToInventory(telegramId, itemName, 1);
+        await renderMainInventory(telegramId);
+      } catch (restoreErr) {
+        console.error("Помилка при відновленні подарунка:", restoreErr);
+      }
+
       currentGiftBet = null;
-      currentBetType = 'money';
+      currentBetType = "money";
     }
   });
 }

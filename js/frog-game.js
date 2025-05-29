@@ -330,7 +330,7 @@ setInterval(() => {
     }
   });
 }, 500);
-function cashoutGiftBet() {
+async function cashoutGiftBet() {
   if (currentBetType !== 'gift' || !currentGiftBet || !isGameActive) return;
 
   try {
@@ -348,13 +348,18 @@ function cashoutGiftBet() {
       }
     }));
 
-    renderMainInventory(telegramId);
+    await setBalanceToBd(telegramId);
     
   } catch (err) {
     console.error('Помилка при кешауті подарунка:', err);
-    addGiftToInventory(telegramId, currentGiftBet.itemId, currentGiftBet.count)
-      .then(() => renderMainInventory(telegramId))
-      .catch(restoreErr => console.error('Помилка відновлення:', restoreErr));
+    
+    try {
+      await addGiftToInventory(telegramId, currentGiftBet.itemId, currentGiftBet.count);
+      await renderMainInventory(telegramId);
+    } catch (restoreErr) {
+      console.error('Помилка відновлення подарунка:', restoreErr);
+    }
+    
   } finally {
     currentGiftBet = null;
     currentBetType = 'money';
