@@ -304,12 +304,13 @@
   border-radius: 20px;
   position: relative; /* Для позиционирования внутренних элементов */
   overflow: hidden; /* Чтобы ничего не выходило за границы */
+  padding-top: 4px;
 }
 .inventory-item__img {
   width: 80px;
   height: 80px;
-  margin-top: 105px;
-  margin-left: -34px;
+  position: relative;
+  right: 15px;
 }
 .inventory-item__name {
   display: flex;
@@ -322,20 +323,7 @@
   line-height: 100%;
   color: #ffffff;
 }
-.inventory-item__wrapper {
-  background: linear-gradient(180deg, #383838 0%, #585858 100%);
-  width: 49px;
-  height: 24px;
-  margin-left: 8px;
-  border-radius: 20px;
-  gap: 5px;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 100%;
-  color: #ffffff;
-  padding-top: 3px;
-}
+
 .inventory-item__marketplace {
   display: flex;
   padding-left: 12px;
@@ -381,4 +369,28 @@
 .inventory-down-main-item__cashout {
   width: 65px;
   color: #fff;
+}
+.inventory-item__wrapper {
+  width: 49px;
+  height: 24px;
+  gap: 5px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 100%;
+  color: #ffffff;
+  padding-top: 3px;
+  margin: 0 auto;
+}
+.inventory-item__price {
+  border-radius: 20px;
+  background: linear-gradient(180deg, #383838 0%, #585858 100%);
+  width: 49px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  position: relative;
+  right: 8px;
 }
