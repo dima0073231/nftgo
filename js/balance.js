@@ -317,13 +317,6 @@ function setupGiftBetHandlers() {
     const confirmBet = confirm(`Ви дійсно хочете зробити ставку подарунком "${itemName}"?`);
     if (!confirmBet) return;
 
-    currentBetType = 'gift';
-    currentGiftBet = {
-      itemId: itemName,
-      count: 1,
-      price: gift.price,
-    };
-
     try {
       console.log(`Спроба видалити подарунок ${itemName} з інвентаря`);
       const removed = await removeGiftFromInventory(telegramId, itemName, 1);
@@ -336,9 +329,17 @@ function setupGiftBetHandlers() {
       console.log('Подарунок успішно видалено, оновлюємо інвентар');
       await renderMainInventory(telegramId);
       
-      console.log('Запускаємо гру...');
-      startGame();
-      alert(`Ставка подарунком "${itemName}" прийнята! Натисніть "Забрати" до падіння коефіцієнта`);
+      // Встановлюємо ставку подарунком
+      currentBetType = 'gift';
+      currentGiftBet = {
+        itemId: itemName,
+        count: 1,
+        price: gift.price,
+      };
+
+      alert(`Ставка подарунком "${itemName}" прийнята! Очікуйте початку гри...`);
+      
+      // Не запускаємо гру тут, гра запуститься автоматично після завершення анімації ракети
     } catch (err) {
       console.error('Помилка при ставці подарунком:', err);
       alert('Сталася помилка при обробці ставки');
