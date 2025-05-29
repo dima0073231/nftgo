@@ -276,8 +276,7 @@ function setupGiftBetHandlers() {
   document.addEventListener("click", async (e) => {
     const cashoutBtn = e.target.closest(".inventory-down-main-item__cashout");
     if (!cashoutBtn || getIsGameActive()) return;
-    alert('Was click')
-
+    
     const card = cashoutBtn.closest(".inventory-skins-items-card");
     if (!card) return;
 
@@ -303,7 +302,7 @@ function setupGiftBetHandlers() {
       alert("Недостатньо подарунків для ставки");
       return;
     }
-
+    alert(cashoutBtn, card, titleElement, titleText, itemCount)
     currentBetType = "gift";
     currentGiftBet = {
       itemId: itemName,
