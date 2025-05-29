@@ -302,8 +302,6 @@ function setupGiftBetHandlers() {
       alert("Недостатньо подарунків для ставки");
       return;
     }
-    alert(itemName)
-    alert(itemCount)
     currentBetType = "gift";
     currentGiftBet = {
       itemId: itemName,
@@ -319,7 +317,7 @@ function setupGiftBetHandlers() {
       }
 
       await renderMainInventory(telegramId);
-      startGame();
+      // startGame();
       alert(
         `Ставка подарунком "${itemName}" прийнята! Натисніть "Забрати" до падіння коефіцієнта`
       );
