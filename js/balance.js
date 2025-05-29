@@ -320,7 +320,7 @@ document.addEventListener("click", async (e) => {
     `Ставка подарунком "${itemName}" прийнята! Натисніть "Забрати" до падіння коефіцієнта`
   );
 });
-export { changeBet, fieldValues, balance, bet, renderMainInventory };
+export { changeBet, fieldValues, balance, bet, renderMainInventory, addGiftToInventory };
 
 // Инициализация слайдера Swiper
 new Swiper(".bet-count__swiper", {

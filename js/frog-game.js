@@ -8,7 +8,7 @@ const selectBetBtns = document.querySelectorAll(".select-bet__btn");
 const stopBtns = document.querySelectorAll(".stop-btn");
 const balancePole = document.querySelector(".main-balance");
 const fieldBet = document.querySelectorAll(".select-bet-count__number");
-import { balance } from "./balance.js";
+import { balance, addGiftToInventory } from "./balance.js";
 import { telegramId } from "./profile.js";
 let currentBetType = "money"; // 'money' або 'gift'
 let currentGiftBet = null; // { itemId: string, count: number, price: number }
