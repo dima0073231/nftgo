@@ -378,3 +378,7 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+.inventory-down-main-item__cashout {
+  width: 65px;
+  color: #fff;
+}
