@@ -282,98 +282,72 @@ async function renderMainInventory(userId) {
   }
 }
 async function handleGiftBetClick(e) {
-  const cashoutBtn = e.target.closest(".inventory-down-main-item__cashout");
+  const cashoutBtn = e.target.closest('.inventory-down-main-item__cashout');
   if (!cashoutBtn) return;
 
-  console.log("Клік на кнопку ставки подарунком виявлено");
-
   if (getIsGameActive()) {
-    alert("Зачекайте завершення поточної гри");
+    alert('Зачекайте завершення поточної гри');
     return;
   }
 
-  const card = cashoutBtn.closest(".inventory-skins-items-card");
-  if (!card) {
-    console.error("Не знайдено картку подарунка");
-    return;
-  }
+  const card = cashoutBtn.closest('.inventory-skins-items-card');
+  if (!card) return;
 
-  const titleElement = card.querySelector(".inventory-skins-items-card__title");
-  if (!titleElement) {
-    console.error("Не знайдено заголовок подарунка");
-    return;
-  }
+  const titleElement = card.querySelector('.inventory-skins-items-card__title');
+  if (!titleElement) return;
 
   const titleText = titleElement.textContent.trim();
-  const [itemName, itemCountStr] = titleText.split(" x");
+  const [itemName, itemCountStr] = titleText.split(' x');
   const itemCount = parseInt(itemCountStr) || 1;
-
-  console.log(`Знайдено подарунок: ${itemName}, кількість: ${itemCount}`);
 
   const gift = gifts.find((g) => g.name === itemName);
   if (!gift) {
-    console.error("Подарунок не знайдено:", itemName);
-    alert("Помилка: подарунок не знайдено");
+    alert('Помилка: подарунок не знайдено');
     return;
   }
 
   if (itemCount < 1) {
-    alert("Недостатньо подарунків для ставки");
+    alert('Недостатньо подарунків для ставки');
     return;
   }
 
-  const confirmBet = confirm(
-    `Ви дійсно хочете зробити ставку подарунком "${itemName}"?`
-  );
+  const confirmBet = confirm(`Ви дійсно хочете зробити ставку подарунком "${itemName}"?`);
   if (!confirmBet) return;
 
   try {
-    console.log(`Спроба видалити подарунок ${itemName} з інвентаря`);
+    // Забираємо подарунок з інвентаря
     const removed = await removeGiftFromInventory(telegramId, itemName, 1);
+    if (!removed) throw new Error('Не вдалося видалити подарунок');
 
-    if (!removed) {
-      alert("Помилка при видаленні подарунка");
-      return;
-    }
-
-    console.log("Подарунок успішно видалено, оновлюємо інвентар");
     await renderMainInventory(telegramId);
-
+    
     // Встановлюємо ставку подарунком
-    currentBetType = "gift";
-    currentGiftBet = {
+    setGiftBet({
       itemId: itemName,
       count: 1,
-      price: gift.price,
-    };
+      price: gift.price
+    });
 
-    alert(`Ставка подарунком "${itemName}" прийнята! Очікуйте початку гри...`);
+    alert(`Ставка подарунком "${itemName}" прийнята! Натисніть "Забрати" до падіння коефіцієнта, щоб отримати виграш та повернути подарунок.`);
 
-    // Додаємо подію для запуску гри
-    window.dispatchEvent(
-      new CustomEvent("giftBetPlaced", {
-        detail: {
-          itemName,
-          price: gift.price,
-        },
-      })
-    );
+    window.dispatchEvent(new CustomEvent('startGiftGame'));
+
   } catch (err) {
-    console.error("Помилка при ставці подарунком:", err);
-    alert("Сталася помилка при обробці ставки");
-
-    // Спробуємо повернути подарунок, якщо сталася помилка
+    console.error('Помилка при ставці подарунком:', err);
+    alert('Сталася помилка при обробці ставки');
+    
     try {
       await addGiftToInventory(telegramId, itemName, 1);
       await renderMainInventory(telegramId);
     } catch (restoreErr) {
-      console.error("Помилка при відновленні подарунка:", restoreErr);
+      console.error('Помилка повернення подарунка:', restoreErr);
     }
-
-    currentGiftBet = null;
-    currentBetType = "money";
   }
 }
+document.addEventListener('giftCashoutSuccess', (e) => {
+  const { itemId, winAmount, coefficient } = e.detail;
+  alert(`Ви виграли ${winAmount.toFixed(2)} TON з коефіцієнтом ${coefficient.toFixed(2)}! Подарунок ${itemId} повернуто до інвентаря.`);
+});
 function setupGiftBetHandlers() {
   document.removeEventListener("click", handleGiftBetClick);
   document.addEventListener("click", handleGiftBetClick);
