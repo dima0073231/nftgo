@@ -30,8 +30,7 @@
 
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding-bottom: 0;
-  height: 500px;
+  overflow-y: auto;
 }
 /* @media (min-width: 390px) {
   .modal-gift {
@@ -274,10 +273,6 @@
   background-image: linear-gradient(90deg, #fff 0%, #fff 100%);
 }
 
-.grid__wrapper {
-  display: flex;
-  flex-wrap: wrap;
-}
 .card-price-icon-gift {
   width: 50px;
   height: 50px;
@@ -286,24 +281,26 @@
   max-height: 120px;
   max-width: 128px;
 }
-.inventory-container{
+.inventory-container {
   width: 284px; /* 132px*2 + 10px*2 gap */
   height: 400px; /* Фиксированная высота скролла */
   overflow-y: auto; /* Вертикальный скролл */
   padding: 5px;
-
 }
 .inventory-wrap {
-   display: grid;
+  display: grid;
   grid-template-columns: repeat(3, 1fr); /* 2 колонки */
   gap: 10px; /* Отступ между элементами */
 }
 
 .inventory-item {
-
-   width: 132px;
+  width: 132px;
   height: 162px;
-  background: linear-gradient(213.72deg, rgba(97, 0, 255, 0.5) 20.44%, rgba(179, 132, 255, 0.5) 96.63%);
+  background: linear-gradient(
+    213.72deg,
+    rgba(97, 0, 255, 0.5) 20.44%,
+    rgba(179, 132, 255, 0.5) 96.63%
+  );
   border-radius: 20px;
   position: relative; /* Для позиционирования внутренних элементов */
   overflow: hidden; /* Чтобы ничего не выходило за границы */
@@ -340,10 +337,9 @@
   padding-top: 3px;
 }
 .inventory-item__marketplace {
- 
   display: flex;
   padding-left: 12px;
- padding-top: 5px;
+  padding-top: 5px;
   gap: 40px;
 }
 .inventory-item__sell {
@@ -352,21 +348,19 @@
   background-color: red;
   border-radius: 7px;
   padding: 3px 5px 5px 0px;
-  
 }
 .inventory-item__cashout {
   width: 35px;
   height: 35px;
   background-color: green;
   border-radius: 7px;
-   padding: 5px 5px 5px 5px;
-  
+  padding: 5px 5px 5px 5px;
 }
- 
 
 .grid {
-  min-height: 400px;
   height: auto;
+  min-height: 350px;
+  max-height: 400px;
   margin-top: 16px;
 }
 
@@ -375,8 +369,9 @@
   grid-gap: 3px;
   grid-template-columns: repeat(2, 1fr);
   height: auto;
-  overflow: hidden;
+  max-height: 400px;
 }
+
 @media (min-width: 420px) {
   .grid__wrapper {
     grid-gap: 5px;

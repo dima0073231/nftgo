@@ -146,30 +146,40 @@ const gifts = [
 ];
 
 let giftsSwiper = null;
-
 function initSwiper() {
   if (giftsSwiper) {
-    giftsSwiper.destroy(true, true); // Додайте true, true для повного очищення
+    giftsSwiper.destroy(true, true);
   }
 
   giftsSwiper = new Swiper(".grid", {
     direction: "vertical",
-    freeMode: false,
-    mousewheel: true,
+    freeMode: {
+      enabled: true,
+      sticky: true, // Додає "пружинний" ефект в кінці
+      momentumBounce: false // Вимкнення відскоку за межі
+    },
+    mousewheel: {
+      releaseOnEdges: true, // Вимкнення скролу за межі
+      forceToAxis: true
+    },
+    slidesPerView: "auto",
     spaceBetween: 10,
     scrollbar: {
       el: ".buy-gift__swiper-scrollbar",
       draggable: true,
+      snapOnRelease: true
     },
-    watchOverflow: true,
+    watchOverflow: false,
+    resistance: false, // Вимкнення ефекту опору
+    resistanceRatio: 0, // Повне вимкнення опору
     breakpoints: {
       0: {
-        slidesPerView: 2,
+        slidesPerColumn: 2
       },
       420: {
-        slidesPerView: 3,
-      },
-    },
+        slidesPerColumn: 3
+      }
+    }
   });
 }
 
