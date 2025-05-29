@@ -273,13 +273,7 @@ async function renderMainInventory(userId) {
   }
 }
 function setupGiftBetHandlers() {
-  const itemsContainer = document.querySelector('.inventory-skins-items');
-  if (!itemsContainer) {
-    console.error('Не знайдено контейнер для інвентаря');
-    return;
-  }
-
-  itemsContainer.addEventListener('click', async (e) => {
+  document.addEventListener('click', async (e) => {
     const cashoutBtn = e.target.closest('.inventory-down-main-item__cashout');
     if (!cashoutBtn) return;
 
@@ -291,14 +285,12 @@ function setupGiftBetHandlers() {
     }
 
     const card = cashoutBtn.closest('.inventory-skins-items-card');
-    alert(card)
     if (!card) {
       console.error('Не знайдено картку подарунка');
       return;
     }
 
     const titleElement = card.querySelector('.inventory-skins-items-card__title');
-    alert(titleElement)
     if (!titleElement) {
       console.error('Не знайдено заголовок подарунка');
       return;
@@ -321,6 +313,9 @@ function setupGiftBetHandlers() {
       alert('Недостатньо подарунків для ставки');
       return;
     }
+
+    const confirmBet = confirm(`Ви дійсно хочете зробити ставку подарунком "${itemName}"?`);
+    if (!confirmBet) return;
 
     currentBetType = 'gift';
     currentGiftBet = {

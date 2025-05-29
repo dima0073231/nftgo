@@ -10,6 +10,7 @@ const balancePole = document.querySelector(".main-balance");
 const fieldBet = document.querySelectorAll(".select-bet-count__number");
 import { balance, addGiftToInventory, renderMainInventory } from "./balance.js";
 import { telegramId } from "./profile.js";
+import { gifts } from "./buy-gift.js";
 let currentBetType = "money"; // 'money' або 'gift'
 let currentGiftBet = null; // { itemId: string, count: number, price: number }
 
