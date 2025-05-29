@@ -273,7 +273,6 @@ async function renderMainInventory(userId) {
   }
 }
 function setupGiftBetHandlers() {
-  // Використовуємо делегування подій на батьківському елементі
   const itemsContainer = document.querySelector('.inventory-skins-items');
   if (!itemsContainer) {
     console.error('Не знайдено контейнер для інвентаря');
@@ -284,7 +283,6 @@ function setupGiftBetHandlers() {
     const cashoutBtn = e.target.closest('.inventory-down-main-item__cashout');
     if (!cashoutBtn) return;
 
-    // Додамо логування для дебагінгу
     console.log('Клік на кнопку ставки подарунком виявлено');
 
     if (getIsGameActive()) {
@@ -330,7 +328,7 @@ function setupGiftBetHandlers() {
     };
 
     try {
-      console.log(`Спроба видалити подарунок ${itemName} з інвентаря`);
+      alert(`Спроба видалити подарунок ${itemName} з інвентаря`);
       const removed = await removeGiftFromInventory(telegramId, itemName, 1);
       
       if (!removed) {
@@ -338,7 +336,7 @@ function setupGiftBetHandlers() {
         return;
       }
 
-      console.log('Подарунок успішно видалено, оновлюємо інвентар');
+      alert('Подарунок успішно видалено, оновлюємо інвентар');
       await renderMainInventory(telegramId);
       
       console.log('Запускаємо гру...');
