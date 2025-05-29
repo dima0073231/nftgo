@@ -16,6 +16,7 @@ import {
   currentGiftBet,
   cashoutGiftBet,
 } from "./frog-game.js";
+
 const getUserName = async function (userId) {
   try {
     const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
@@ -271,56 +272,72 @@ async function renderMainInventory(userId) {
     console.error("Ошибка при загрузке инвентаря:", err);
   }
 }
-document.addEventListener("click", async (e) => {
-  const cashoutBtn = e.target.closest(".inventory-item__cashout");
-  if (!cashoutBtn || getIsGameActive()) return;
+function setupGiftBetHandlers() {
+  document.addEventListener("click", async (e) => {
+    const cashoutBtn = e.target.closest(".inventory-item__cashout");
+    if (!cashoutBtn || getIsGameActive()) return;
 
-  const card = cashoutBtn.closest(".inventory-skins-items-card");
-  if (!card) return;
+    const card = cashoutBtn.closest(".inventory-skins-items-card");
+    if (!card) return;
 
-  const titleElement = card.querySelector(".inventory-skins-items-card__title");
-  if (!titleElement) return;
+    const titleElement = card.querySelector(
+      ".inventory-skins-items-card__title"
+    );
+    if (!titleElement) {
+      console.error("Не знайдено заголовок подарунка");
+      return;
+    }
 
-  const titleText = titleElement.textContent.trim();
-  const [itemName, itemCountStr] = titleText.split(" x");
-  const itemCount = parseInt(itemCountStr) || 1;
+    const titleText = titleElement.textContent.trim();
+    const [itemName, itemCountStr] = titleText.split(" x");
+    const itemCount = parseInt(itemCountStr) || 1;
 
-  const gift = gifts.find((g) => g.name === itemName);
-  if (!gift) {
-    console.error("Подарунок не знайдено:", itemName);
-    return;
-  }
+    const gift = gifts.find((g) => g.name === itemName);
+    if (!gift) {
+      console.error("Подарунок не знайдено:", itemName);
+      return;
+    }
 
-  // Перевіряємо, чи є достатньо подарунків
-  if (itemCount < 1) {
-    alert("Недостатньо подарунків для ставки");
-    return;
-  }
+    if (itemCount < 1) {
+      alert("Недостатньо подарунків для ставки");
+      return;
+    }
 
-  // Встановлюємо тип ставки як подарунок
-  currentBetType = "gift";
-  currentGiftBet = {
-    itemId: itemName,
-    count: 1,
-    price: gift.price,
-  };
+    currentBetType = "gift";
+    currentGiftBet = {
+      itemId: itemName,
+      count: 1,
+      price: gift.price,
+    };
 
-  const removed = await removeGiftFromInventory(telegramId, itemName, 1);
-  if (!removed) {
-    alert("Помилка при видаленні подарунка");
-    return;
-  }
+    try {
+      const removed = await removeGiftFromInventory(telegramId, itemName, 1);
+      if (!removed) {
+        alert("Помилка при видаленні подарунка");
+        return;
+      }
 
-  // Оновлюємо інвентар
-  await renderMainInventory(telegramId);
+      await renderMainInventory(telegramId);
+      startGame();
+      alert(
+        `Ставка подарунком "${itemName}" прийнята! Натисніть "Забрати" до падіння коефіцієнта`
+      );
+    } catch (err) {
+      console.error("Помилка при ставці подарунком:", err);
+      alert("Сталася помилка при обробці ставки");
+    }
+  });
+}
 
-  startGame();
-
-  alert(
-    `Ставка подарунком "${itemName}" прийнята! Натисніть "Забрати" до падіння коефіцієнта`
-  );
-});
-export { changeBet, fieldValues, balance, bet, renderMainInventory, addGiftToInventory };
+renderMainInventory(telegramId).then(setupGiftBetHandlers);
+export {
+  changeBet,
+  fieldValues,
+  balance,
+  bet,
+  renderMainInventory,
+  addGiftToInventory,
+};
 
 // Инициализация слайдера Swiper
 new Swiper(".bet-count__swiper", {
