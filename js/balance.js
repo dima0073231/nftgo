@@ -326,7 +326,7 @@ function setupGiftBetHandlers() {
         return;
       }
 
-      console.log('Подарунок успішно видалено, оновлюємо інвентар');
+      alert('Подарунок успішно видалено, оновлюємо інвентар');
       await renderMainInventory(telegramId);
       
       // Встановлюємо ставку подарунком
@@ -336,6 +336,8 @@ function setupGiftBetHandlers() {
         count: 1,
         price: gift.price,
       };
+      alert(currentBetType)
+      alert(currentGiftBet)
 
       alert(`Ставка подарунком "${itemName}" прийнята! Очікуйте початку гри...`);
       
