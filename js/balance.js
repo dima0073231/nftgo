@@ -221,10 +221,10 @@ async function renderMainInventory(userId) {
               alt="bottle"
               class="inventory-skins-items-card__img"
             />
+            <h3 class="inventory-skins-items-card__title">${gift.name} x${item.count}</h3>
             <button type="button" class="inventory-item__cashout inventory-down-main-item__cashout">
               Ставить
             </button>
-            <h3 class="inventory-skins-items-card__title">${gift.name} x${item.count}</h3>
       `;
       itemsContainer.appendChild(itemElement);
     });
