@@ -9,6 +9,7 @@ if (sellBtns.length > 0) {
   sellBtns.forEach((btn) => {
     btn.addEventListener("click", async function () {
       await handleSellItem(this, telegramId);
+      alert('Був клік')
     });
   });
 }
