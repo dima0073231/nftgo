@@ -302,7 +302,8 @@ function setupGiftBetHandlers() {
       alert("Недостатньо подарунків для ставки");
       return;
     }
-    alert(cashoutBtn, card, titleElement, titleText, itemCount)
+    alert(itemName)
+    alert(itemCount)
     currentBetType = "gift";
     currentGiftBet = {
       itemId: itemName,
