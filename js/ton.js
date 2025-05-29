@@ -8,16 +8,18 @@ const btnTon = document.querySelector('.modal-btn-container-ton')
 const btnCryptoBot = document.querySelector('.modal-btn-container-cryptoBot')
 const btnTonContainer = document.querySelector('.modal-container-ton')
 const btnCryptoBotContainer = document.querySelector('.modal-container-cryptoBot')
-import { TonConnect } from "@tonconnect/sdk";
 
-const tonConnect = new TonConnect({
+
+const tonConnect = new TON_CONNECT_UI.TonConnectUI({
   manifestUrl: "https://dima0073231.github.io/nftgo/tonconnect-manifest.json",
+  buttonRootId: "ton-connect",
 });
-mainConnectWallet.addEventListener('click', async () => {
+
+mainConnectWallet.addEventListener("click", async () => {
   try {
-    await tonConnect.connect();
+    await tonConnect.connectWallet();
     const wallet = tonConnect.wallet;
-    console.log("Кошелек:", wallet);
+    console.log("Подключено:", wallet);
   } catch (e) {
     console.error("Ошибка подключения:", e);
   }
