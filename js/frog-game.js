@@ -330,24 +330,32 @@ setInterval(() => {
 function cashoutGiftBet() {
   if (currentBetType !== 'gift' || !currentGiftBet || !isGameActive) return;
 
-  const winAmount = currentGiftBet.price * currentCoefficient;
-  balance.value += winAmount;
-  updateBalanceDisplay();
+  try {
+    const winAmount = currentGiftBet.price * currentCoefficient;
+    balance.value += winAmount;
+    updateBalanceDisplay();
 
-  window.dispatchEvent(new CustomEvent('giftCashout', {
-    detail: {
-      itemId: currentGiftBet.itemId,
-      count: currentGiftBet.count,
-      winAmount: winAmount,
-      coefficient: currentCoefficient,
-      originalPrice: currentGiftBet.price
-    }
-  }));
+    window.dispatchEvent(new CustomEvent('giftCashoutSuccess', {
+      detail: {
+        itemId: currentGiftBet.itemId,
+        count: currentGiftBet.count,
+        winAmount: winAmount,
+        coefficient: currentCoefficient,
+        originalPrice: currentGiftBet.price
+      }
+    }));
 
-  renderMainInventory(telegramId);
-  
-  currentGiftBet = null;
-  currentBetType = 'money';
+    renderMainInventory(telegramId);
+    
+  } catch (err) {
+    console.error('Помилка при кешауті подарунка:', err);
+    addGiftToInventory(telegramId, currentGiftBet.itemId, currentGiftBet.count)
+      .then(() => renderMainInventory(telegramId))
+      .catch(restoreErr => console.error('Помилка відновлення:', restoreErr));
+  } finally {
+    currentGiftBet = null;
+    currentBetType = 'money';
+  }
 }
 
 import { getUserName } from "./balance.js";

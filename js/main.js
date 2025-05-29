@@ -66,7 +66,9 @@ document.addEventListener("gameCrash", () => {
     }, 600);
   }, 2000);
 });
-
+window.addEventListener('giftBetPlaced', () => {
+  console.log('Ставка подарунком прийнята, очікуємо запуск гри');
+});
 const socket = new WebSocket('https://socketnft.onrender.com');
 
 
