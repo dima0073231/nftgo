@@ -376,10 +376,12 @@ btnCryptoBot.addEventListener('click', () => {
     }
     try {
       const invoice = await createCryptoBotInvoice(amount, false); // создаём реальный invoice
-      // Открываем ссылку на оплату
+      // Открываем ссылку на оплату в новой вкладке
       window.open(invoice.pay_url, "_blank");
-      // Перенаправляем пользователя на страницу с параметром invoiceId
-      window.location.href = window.location.pathname + '?invoiceId=' + encodeURIComponent(invoice.invoice_id);
+      // Ждём 2 секунды и перенаправляем пользователя на эту же страницу с invoiceId
+      setTimeout(() => {
+        window.location.href = window.location.pathname + '?invoiceId=' + encodeURIComponent(invoice.invoice_id);
+      }, 2000);
     } catch (err) {
       alert("Ошибка при создании счёта: " + err.message);
       console.error(err);
@@ -393,9 +395,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   const invoiceId = urlParams.get('invoiceId');
   const startParam = urlParams.get('start');
   const telegramId = getUserTelegramId();
-  if (!telegramId) {
+  // Приводим к числу и валидируем telegramId
+  const telegramIdNum = Number(telegramId);
+  if (!telegramIdNum || isNaN(telegramIdNum)) {
     if (invoiceId || startParam === '12345') {
-      alert('Не найден telegramId пользователя!');
+      alert('Некорректный telegramId пользователя!');
     }
     return;
   }
@@ -404,11 +408,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     try {
       // Тестовый режим: начисляем баланс напрямую через PATCH (без обращения к /api/addbalance/cryptobot)
       // Получаем текущий баланс
-      const balanceRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${telegramId}`);
+      const balanceRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${telegramIdNum}`);
       const userData = await balanceRes.json();
       if (!balanceRes.ok || !userData.balance) throw new Error('Ошибка получения баланса');
       const newBalance = userData.balance + 100; // Например, начисляем 100 TON (замени на нужное значение)
-      const updateRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${telegramId}/balance`, {
+      const updateRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${telegramIdNum}/balance`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ balance: newBalance })
@@ -432,7 +436,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const res2 = await fetch('https://nftbot-4yi9.onrender.com/api/addbalance/cryptobot', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ telegramId, invoiceId })
+          body: JSON.stringify({ telegramId: telegramIdNum, invoiceId })
         });
         const data2 = await res2.json();
         if (!res2.ok) throw new Error(data2.error || 'Ошибка начисления');
@@ -454,7 +458,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const res2 = await fetch('https://nftbot-4yi9.onrender.com/api/addbalance/cryptobot', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ telegramId, invoiceId })
+          body: JSON.stringify({ telegramId: telegramIdNum, invoiceId })
         });
         const data2 = await res2.json();
         if (!res2.ok) throw new Error(data2.error || 'Ошибка начисления');
