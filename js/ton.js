@@ -441,14 +441,18 @@ window.addEventListener('DOMContentLoaded', async () => {
   // --- Тестовый сценарий через start=12345 ---
   if (startParam === '12345') {
     try {
-      // Тестовый режим: начисляем баланс по тестовому invoiceId
-      const res2 = await fetch('https://nftbot-4yi9.onrender.com/api/addbalance/cryptobot', {
-        method: 'POST',
+      // Тестовый режим: начисляем баланс напрямую через PATCH (без обращения к /api/addbalance/cryptobot)
+      // Получаем текущий баланс
+      const balanceRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${telegramId}`);
+      const userData = await balanceRes.json();
+      if (!balanceRes.ok || !userData.balance) throw new Error('Ошибка получения баланса');
+      const newBalance = userData.balance + 100; // Например, начисляем 100 TON (замени на нужное значение)
+      const updateRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${telegramId}/balance`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ telegramId, invoiceId: 'test_invoice_12345' })
+        body: JSON.stringify({ balance: newBalance })
       });
-      const data2 = await res2.json();
-      if (!res2.ok) throw new Error(data2.error || 'Ошибка начисления');
+      if (!updateRes.ok) throw new Error('Ошибка начисления');
       alert('Баланс успешно пополнен (тест, start)!');
       updateBalance();
       urlParams.delete('start');
