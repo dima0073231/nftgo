@@ -319,3 +319,16 @@ setInterval(() => {
   }
 }, 10000);
 
+// Извлечение telegramId из Telegram WebApp и сохранение в localStorage
+if (window.Telegram?.WebApp) {
+  const initData = window.Telegram.WebApp.initDataUnsafe;
+  const telegramId = initData?.user?.id?.toString();
+
+  if (telegramId) {
+    localStorage.setItem("telegramId", telegramId);
+    console.log("Telegram ID успешно сохранён в localStorage:", telegramId);
+  } else {
+    console.error("Не удалось получить Telegram ID из WebApp");
+  }
+}
+
