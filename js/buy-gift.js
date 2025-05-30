@@ -274,6 +274,20 @@ const addToInventory = async function (userId, itemId, count, price) {
   }
 
   try {
+    // Сначала проверяем баланс пользователя
+    const balanceRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${userId}/balance`);
+    if (!balanceRes.ok) {
+      throw new Error("Не удалось получить баланс пользователя");
+    }
+    const balanceData = await balanceRes.json();
+    const currentBalance = balanceData.balance;
+
+    if (currentBalance < price) {
+      alert("Недостаточно средств на балансе для покупки подарка.");
+      return;
+    }
+
+    // Обновляем инвентарь
     const updateRes = await fetch(
       `https://nftbot-4yi9.onrender.com/api/users/${userId}/inventory`,
       {
@@ -292,7 +306,16 @@ const addToInventory = async function (userId, itemId, count, price) {
       throw new Error(errorData.error || "Не удалось обновить инвентарь");
     }
 
-    const data = await updateRes.json();
+    // Списываем деньги с баланса
+    const deductRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${userId}/balance`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ balance: currentBalance - price }),
+    });
+
+    if (!deductRes.ok) {
+      throw new Error("Не удалось списать средства с баланса");
+    }
 
     alert("Подарок успешно куплен!");
     await changeBalance(telegramId);
