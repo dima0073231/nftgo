@@ -362,17 +362,10 @@ btnCryptoBot.addEventListener('click', () => {
       </div>
       <button class="btn" type="submit">Создать счет CryptoBot</button>
     </form>
-    <form class="modal-form-cryptoBot-invoice" style="margin-top:20px;display:none;"> 
-      <label class="label" for="invoiceId">Вставьте invoiceId после оплаты</label>
-      <input type="text" name="invoiceId" id="invoiceId-cryptoBot" required />
-      <button class="btn" type="submit">Подтвердить пополнение</button>
-    </form>
   `;
 
   const modalFormCrypto = document.querySelector(".modal-form-cryptoBot");
   const sumPayCrypto = document.getElementById("sumPayCryptoBot");
-  const modalFormCryptoInvoice = document.querySelector(".modal-form-cryptoBot-invoice");
-  const invoiceIdInput = document.getElementById("invoiceId-cryptoBot");
 
   modalFormCrypto.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -382,46 +375,14 @@ btnCryptoBot.addEventListener('click', () => {
       return;
     }
     try {
-      const invoice = await createCryptoBotInvoice(amount, true); // создаст тестовый invoice
-      // Сохраняем invoiceId в переменную для автозаполнения
-      window.latestCryptoBotInvoiceId = invoice.invoice_id;
+      const invoice = await createCryptoBotInvoice(amount, false); // создаём реальный invoice
+      // Открываем ссылку на оплату
       window.open(invoice.pay_url, "_blank");
-      // Автоматически подставляем invoiceId в форму
-      invoiceIdInput.value = invoice.invoice_id;
-      // Показываем форму для ввода invoiceId
-      modalFormCrypto.style.display = 'none';
-      modalFormCryptoInvoice.style.display = '';
+      // Перенаправляем пользователя на страницу с параметром invoiceId
+      window.location.href = window.location.pathname + '?invoiceId=' + encodeURIComponent(invoice.invoice_id);
     } catch (err) {
       alert("Ошибка при создании счёта: " + err.message);
       console.error(err);
-    }
-  });
-
-  modalFormCryptoInvoice.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    // invoiceId теперь всегда берём из поля (оно автозаполнено)
-    const invoiceId = invoiceIdInput.value.trim() || window.latestCryptoBotInvoiceId;
-    if (!invoiceId) {
-      alert("Введите invoiceId");
-      return;
-    }
-    const telegramId = getUserTelegramId();
-    if (!telegramId) {
-      alert("Не найден telegramId пользователя!");
-      return;
-    }
-    try {
-      const res = await fetch('https://nftbot-4yi9.onrender.com/api/addbalance/cryptobot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ telegramId, invoiceId })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Ошибка пополнения');
-      alert('Баланс успешно пополнен!');
-      updateBalance();
-    } catch (err) {
-      alert('Ошибка: ' + err.message);
     }
   });
 });
