@@ -134,22 +134,38 @@ app.post('/api/cryptobot/create-invoice', async (req, res) => {
   }
 
   try {
-    const generatedInvoiceId = `invoice_${Date.now()}`;
+    const response = await axios.post(
+      'https://pay.crypt.bot/api/createInvoice',
+      {
+        amount: Number(amount),
+        currency: 'TON',
+        description: `Invoice for Telegram ID: ${validatedTelegramId}`,
+      },
+      {
+        headers: {
+          'Crypto-Pay-API-Token': process.env.CRYPTOBOT_TOKEN,
+        },
+      }
+    );
+
+    if (!response.data.ok || !response.data.result) {
+      throw new Error(response.data.error || 'Ошибка создания инвойса через CryptoBot');
+    }
+
+    const { invoice_id, pay_url } = response.data.result;
 
     const newInvoice = new Invoice({
-      invoiceId: generatedInvoiceId,
+      invoiceId: invoice_id,
       telegramId: validatedTelegramId,
       amount: Number(amount),
       status: 'pending',
     });
     await newInvoice.save();
 
-    const payUrl = `https://pay.crypt.bot/invoice/${generatedInvoiceId}`;
-
-    console.log('Инвойс успешно создан:', { invoiceId: generatedInvoiceId, payUrl });
-    res.json({ ok: true, result: { invoice_id: generatedInvoiceId, pay_url: payUrl } });
+    console.log('Инвойс успешно создан через CryptoBot:', { invoiceId: invoice_id, payUrl: pay_url });
+    res.json({ ok: true, result: { invoice_id, pay_url } });
   } catch (err) {
-    console.error('Ошибка создания инвойса:', err);
+    console.error('Ошибка создания инвойса через CryptoBot:', err);
     res.status(500).json({ ok: false, error: 'Ошибка сервера' });
   }
 });
