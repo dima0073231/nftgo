@@ -331,6 +331,49 @@ btnTon.addEventListener('click', () => {
   });
 });
 
+// === CryptoBot Method Handler ===
+btnCryptoBot.addEventListener('click', () => {
+  btnTonContainer.innerHTML = ``; // Очистка контейнера TON
+  btnCryptoBot.classList.toggle('btnActive'); // Переключение состояния кнопки
+
+  btnCryptoBotContainer.innerHTML = `
+    <form class="modal-form-cryptoBot"> 
+      <label class="label" for="sumPayCryptoBot">Сумма пополнения (TON)</label>
+      <input type="number" name="sumPay" id="sumPayCryptoBot" min="0.1" required />
+      <div class="modal-form-reqeired">
+        <span>Min: 0.1 TON</span>
+        <span>Max: 1000 TON</span> 
+      </div>
+      <button class="btn" type="submit">Создать счет CryptoBot</button>
+    </form>
+  `;
+
+  const modalFormCrypto = document.querySelector(".modal-form-cryptoBot");
+  const sumPayCrypto = document.getElementById("sumPayCryptoBot");
+
+  modalFormCrypto.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const amount = parseFloat(sumPayCrypto.value);
+    if (isNaN(amount) || amount <= 0) {
+      alert("Введите корректную сумму");
+      return;
+    }
+    try {
+      const telegramId = getUserTelegramId();
+      const invoice = await createCryptoBotInvoice(amount, false, telegramId); // создаём реальный invoice
+      if (!invoice || !invoice.pay_url || !invoice.invoice_id) {
+        throw new Error("Ошибка: сервер не вернул ссылку на оплату. Попробуйте позже.");
+      }
+      // Открываем ссылку на оплату в новой вкладке
+      window.open(invoice.pay_url, "_blank");
+      window.latestCryptoBotInvoiceId = invoice.invoice_id;
+    } catch (err) {
+      alert("Ошибка при создании счёта: " + (err.message || err));
+      console.error(err);
+    }
+  });
+});
+
 // === Создание инвойса через сервер ===
 async function createCryptoBotInvoice(amount, test = true, telegramId) {
   const response = await fetch("/api/cryptobot/create-invoice", {

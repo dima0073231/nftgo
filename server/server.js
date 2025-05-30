@@ -113,8 +113,15 @@ app.get('/api/cryptobot/invoice/:invoiceId', async (req, res) => {
 // === Создание инвойса ===
 app.post('/api/cryptobot/create-invoice', async (req, res) => {
   const { amount, test, telegramId } = req.body;
-  if (!amount || !telegramId) {
-    return res.status(400).json({ ok: false, error: 'Не указаны обязательные параметры' });
+
+  // Проверка и валидация telegramId
+  const validatedTelegramId = Number(telegramId);
+  if (!validatedTelegramId || isNaN(validatedTelegramId)) {
+    return res.status(400).json({ ok: false, error: 'Некорректный telegramId' });
+  }
+
+  if (!amount) {
+    return res.status(400).json({ ok: false, error: 'Не указана сумма' });
   }
 
   try {
@@ -124,7 +131,7 @@ app.post('/api/cryptobot/create-invoice', async (req, res) => {
 
     const newInvoice = new Invoice({
       invoiceId: generatedInvoiceId,
-      telegramId,
+      telegramId: validatedTelegramId,
       amount,
       status: 'pending',
     });
@@ -132,7 +139,7 @@ app.post('/api/cryptobot/create-invoice', async (req, res) => {
 
     const payUrl = test
       ? `https://t.me/nftgo_bot?start=invoice_${generatedInvoiceId}` // Тестовая ссылка для бота
-      : response.data.result.pay_url; // Реальная ссылка из API CryptoBot
+      : `https://pay.crypt.bot/invoice/${generatedInvoiceId}`; // Реальная ссылка из API CryptoBot
 
     res.json({ ok: true, result: { invoice_id: generatedInvoiceId, pay_url: payUrl } });
   } catch (err) {
