@@ -383,11 +383,20 @@ async function createCryptoBotInvoice(amount, test = true, telegramId) {
     },
     body: JSON.stringify({ amount, test, telegramId }),
   });
-  const data = await response.json();
-  if (!response.ok || !data.ok) {
-    throw new Error(data.error || "Ошибка создания счёта");
+
+  // Отладочный вывод для проверки ответа сервера
+  const text = await response.text();
+  console.log("Ответ сервера:", text);
+
+  try {
+    const data = JSON.parse(text);
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "Ошибка создания счёта");
+    }
+    return data.result;
+  } catch (err) {
+    throw new Error("Ошибка обработки ответа сервера: " + err.message);
   }
-  return data.result;
 }
 
 // === Проверка статуса инвойса ===
