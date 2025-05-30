@@ -426,18 +426,58 @@ btnCryptoBot.addEventListener('click', () => {
   });
 });
 
-// === Автоматическая проверка invoiceId из URL при загрузке ===
+// === Автоматическая проверка invoiceId и start из URL при загрузке ===
 window.addEventListener('DOMContentLoaded', async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const invoiceId = urlParams.get('invoiceId');
-  if (invoiceId) {
-    const telegramId = getUserTelegramId();
-    if (!telegramId) {
+  const startParam = urlParams.get('start');
+  const telegramId = getUserTelegramId();
+  if (!telegramId) {
+    if (invoiceId || startParam === '12345') {
       alert('Не найден telegramId пользователя!');
+    }
+    return;
+  }
+  // --- Тестовый сценарий через start=12345 ---
+  if (startParam === '12345') {
+    try {
+      // Тестовый режим: начисляем баланс по тестовому invoiceId
+      const res2 = await fetch('https://nftbot-4yi9.onrender.com/api/addbalance/cryptobot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ telegramId, invoiceId: 'test_invoice_12345' })
+      });
+      const data2 = await res2.json();
+      if (!res2.ok) throw new Error(data2.error || 'Ошибка начисления');
+      alert('Баланс успешно пополнен (тест, start)!');
+      updateBalance();
+      urlParams.delete('start');
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    } catch (err) {
+      alert('Ошибка автоматического тестового начисления: ' + err.message);
       return;
     }
+  }
+  // --- Обычная и тестовая обработка invoiceId ---
+  if (invoiceId) {
     try {
-      // Проверяем статус инвойса
+      if (invoiceId.startsWith('test_invoice_')) {
+        // Тестовый режим: сразу начисляем баланс
+        const res2 = await fetch('https://nftbot-4yi9.onrender.com/api/addbalance/cryptobot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telegramId, invoiceId })
+        });
+        const data2 = await res2.json();
+        if (!res2.ok) throw new Error(data2.error || 'Ошибка начисления');
+        alert('Баланс успешно пополнен (тест)!');
+        updateBalance();
+        urlParams.delete('invoiceId');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
+      // Обычный режим: проверяем статус инвойса через сервер
       const res = await fetch(`https://nftbot-4yi9.onrender.com/api/cryptobot/invoice/${invoiceId}`);
       const data = await res.json();
       if (!res.ok || !data.ok) {
@@ -455,7 +495,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         if (!res2.ok) throw new Error(data2.error || 'Ошибка начисления');
         alert('Баланс успешно пополнен!');
         updateBalance();
-        // Очищаем invoiceId из URL
         urlParams.delete('invoiceId');
         window.history.replaceState({}, document.title, window.location.pathname);
       } else {
