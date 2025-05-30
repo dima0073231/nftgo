@@ -156,30 +156,30 @@ function initSwiper() {
     freeMode: {
       enabled: true,
       sticky: true, // Додає "пружинний" ефект в кінці
-      momentumBounce: false // Вимкнення відскоку за межі
+      momentumBounce: false, // Вимкнення відскоку за межі
     },
     mousewheel: {
       releaseOnEdges: true, // Вимкнення скролу за межі
-      forceToAxis: true
+      forceToAxis: true,
     },
     slidesPerView: "auto",
     spaceBetween: 10,
     scrollbar: {
       el: ".buy-gift__swiper-scrollbar",
       draggable: true,
-      snapOnRelease: true
+      snapOnRelease: true,
     },
     watchOverflow: false,
     resistance: false, // Вимкнення ефекту опору
     resistanceRatio: 0, // Повне вимкнення опору
     breakpoints: {
       0: {
-        slidesPerColumn: 2
+        slidesPerColumn: 2,
       },
       420: {
-        slidesPerColumn: 3
-      }
-    }
+        slidesPerColumn: 3,
+      },
+    },
   });
 }
 
@@ -307,7 +307,7 @@ const addToInventory = async function (userId, itemId, count, price) {
 // Отображение инвентаря
 async function renderInventory(userId) {
   const inventorySection = document.querySelector(".user-page-inventory");
-  if (!inventorySection) return;
+  if (!inventorySection) return itemsContainer;
 
   try {
     const response = await fetch(
@@ -353,8 +353,8 @@ async function renderInventory(userId) {
       };
 
       const itemElement = document.createElement("div");
-      itemElement.classList.add('inventory-item');
-      itemElement.classList.add('swiper-slide');
+      itemElement.classList.add("inventory-item");
+      itemElement.classList.add("swiper-slide");
 
       itemElement.innerHTML = `
    
@@ -374,8 +374,10 @@ async function renderInventory(userId) {
       `;
       itemsContainer.appendChild(itemElement);
     });
+    return itemsContainer;
   } catch (err) {
     console.error("Ошибка при загрузке инвентаря:", err);
+    return null;
   }
 }
 new Swiper(".inventory-swiper", {
@@ -489,7 +491,6 @@ export { renderInventory, gifts };
 // }
 
 // renderGiftsMain(0, Infinity);
-
 
 // const giftImage = document.getElementById("giftImage");
 // if (giftImage) {

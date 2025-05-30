@@ -5,14 +5,12 @@ import { balance } from "./balance.js";
 
 const sellBtns = document.querySelectorAll(".inventory-item__sell");
 
-if (sellBtns.length > 0) {
-  sellBtns.forEach((btn) => {
-    btn.addEventListener("click", async function () {
-      await handleSellItem(this, telegramId);
-      alert('Був клік')
-    });
-  });
-}
+document.addEventListener("click", async function (e) {
+  if (e.target.closest(".inventory-item__sell")) {
+    const sellBtn = e.target.closest(".inventory-item__sell");
+    await handleSellItem(sellBtn, telegramId);
+  }
+});
 
 async function handleSellItem(clickedBtn, userId) {
   const item = clickedBtn.closest(".inventory-item");
@@ -54,7 +52,7 @@ async function handleSellItem(clickedBtn, userId) {
       throw new Error("Не вдалося оновити баланс");
     }
 
-    await renderInventory(userId);
+    const itemsContainer = await renderInventory(userId);
 
     const balancePole = document.querySelector(".main-balance");
     if (balancePole) {
@@ -67,8 +65,6 @@ async function handleSellItem(clickedBtn, userId) {
         />
       `;
     }
-
-    // setTimeout(() => item.remove(), 300);
   } catch (err) {
     console.error("Помилка при продажі:", err);
     alert("Помилка: " + err.message);
