@@ -8,7 +8,7 @@ const btnTon = document.querySelector('.modal-btn-container-ton')
 const btnCryptoBot = document.querySelector('.modal-btn-container-cryptoBot')
 const btnTonContainer = document.querySelector('.modal-container-ton')
 const btnCryptoBotContainer = document.querySelector('.modal-container-cryptoBot')
-
+import { telegramId } from "./profile.js";
 
 const tonConnect = new TON_CONNECT_UI.TonConnectUI({
   manifestUrl: "https://dima0073231.github.io/nftgo/tonconnect-manifest.json",
@@ -71,21 +71,47 @@ async function updateBalance() {
 
 
 // Проверка и логирование извлечения telegramId из localStorage
-function getUserTelegramId() {
-  const telegramId = localStorage.getItem("telegramId");
-  if (!telegramId || isNaN(Number(telegramId))) {
-    console.error("Telegram ID отсутствует или некорректен в localStorage.");
-    return null;
+function getTelegramUserId() {
+  // Проверяем, запущено ли в Telegram WebApp
+  if (window.Telegram?.WebApp) {
+    try {
+      const initData = window.Telegram.WebApp.initData;
+      const initDataUnsafe = window.Telegram.WebApp.initDataUnsafe;
+      
+      console.log("Telegram WebApp detected", { initData, initDataUnsafe });
+      
+      // Пытаемся получить ID из unsafe данных (быстрее)
+      if (initDataUnsafe?.user?.id) {
+        const tgId = telegramId
+        localStorage.setItem("telegramId", tgId);
+        return tgId;
+      }
+      
+      // Если unsafe данных нет, можно попробовать парсить initData
+      if (initData) {
+        const params = new URLSearchParams(initData);
+        const userStr = params.get('user');
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          if (user?.id) {
+            const tgId = user.id.toString();
+            localStorage.setItem("telegramId", tgId);
+            return tgId;
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error getting Telegram ID:", error);
+    }
   }
-  console.log("Извлечён Telegram ID из localStorage:", telegramId);
-  return telegramId;
+  
+  // Проверяем есть ли ID в localStorage (для dev режима)
+  const storedId = localStorage.getItem("telegramId");
+  if (storedId) return storedId;
+  
+  console.warn("Telegram user ID not available");
+  return null;
 }
-
-function setUserTelegramId(telegramId) {
-  localStorage.setItem("telegramId", telegramId);
-  console.log("Сохранён новый telegramId в localStorage:", telegramId);
-}
-
 async function setBalanceToBd(tgId, newBalance) {
   try {
     const updateRes = await fetch(`https://nftbotserver.onrender.com/api/users/${tgId}/balance`, {
@@ -216,7 +242,7 @@ btnCryptoBot.addEventListener('click', () => {
       return;
     }
     try {
-      const telegramId = getUserTelegramId();
+
       if (!telegramId) {
         alert("Некорректный telegramId:", telegramId);
         console.error("Некорректный telegramId:", telegramId);
@@ -339,12 +365,14 @@ setInterval(() => {
 if (window.Telegram?.WebApp) {
   const initData = window.Telegram.WebApp.initDataUnsafe;
   console.log("initDataUnsafe содержимое:", initData);
-  const telegramId = initData?.user?.id;
 
+  const telegramId = initData?.user?.id;
   if (telegramId && !isNaN(Number(telegramId))) {
     localStorage.setItem("telegramId", telegramId.toString());
     console.log("Telegram ID успешно сохранён в localStorage:", telegramId);
   } else {
     console.error("Не удалось получить корректный Telegram ID из WebApp. Проверьте initDataUnsafe:", initData);
   }
+} else {
+  console.warn("Telegram WebApp не обнаружен. Проверьте окружение.");
 }
