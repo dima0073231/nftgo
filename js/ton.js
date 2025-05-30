@@ -69,19 +69,8 @@ async function updateBalance() {
 
 
 function getUserTelegramId() {
-  const initData = window.Telegram?.WebApp?.initDataUnsafe;
-  const telegramId = initData?.user?.id?.toString(); // Преобразуем telegramId в строку
-
-  if (telegramId) {
-    localStorage.setItem("telegramId", telegramId);
-    console.log("Telegram ID успешно получен и сохранён:", telegramId);
-  } else {
-    console.error("Не удалось получить Telegram ID из WebApp");
-  }
-
-  return telegramId;
+  return localStorage.getItem("telegramId"); // Замени на свою реалізацію, якщо треба
 }
-
 
 async function setBalanceToBd(tgId, newBalance) {
   try {
