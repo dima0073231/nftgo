@@ -77,15 +77,17 @@ let bet;
 
 function updateButtonsState() {
   const gameActive = getIsGameActive();
-  const hasGiftBet = !!localStorage.getItem('activeGiftBet');
+  const hasGiftBet = !!localStorage.getItem("activeGiftBet");
 
-  fixedBetBtns.forEach(btn => btn.disabled = gameActive || hasGiftBet);
-  changeBetBtns.forEach(btn => btn.disabled = gameActive || hasGiftBet);
-  selectBetBtns.forEach(btn => btn.disabled = gameActive || hasGiftBet);
-  
+  fixedBetBtns.forEach((btn) => (btn.disabled = gameActive || hasGiftBet));
+  changeBetBtns.forEach((btn) => (btn.disabled = gameActive || hasGiftBet));
+  selectBetBtns.forEach((btn) => (btn.disabled = gameActive || hasGiftBet));
+
   // Блокуємо кнопки подарунків під час звичайної ставки
-  giftBetBtns.forEach(btn => {
-    btn.disabled = gameActive || fieldValues.some(f => parseFloat(f.dataset.bet || '0') > 0);
+  giftBetBtns.forEach((btn) => {
+    btn.disabled =
+      gameActive ||
+      fieldValues.some((f) => parseFloat(f.dataset.bet || "0") > 0);
   });
 }
 setInterval(updateButtonsState, 100);
@@ -232,7 +234,7 @@ async function renderMainInventory(userId) {
     console.error("Ошибка при загрузке инвентаря:", err);
   }
 }
-renderMainInventory(telegramId)
+renderMainInventory(telegramId);
 export { changeBet, fieldValues, balance, bet, renderMainInventory };
 
 // Инициализация слайдера Swiper
