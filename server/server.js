@@ -86,7 +86,7 @@ app.get('/api/ton/transaction/:txHash', async (req, res) => {
   }
 });
 
-// Получить статус CryptoBot invoice по invoiceId
+// Проверка статуса CryptoBot invoice по invoiceId с улучшенным логированием
 app.get('/api/cryptobot/invoice/:invoiceId', async (req, res) => {
   try {
     const invoiceId = req.params.invoiceId;
@@ -100,50 +100,51 @@ app.get('/api/cryptobot/invoice/:invoiceId', async (req, res) => {
         }
       }
     );
+
     if (response.data.ok && response.data.result) {
       return res.json({ ok: true, result: response.data.result });
     }
+
+    console.error("Invoice not found or invalid response:", response.data);
     return res.status(404).json({ ok: false, error: "Invoice not found" });
   } catch (error) {
-    console.error("Error verifying CryptoBot invoice:", error);
+    console.error("Error verifying CryptoBot invoice:", error.response?.data || error.message);
     res.status(500).json({ ok: false, error: "Server error" });
   }
 });
+
+
 
 // === Создание инвойса ===
 app.post('/api/cryptobot/create-invoice', async (req, res) => {
   console.log('Запрос на создание инвойса:', req.body); // Логирование входящих данных
 
-  const { amount, test, telegramId } = req.body;
+  const { amount, telegramId } = req.body; // Удалён параметр test
 
   // Проверка и валидация telegramId
   const validatedTelegramId = Number(telegramId);
   if (!validatedTelegramId || isNaN(validatedTelegramId)) {
-    console.error('Ошибка: Некорректный telegramId');
+    console.error('Ошибка: Некорректный telegramId:', telegramId);
     return res.status(400).json({ ok: false, error: 'Некорректный telegramId' });
   }
 
-  if (!amount) {
-    console.error('Ошибка: Не указана сумма');
-    return res.status(400).json({ ok: false, error: 'Не указана сумма' });
+  if (!amount || isNaN(Number(amount))) {
+    console.error('Ошибка: Не указана сумма или сумма некорректна:', amount);
+    return res.status(400).json({ ok: false, error: 'Не указана сумма или сумма некорректна' });
   }
 
   try {
-    const generatedInvoiceId = test
-      ? `test_invoice_${Date.now()}`
-      : `real_invoice_${Date.now()}`;
+    const generatedInvoiceId = `invoice_${Date.now()}`;
 
     const newInvoice = new Invoice({
       invoiceId: generatedInvoiceId,
       telegramId: validatedTelegramId,
-      amount,
+      amount: Number(amount),
       status: 'pending',
     });
     await newInvoice.save();
 
-    const payUrl = test
-      ? `https://t.me/nftgo_bot?start=invoice_${generatedInvoiceId}`
-      : `https://pay.crypt.bot/invoice/${generatedInvoiceId}`;
+    const payUrl = `https://pay.crypt.bot/invoice/${generatedInvoiceId}`;
 
     console.log('Инвойс успешно создан:', { invoiceId: generatedInvoiceId, payUrl });
     res.json({ ok: true, result: { invoice_id: generatedInvoiceId, pay_url: payUrl } });
@@ -154,21 +155,21 @@ app.post('/api/cryptobot/create-invoice', async (req, res) => {
 });
 
 // === Проверка статуса инвойса ===
-app.get('/api/cryptobot/invoice/:id', async (req, res) => {
-  const { id } = req.params;
+// app.get('/api/cryptobot/invoice/:id', async (req, res) => {
+//   const { id } = req.params;
 
-  try {
-    const invoice = await Invoice.findOne({ invoiceId: id });
-    if (!invoice) {
-      return res.status(404).json({ ok: false, error: 'Инвойс не найден' });
-    }
+//   try {
+//     const invoice = await Invoice.findOne({ invoiceId: id });
+//     if (!invoice) {
+//       return res.status(404).json({ ok: false, error: 'Инвойс не найден' });
+//     }
 
-    res.json({ ok: true, result: { status: invoice.status } });
-  } catch (err) {
-    console.error('Ошибка проверки инвойса:', err);
-    res.status(500).json({ ok: false, error: 'Ошибка сервера' });
-  }
-});
+//     res.json({ ok: true, result: { status: invoice.status } });
+//   } catch (err) {
+//     console.error('Ошибка проверки инвойса:', err);
+//     res.status(500).json({ ok: false, error: 'Ошибка сервера' });
+//   }
+// });
 
 // === Обновление статуса инвойса и пополнение баланса ===
 app.post('/api/cryptobot/update-invoice', async (req, res) => {

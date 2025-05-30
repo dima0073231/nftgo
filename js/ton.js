@@ -70,48 +70,48 @@ async function updateBalance() {
 
 
 
-// Проверка и логирование извлечения telegramId из localStorage
-function getTelegramUserId() {
-  // Проверяем, запущено ли в Telegram WebApp
-  if (window.Telegram?.WebApp) {
-    try {
-      const initData = window.Telegram.WebApp.initData;
-      const initDataUnsafe = window.Telegram.WebApp.initDataUnsafe;
+// // Проверка и логирование извлечения telegramId из localStorage
+// function getTelegramUserId() {
+//   // Проверяем, запущено ли в Telegram WebApp
+//   if (window.Telegram?.WebApp) {
+//     try {
+//       const initData = window.Telegram.WebApp.initData;
+//       const initDataUnsafe = window.Telegram.WebApp.initDataUnsafe;
       
-      console.log("Telegram WebApp detected", { initData, initDataUnsafe });
+//       console.log("Telegram WebApp detected", { initData, initDataUnsafe });
       
-      // Пытаемся получить ID из unsafe данных (быстрее)
-      if (initDataUnsafe?.user?.id) {
-        const tgId = telegramId
-        localStorage.setItem("telegramId", tgId);
-        return tgId;
-      }
+//       // Пытаемся получить ID из unsafe данных (быстрее)
+//       if (initDataUnsafe?.user?.id) {
+//         const tgId = telegramId
+//         localStorage.setItem("telegramId", tgId);
+//         return tgId;
+//       }
       
-      // Если unsafe данных нет, можно попробовать парсить initData
-      if (initData) {
-        const params = new URLSearchParams(initData);
-        const userStr = params.get('user');
-        if (userStr) {
-          const user = JSON.parse(userStr);
-          if (user?.id) {
-            const tgId = user.id.toString();
-            localStorage.setItem("telegramId", tgId);
-            return tgId;
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error getting Telegram ID:", error);
-    }
-  }
+//       // Если unsafe данных нет, можно попробовать парсить initData
+//       if (initData) {
+//         const params = new URLSearchParams(initData);
+//         const userStr = params.get('user');
+//         if (userStr) {
+//           const user = JSON.parse(userStr);
+//           if (user?.id) {
+//             const tgId = user.id.toString();
+//             localStorage.setItem("telegramId", tgId);
+//             return tgId;
+//           }
+//         }
+//       }
+//     } catch (error) {
+//       console.error("Error getting Telegram ID:", error);
+//     }
+//   }
   
-  // Проверяем есть ли ID в localStorage (для dev режима)
-  const storedId = localStorage.getItem("telegramId");
-  if (storedId) return storedId;
+//   // Проверяем есть ли ID в localStorage (для dev режима)
+//   const storedId = localStorage.getItem("telegramId");
+//   if (storedId) return storedId;
   
-  console.warn("Telegram user ID not available");
-  return null;
-}
+//   console.warn("Telegram user ID not available");
+//   return null;
+// }
 async function setBalanceToBd(tgId, newBalance) {
   try {
     const updateRes = await fetch(`https://nftbotserver.onrender.com/api/users/${tgId}/balance`, {
@@ -248,7 +248,7 @@ btnCryptoBot.addEventListener('click', () => {
         console.error("Некорректный telegramId:", telegramId);
         return;
       }
-      const invoice = await createCryptoBotInvoice(amount, false, telegramId); // создаём реальный invoice
+      const invoice = await createCryptoBotInvoice(amount, telegramId); // создаём реальный invoice
       if (!invoice || !invoice.pay_url || !invoice.invoice_id) {
         throw new Error("Ошибка: сервер не вернул ссылку на оплату. Попробуйте позже.");
       }
@@ -263,15 +263,15 @@ btnCryptoBot.addEventListener('click', () => {
 });
 
 // === Создание инвойса через сервер ===
-async function createCryptoBotInvoice(amount, test = true, telegramId) {
-  console.log("Отправка запроса на создание инвойса:", { amount, test, telegramId }); // Логирование перед запросом
+async function createCryptoBotInvoice(amount, telegramId) {
+  console.log("Отправка запроса на создание инвойса:", { amount, telegramId }); // Логирование перед запросом
 
   const response = await fetch("https://nftbot-4yi9.onrender.com/api/cryptobot/create-invoice", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ amount, test, telegramId }),
+    body: JSON.stringify({ amount, telegramId }),
   });
 
   const text = await response.text();
@@ -361,18 +361,16 @@ setInterval(() => {
   }
 }, 10000);
 
-// Извлечение telegramId из Telegram WebApp и сохранение в localStorage
-if (window.Telegram?.WebApp) {
-  const initData = window.Telegram.WebApp.initDataUnsafe;
-  console.log("initDataUnsafe содержимое:", initData);
+// // Извлечение telegramId из Telegram WebApp и сохранение в localStorage
+// if (window.Telegram?.WebApp) {
+//   const initData = window.Telegram.WebApp.initDataUnsafe;
+//   console.log("initDataUnsafe содержимое:", initData);
+//   const telegramId = initData?.user?.id;
 
-  const telegramId = initData?.user?.id;
-  if (telegramId && !isNaN(Number(telegramId))) {
-    localStorage.setItem("telegramId", telegramId.toString());
-    console.log("Telegram ID успешно сохранён в localStorage:", telegramId);
-  } else {
-    console.error("Не удалось получить корректный Telegram ID из WebApp. Проверьте initDataUnsafe:", initData);
-  }
-} else {
-  console.warn("Telegram WebApp не обнаружен. Проверьте окружение.");
-}
+//   if (telegramId && !isNaN(Number(telegramId))) {
+//     localStorage.setItem("telegramId", telegramId.toString());
+//     console.log("Telegram ID успешно сохранён в localStorage:", telegramId);
+//   } else {
+//     console.error("Не удалось получить корректный Telegram ID из WebApp. Проверьте initDataUnsafe:", initData);
+//   }
+// }
