@@ -200,6 +200,7 @@ btnTon.addEventListener('click', () => {
 
 // === CryptoBot Method Handler ===
 btnCryptoBot.addEventListener('click', () => {
+  console.log("Кнопка CryptoBot нажата");
   btnTonContainer.innerHTML = ``; // Очистка контейнера TON
   btnCryptoBot.classList.toggle('btnActive'); // Переключение состояния кнопки
 
@@ -220,6 +221,7 @@ btnCryptoBot.addEventListener('click', () => {
 
   modalFormCrypto.addEventListener("submit", async (event) => {
     event.preventDefault();
+    console.log("Форма CryptoBot отправлена");
     const amount = parseFloat(sumPayCrypto.value);
     if (isNaN(amount) || amount <= 0) {
       alert("Введите корректную сумму");
