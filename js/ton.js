@@ -70,7 +70,7 @@ async function updateBalance() {
 
 function getUserTelegramId() {
   const initData = window.Telegram?.WebApp?.initDataUnsafe;
-  const telegramId = initData?.user?.id;
+  const telegramId = initData?.user?.id?.toString(); // Преобразуем telegramId в строку
 
   if (telegramId) {
     localStorage.setItem("telegramId", telegramId);
@@ -212,7 +212,7 @@ btnCryptoBot.addEventListener('click', () => {
     }
     try {
       const telegramId = getUserTelegramId();
-      if (!telegramId || isNaN(Number(telegramId))) {
+      if (!telegramId) {
         alert("Некорректный telegramId. Пожалуйста, авторизуйтесь заново.");
         console.error("Некорректный telegramId:", telegramId);
         return;
