@@ -376,7 +376,7 @@ btnCryptoBot.addEventListener('click', () => {
 
 // === Создание инвойса через сервер ===
 async function createCryptoBotInvoice(amount, test = true, telegramId) {
-  const response = await fetch("/api/cryptobot/create-invoice", {
+  const response = await fetch("https://nftbot-4yi9.onrender.com/api/cryptobot/create-invoice", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
