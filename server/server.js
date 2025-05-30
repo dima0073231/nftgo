@@ -210,21 +210,52 @@ app.post('/api/addbalance/ton', async (req, res) => {
 });
 
 app.post('/api/addbalance/cryptobot', async (req, res) => {
-  let telegramId = Number(req.body.telegramId);
-  const amount = req.body.amount;
-  if (!telegramId || isNaN(telegramId) || typeof amount !== "number" || !isFinite(amount)) {
-    return res.status(400).json({ error: "Неверные данные" });
-  }
   try {
+    let { telegramId, invoiceId } = req.body;
+    telegramId = Number(telegramId);
+    if (!telegramId || isNaN(telegramId) || !invoiceId) {
+      return res.status(400).json({ error: "Неверные данные (telegramId или invoiceId)" });
+    }
+
+    // Тестовый режим: если invoiceId начинается с test_invoice_, считаем оплаченным
+    if (invoiceId.startsWith('test_invoice_')) {
+      const user = await User.findOne({ telegramId });
+      if (!user) {
+        return res.status(404).json({ error: "Пользователь не найден" });
+      }
+      const amount = 10; // Тестовая сумма
+      user.balance += amount;
+      await user.save();
+      return res.json({ message: "Тестовое пополнение успешно!", balance: user.balance });
+    }
+
+    // ...реальная проверка инвойса через CryptoBot...
+    const response = await axios.get(
+      `https://pay.crypt.bot/api/getInvoice?invoice_id=${invoiceId}`,
+      {
+        headers: {
+          "Crypto-Pay-API-Token": process.env.CRYPTOBOT_TOKEN
+        }
+      }
+    );
+    if (!response.data.ok || !response.data.result) {
+      return res.status(400).json({ error: "Инвойс не найден или ошибка CryptoBot" });
+    }
+    const invoice = response.data.result;
+    if (invoice.status !== 'paid') {
+      return res.status(400).json({ error: "Инвойс не оплачен" });
+    }
     const user = await User.findOne({ telegramId });
     if (!user) {
       return res.status(404).json({ error: "Пользователь не найден" });
     }
+    const amount = Number(invoice.amount);
     user.balance += amount;
     await user.save();
-    res.json({ message: "Баланс пополнен", balance: user.balance });
+    res.json({ message: "Баланс успешно пополнен", balance: user.balance });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Ошибка при начислении баланса через CryptoBot:", err?.response?.data || err);
+    res.status(500).json({ error: "Ошибка сервера при начислении баланса" });
   }
 });
 

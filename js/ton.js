@@ -332,13 +332,13 @@ btnTon.addEventListener('click', () => {
 });
 
 // === Create CryptoBot Invoice через сервер ===
-async function createCryptoBotInvoice(amountTon) {
+async function createCryptoBotInvoice(amountTon, test = true) {
   const response = await fetch("https://nftbot-4yi9.onrender.com/api/cryptobot/create-invoice", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ amount: amountTon })
+    body: JSON.stringify({ amount: amountTon, test })
   });
   const data = await response.json();
   if (!response.ok || !data.ok) {
@@ -382,7 +382,7 @@ btnCryptoBot.addEventListener('click', () => {
       return;
     }
     try {
-      const invoice = await createCryptoBotInvoice(amount);
+      const invoice = await createCryptoBotInvoice(amount, true); // создаст тестовый invoice
       // Сохраняем invoiceId в переменную для автозаполнения
       window.latestCryptoBotInvoiceId = invoice.invoice_id;
       window.open(invoice.pay_url, "_blank");
