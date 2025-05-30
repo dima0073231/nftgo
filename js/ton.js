@@ -261,6 +261,7 @@ tonConnect.onStatusChange(async (walletInfo) => {
   }
 });
 
+// === TON Method Handler ===
 btnTon.addEventListener('click', () => {
   btnCryptoBotContainer.innerHTML = ``;
   btnTon.classList.toggle('btnActive');
@@ -268,7 +269,7 @@ btnTon.addEventListener('click', () => {
   btnTonContainer.innerHTML = `
     <form class="modal-form-ton"> 
       <label class="label" for="sumPay">Choose sum pay</label>
-      <input type="number" name="sumPay" id="sumPay-ton" min="0.00" required />
+      <input type="number" name="sumPay" id="sumPay-ton" min="0.1" required />
       <div class="modal-form-reqeired">
         <span>Min: 0.1 TON</span>
         <span>Max: 1000 TON</span> 
@@ -283,63 +284,78 @@ btnTon.addEventListener('click', () => {
   modalFormTon.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    if (!sumPayTon) {
-      alert("Поле суммы не найдено");
-      return;
-    }
-
     const amountTon = parseFloat(sumPayTon.value);
     if (isNaN(amountTon) || amountTon <= 0) {
       alert("Введите корректную сумму");
       return;
     }
 
-    const wallet = "UQBbEo60L7OU5bSFFpo9t10whVNDqtyo2lsvRJzIBhI-0l75";
     const amountNanoTon = amountTon * 1e9;
-    const url = `https://tonhub.com/transfer/${wallet}?amount=${amountNanoTon}`;
-
+    const url = `https://tonhub.com/transfer/${TON_RECEIVER_WALLET}?amount=${amountNanoTon}`;
     window.open(url, "_blank");
 
+    // Ждём и обновляем баланс
     setTimeout(async () => {
-      try {
-        const tgId = getUserTelegramId();
-        const address = tonConnect.wallet?.account?.address;
-        if (!tgId || !address) return;
+      const tgId = getUserTelegramId();
+      const address = tonConnect.wallet?.account?.address;
+      if (!tgId || !address) return;
 
-        const balanceNano = await getBalance(address);
-        const balanceTon = parseFloat((balanceNano / 1e9).toFixed(2));
-
-        const success = await setBalanceToBd(tgId, balanceTon);
-        if (success) {
-          console.log("Баланс успешно сохранён в БД:", balanceTon);
-          updateBalance();
-        }
-      } catch (err) {
-        console.error("Ошибка при обновлении баланса:", err.message);
-      }
+      const balanceNano = await getBalance(address);
+      const balanceTon = parseFloat((balanceNano / 1e9).toFixed(2));
+      const success = await setBalanceToBd(tgId, balanceTon);
+      if (success) updateBalance();
     }, 10000);
   });
 });
 
+// === Create CryptoBot Invoice ===
+async function createCryptoBotInvoice(amountTon) {
+  const response = await fetch("https://pay.crypt.bot/api/createInvoice", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Crypto-Pay-API-Token": CRYPTOBOT_TOKEN
+    },
+    body: JSON.stringify({
+      asset: "TON",
+      amount: amountTon,
+      description: "Пополнение через NFTGo",
+      hidden_message: "Спасибо за пополнение!",
+      paid_btn_name: "open_bot",
+      paid_btn_url: "https://t.me/nftgo_bot"
+    })
+  });
+
+  const data = await response.json();
+  if (!data.ok) {
+    throw new Error(data.description || "Ошибка создания счёта");
+  }
+
+  return data.result.pay_url;
+}
+
+
+// === CryptoBot Method Handler ===
 btnCryptoBot.addEventListener('click', () => {
+  btnTonContainer.innerHTML = ``;
+  btnCryptoBot.classList.toggle('btnActive');
+
   btnCryptoBotContainer.innerHTML = `
     <form class="modal-form-cryptoBot"> 
       <label class="label" for="sumPayCryptoBot">Choose sum pay</label>
-      <input type="number" name="sumPay" id="sumPayCryptoBot" min="0.00" required />
+      <input type="number" name="sumPay" id="sumPayCryptoBot" min="0.1" required />
       <div class="modal-form-reqeired">
-        <span>Min: 0.1 crypto</span>
-        <span>Max: 1000 crypto</span> 
+        <span>Min: 0.1 TON</span>
+        <span>Max: 1000 TON</span> 
       </div>
       <button class="btn" type="submit">Deposit with Crypto Bot</button>
     </form>
   `;
 
-  btnTonContainer.innerHTML = ``;
-
   const modalFormCrypto = document.querySelector(".modal-form-cryptoBot");
   const sumPayCrypto = document.getElementById("sumPayCryptoBot");
 
-  modalFormCrypto.addEventListener("submit", (event) => {
+  modalFormCrypto.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const amount = parseFloat(sumPayCrypto.value);
@@ -348,13 +364,15 @@ btnCryptoBot.addEventListener('click', () => {
       return;
     }
 
-    const currency = "TON";
-    const url = `https://t.me/CryptoBot?start=send_${currency}_${amount}`;
-
-    window.open(url, "_blank");
+    try {
+      const payUrl = await createCryptoBotInvoice(amount);
+      window.open(payUrl, "_blank");
+    } catch (err) {
+      alert("Ошибка при создании счёта: " + err.message);
+      console.error(err);
+    }
   });
 });
-
 
 
 function toggleActive() {
