@@ -71,6 +71,7 @@ async function updateBalance() {
 // Извлечение telegramId из Telegram WebApp и сохранение в localStorage
 if (window.Telegram?.WebApp) {
   const initData = window.Telegram.WebApp.initDataUnsafe;
+  console.log("initDataUnsafe содержимое:", initData);
   const telegramId = initData?.user?.id;
 
   if (telegramId && !isNaN(Number(telegramId))) {
@@ -347,6 +348,7 @@ setInterval(() => {
 // Извлечение telegramId из Telegram WebApp и сохранение в localStorage
 if (window.Telegram?.WebApp) {
   const initData = window.Telegram.WebApp.initDataUnsafe;
+  console.log("initDataUnsafe содержимое:", initData);
   const telegramId = initData?.user?.id;
 
   if (telegramId && !isNaN(Number(telegramId))) {
