@@ -376,6 +376,8 @@ btnCryptoBot.addEventListener('click', () => {
 
 // === Создание инвойса через сервер ===
 async function createCryptoBotInvoice(amount, test = true, telegramId) {
+  console.log("Отправка запроса на создание инвойса:", { amount, test, telegramId }); // Логирование перед запросом
+
   const response = await fetch("https://nftbot-4yi9.onrender.com/api/cryptobot/create-invoice", {
     method: "POST",
     headers: {
@@ -384,9 +386,8 @@ async function createCryptoBotInvoice(amount, test = true, telegramId) {
     body: JSON.stringify({ amount, test, telegramId }),
   });
 
-  // Отладочный вывод для проверки ответа сервера
   const text = await response.text();
-  console.log("Ответ сервера:", text);
+  console.log("Ответ сервера:", text); // Логирование ответа сервера
 
   try {
     const data = JSON.parse(text);
@@ -395,6 +396,7 @@ async function createCryptoBotInvoice(amount, test = true, telegramId) {
     }
     return data.result;
   } catch (err) {
+    console.error("Ошибка обработки ответа сервера:", err); // Логирование ошибок
     throw new Error("Ошибка обработки ответа сервера: " + err.message);
   }
 }
