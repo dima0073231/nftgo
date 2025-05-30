@@ -63,6 +63,50 @@ app.get('/api/users/:telegramId/history', async (req, res) => {
   }
 });
 
+// Получить статус TON-транзакции по хешу
+app.get('/api/ton/transaction/:txHash', async (req, res) => {
+  try {
+    const txHash = req.params.txHash;
+    if (!txHash) return res.status(400).json({ ok: false, error: "txHash required" });
+
+    // Используем функцию с сервера
+    const response = await axios.get(
+      `https://toncenter.com/api/v2/getTransaction?hash=${txHash}&api_key=${process.env.TONCENTER_API_TOKEN}`
+    );
+    if (response.data.ok && response.data.result) {
+      return res.json({ ok: true, result: response.data.result });
+    }
+    return res.status(404).json({ ok: false, error: "Transaction not found" });
+  } catch (error) {
+    console.error("Error verifying TON transaction:", error);
+    res.status(500).json({ ok: false, error: "Server error" });
+  }
+});
+
+// Получить статус CryptoBot invoice по invoiceId
+app.get('/api/cryptobot/invoice/:invoiceId', async (req, res) => {
+  try {
+    const invoiceId = req.params.invoiceId;
+    if (!invoiceId) return res.status(400).json({ ok: false, error: "invoiceId required" });
+
+    const response = await axios.get(
+      `https://pay.crypt.bot/api/getInvoice?invoice_id=${invoiceId}`,
+      {
+        headers: {
+          "Crypto-Pay-API-Token": process.env.CRYPTOBOT_TOKEN
+        }
+      }
+    );
+    if (response.data.ok && response.data.result) {
+      return res.json({ ok: true, result: response.data.result });
+    }
+    return res.status(404).json({ ok: false, error: "Invoice not found" });
+  } catch (error) {
+    console.error("Error verifying CryptoBot invoice:", error);
+    res.status(500).json({ ok: false, error: "Server error" });
+  }
+});
+
 app.post('/api/users/:telegramId/history', async (req, res) => {
   const { telegramId } = req.params;
   const { date, betAmount, coefficient, result } = req.body;
@@ -86,8 +130,55 @@ app.post('/api/users/:telegramId/history', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+app.post('/api/addbalance/ton', async (req, res) => {
+  try {
+    const { telegramId, amount } = req.body; // amount — сколько добавить
+
+    if (!telegramId || typeof amount !== "number" || !isFinite(amount)) {
+      return res.status(400).json({ error: "Неверные данные" });
+    }
+
+    const user = await User.findOne({ telegramId });
+    if (!user) {
+      return res.status(404).json({ error: "Пользователь не найден" });
+    }
+
+    user.balance += amount;
+    await user.save();
+
+    res.json({ message: "Баланс пополнен", balance: user.balance });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/addbalance/cryptobot', async (req, res) => {
+  try {
+    const { telegramId, amount } = req.body; // amount — сколько добавить
+
+    if (!telegramId || typeof amount !== "number" || !isFinite(amount)) {
+      return res.status(400).json({ error: "Неверные данные" });
+    }
+
+    const user = await User.findOne({ telegramId });
+    if (!user) {
+      return res.status(404).json({ error: "Пользователь не найден" });
+    }
+
+    user.balance += amount;
+    await user.save();
+
+    res.json({ message: "Баланс пополнен", balance: user.balance });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
 const { ethers } = require('ethers');
-require('dotenv').config();
+
 
 // Настройки блокчейна
 const provider = new ethers.providers.JsonRpcProvider(process.env.BLOCKCHAIN_PROVIDER_URL);
