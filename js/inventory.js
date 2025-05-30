@@ -1,7 +1,7 @@
 import { setBalanceToBd } from "./frog-game.js";
 import { renderInventory } from "./buy-gift.js";
 import { telegramId } from "./profile.js";
-import { balance } from "./balance.js";
+import { balance, renderMainInventory } from "./balance.js";
 
 const sellBtns = document.querySelectorAll(".inventory-item__sell");
 
@@ -47,6 +47,7 @@ async function handleSellItem(clickedBtn, userId) {
 
     balance.value += price;
     const balanceUpdated = await setBalanceToBd(userId);
+    await renderMainInventory(userId);
 
     if (!balanceUpdated) {
       throw new Error("Не вдалося оновити баланс");
