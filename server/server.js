@@ -109,16 +109,17 @@ app.get('/api/cryptobot/invoice/:invoiceId', async (req, res) => {
 
 app.post("/api/cryptobot/create-invoice", async (req, res) => {
   try {
-    const { amount } = req.body;
-    if (!amount || typeof amount !== "number" || amount <= 0) {
-      return res.status(400).json({ ok: false, error: "Некорректная сумма" });
+    let { amount } = req.body;
+    amount = Number(amount);
+    if (!amount || isNaN(amount) || amount < 1) {
+      return res.status(400).json({ ok: false, error: "Минимальная сумма — 1 TON" });
     }
 
     const response = await axios.post(
       "https://pay.crypt.bot/api/createInvoice",
       {
         asset: "TON",
-        amount,
+        amount: amount.toString(), // CryptoBot API требует строку
         description: "Пополнение через NFTGo",
         hidden_message: "Спасибо за пополнение!",
         paid_btn_name: "open_bot",
@@ -138,7 +139,7 @@ app.post("/api/cryptobot/create-invoice", async (req, res) => {
 
     res.json({ ok: true, result: response.data.result });
   } catch (err) {
-    console.error("Ошибка при создании инвойса CryptoBot:", err);
+    console.error("Ошибка при создании инвойса CryptoBot:", err?.response?.data || err);
     res.status(500).json({ ok: false, error: "Ошибка сервера при создании инвойса" });
   }
 });
