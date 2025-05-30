@@ -383,7 +383,11 @@ btnCryptoBot.addEventListener('click', () => {
     }
     try {
       const invoice = await createCryptoBotInvoice(amount);
+      // Сохраняем invoiceId в переменную для автозаполнения
+      window.latestCryptoBotInvoiceId = invoice.invoice_id;
       window.open(invoice.pay_url, "_blank");
+      // Автоматически подставляем invoiceId в форму
+      invoiceIdInput.value = invoice.invoice_id;
       // Показываем форму для ввода invoiceId
       modalFormCrypto.style.display = 'none';
       modalFormCryptoInvoice.style.display = '';
@@ -395,21 +399,22 @@ btnCryptoBot.addEventListener('click', () => {
 
   modalFormCryptoInvoice.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const invoiceId = invoiceIdInput.value.trim();
+    // invoiceId теперь всегда берём из поля (оно автозаполнено)
+    const invoiceId = invoiceIdInput.value.trim() || window.latestCryptoBotInvoiceId;
     if (!invoiceId) {
       alert("Введите invoiceId");
       return;
     }
-    const address = tonConnect.wallet?.account?.address;
-    if (!address) {
-      alert("Сначала подключите TON-кошелек!");
+    const telegramId = getUserTelegramId();
+    if (!telegramId) {
+      alert("Не найден telegramId пользователя!");
       return;
     }
     try {
       const res = await fetch('https://nftbot-4yi9.onrender.com/api/addbalance/cryptobot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address, invoiceId })
+        body: JSON.stringify({ telegramId, invoiceId })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Ошибка пополнения');
@@ -421,6 +426,46 @@ btnCryptoBot.addEventListener('click', () => {
   });
 });
 
+// === Автоматическая проверка invoiceId из URL при загрузке ===
+window.addEventListener('DOMContentLoaded', async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const invoiceId = urlParams.get('invoiceId');
+  if (invoiceId) {
+    const telegramId = getUserTelegramId();
+    if (!telegramId) {
+      alert('Не найден telegramId пользователя!');
+      return;
+    }
+    try {
+      // Проверяем статус инвойса
+      const res = await fetch(`https://nftbot-4yi9.onrender.com/api/cryptobot/invoice/${invoiceId}`);
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        alert('Ошибка проверки оплаты: ' + (data.error || 'Не удалось проверить статус инвойса'));
+        return;
+      }
+      if (data.result.status === 'paid') {
+        // Если оплачен — начисляем баланс
+        const res2 = await fetch('https://nftbot-4yi9.onrender.com/api/addbalance/cryptobot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telegramId, invoiceId })
+        });
+        const data2 = await res2.json();
+        if (!res2.ok) throw new Error(data2.error || 'Ошибка начисления');
+        alert('Баланс успешно пополнен!');
+        updateBalance();
+        // Очищаем invoiceId из URL
+        urlParams.delete('invoiceId');
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else {
+        alert('Инвойс найден, но не оплачен. Попробуйте позже.');
+      }
+    } catch (err) {
+      alert('Ошибка автоматической проверки оплаты: ' + err.message);
+    }
+  }
+});
 
 function toggleActive() {
   if (modal) {

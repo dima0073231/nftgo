@@ -111,10 +111,26 @@ app.get('/api/cryptobot/invoice/:invoiceId', async (req, res) => {
 
 app.post("/api/cryptobot/create-invoice", async (req, res) => {
   try {
-    let { amount } = req.body;
+    let { amount, test } = req.body;
     amount = Number(amount);
     if (!amount || isNaN(amount) || amount < 1) {
       return res.status(400).json({ ok: false, error: "Минимальная сумма — 1 TON" });
+    }
+
+    // Тестовый режим: не создаём реальный инвойс, а возвращаем фейковый invoice_id и ссылку
+    if (test) {
+      const fakeInvoiceId = 'test_invoice_' + Math.floor(Math.random() * 1000000);
+      const testBotUrl = `https://t.me/nftgo_bot?start=invoice_${fakeInvoiceId}`;
+      return res.json({
+        ok: true,
+        result: {
+          invoice_id: fakeInvoiceId,
+          pay_url: 'https://t.me/nftgo_bot',
+          status: 'paid',
+          paid_btn_url: testBotUrl,
+          test_bot_url: testBotUrl
+        }
+      });
     }
 
     const response = await axios.post(
@@ -124,7 +140,7 @@ app.post("/api/cryptobot/create-invoice", async (req, res) => {
         amount: amount.toString(), // CryptoBot API требует строку
         description: "Пополнение через NFTGo",
         hidden_message: "Спасибо за пополнение!",
-        paid_btn_name: "openBot", // исправлено на валидное значение
+        paid_btn_name: "openBot",
         paid_btn_url: "https://t.me/nftgo_bot"
       },
       {
@@ -138,6 +154,12 @@ app.post("/api/cryptobot/create-invoice", async (req, res) => {
     if (!response.data.ok) {
       return res.status(400).json({ ok: false, error: response.data.description || "Ошибка CryptoBot" });
     }
+
+    // Формируем ссылку для перехода в бота с invoiceId (для теста)
+    const invoiceId = response.data.result.invoice_id;
+    const testBotUrl = `https://t.me/nftgo_bot?start=invoice_${invoiceId}`;
+    response.data.result.test_bot_url = testBotUrl;
+    console.log('Ссылка для теста перехода в бота:', testBotUrl);
 
     res.json({ ok: true, result: response.data.result });
   } catch (err) {
