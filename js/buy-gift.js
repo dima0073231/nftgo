@@ -275,12 +275,16 @@ const addToInventory = async function (userId, itemId, count, price) {
 
   try {
     // Сначала проверяем баланс пользователя
-    const balanceRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${userId}/balance`);
-    if (!balanceRes.ok) {
-      throw new Error("Не удалось получить баланс пользователя");
+    const usersRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users`);
+    if (!usersRes.ok) {
+      throw new Error("Не удалось получить список пользователей");
     }
-    const balanceData = await balanceRes.json();
-    const currentBalance = balanceData.balance;
+    const usersData = await usersRes.json();
+    const user = usersData.find(u => u.id === userId || u.telegramId === userId);
+    if (!user) {
+      throw new Error("Пользователь не найден");
+    }
+    const currentBalance = user.balance;
 
     if (currentBalance < price) {
       alert("Недостаточно средств на балансе для покупки подарка.");
