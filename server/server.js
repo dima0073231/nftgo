@@ -50,8 +50,10 @@ app.post('/api/users', async (req, res) => {
 });
 
 app.get('/api/users/:telegramId/history', async (req, res) => {
-  const { telegramId } = req.params;
-
+  let telegramId = Number(req.params.telegramId);
+  if (!telegramId || isNaN(telegramId)) {
+    return res.status(400).json({ error: 'Некорректный telegramId' });
+  }
   try {
     const user = await User.findOne({ telegramId });
     if (!user) {
@@ -122,7 +124,7 @@ app.post("/api/cryptobot/create-invoice", async (req, res) => {
         amount: amount.toString(), // CryptoBot API требует строку
         description: "Пополнение через NFTGo",
         hidden_message: "Спасибо за пополнение!",
-        paid_btn_name: "open_bot",
+        paid_btn_name: "openBot", // исправлено на валидное значение
         paid_btn_url: "https://t.me/nftgo_bot"
       },
       {
@@ -145,23 +147,21 @@ app.post("/api/cryptobot/create-invoice", async (req, res) => {
 });
 
 app.post('/api/users/:telegramId/history', async (req, res) => {
-  const { telegramId } = req.params;
+  let telegramId = Number(req.params.telegramId);
+  if (!telegramId || isNaN(telegramId)) {
+    return res.status(400).json({ error: 'Некорректный telegramId' });
+  }
   const { date, betAmount, coefficient, result } = req.body;
-
   if (!date || !betAmount || !coefficient || !result) {
     return res.status(400).json({ error: 'Недостаточно данных' });
   }
-
   try {
     const user = await User.findOne({ telegramId });
-
     if (!user) {
       return res.status(404).json({ error: 'Пользователь не найден' });
     }
-
     user.gameHistory.push({ date, betAmount, coefficient, result });
     await user.save();
-
     res.status(200).json({ message: 'История добавлена' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -169,21 +169,18 @@ app.post('/api/users/:telegramId/history', async (req, res) => {
 });
 
 app.post('/api/addbalance/ton', async (req, res) => {
+  let telegramId = Number(req.body.telegramId);
+  const amount = req.body.amount;
+  if (!telegramId || isNaN(telegramId) || typeof amount !== "number" || !isFinite(amount)) {
+    return res.status(400).json({ error: "Неверные данные" });
+  }
   try {
-    const { telegramId, amount } = req.body; // amount — сколько добавить
-
-    if (!telegramId || typeof amount !== "number" || !isFinite(amount)) {
-      return res.status(400).json({ error: "Неверные данные" });
-    }
-
     const user = await User.findOne({ telegramId });
     if (!user) {
       return res.status(404).json({ error: "Пользователь не найден" });
     }
-
     user.balance += amount;
     await user.save();
-
     res.json({ message: "Баланс пополнен", balance: user.balance });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -191,21 +188,18 @@ app.post('/api/addbalance/ton', async (req, res) => {
 });
 
 app.post('/api/addbalance/cryptobot', async (req, res) => {
+  let telegramId = Number(req.body.telegramId);
+  const amount = req.body.amount;
+  if (!telegramId || isNaN(telegramId) || typeof amount !== "number" || !isFinite(amount)) {
+    return res.status(400).json({ error: "Неверные данные" });
+  }
   try {
-    const { telegramId, amount } = req.body; // amount — сколько добавить
-
-    if (!telegramId || typeof amount !== "number" || !isFinite(amount)) {
-      return res.status(400).json({ error: "Неверные данные" });
-    }
-
     const user = await User.findOne({ telegramId });
     if (!user) {
       return res.status(404).json({ error: "Пользователь не найден" });
     }
-
     user.balance += amount;
     await user.save();
-
     res.json({ message: "Баланс пополнен", balance: user.balance });
   } catch (err) {
     res.status(500).json({ error: err.message });

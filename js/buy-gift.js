@@ -280,7 +280,7 @@ const addToInventory = async function (userId, itemId, count, price) {
       throw new Error("Не удалось получить список пользователей");
     }
     const usersData = await usersRes.json();
-    const user = usersData.find(u => u.id === userId || u.telegramId === userId);
+    const user = usersData.find(u => u.id === Number(userId) || u.telegramId === Number(userId));
     if (!user) {
       throw new Error("Пользователь не найден");
     }
@@ -293,7 +293,7 @@ const addToInventory = async function (userId, itemId, count, price) {
 
     // Обновляем инвентарь
     const updateRes = await fetch(
-      `https://nftbot-4yi9.onrender.com/api/users/${userId}/inventory`,
+      `https://nftbot-4yi9.onrender.com/api/users/${Number(userId)}/inventory`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -311,7 +311,7 @@ const addToInventory = async function (userId, itemId, count, price) {
     }
 
     // Списываем деньги с баланса
-    const deductRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${userId}/balance`, {
+    const deductRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${Number(userId)}/balance`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ balance: currentBalance - price }),
@@ -420,7 +420,7 @@ buyBtn.addEventListener("click", () => {
     alert("Сначала выбери подарок!");
     return;
   }
-  addToInventory(telegramId, selectedItem.name, 1, selectedItem.price);
+  addToInventory(Number(telegramId), selectedItem.name, 1, selectedItem.price);
 });
 
 // Открытие/закрытие модалки
@@ -543,6 +543,7 @@ export { renderInventory, gifts };
 
 //       const data = await response.json();
 //       alert(data.dataResults?.order || "Подарок успешно заказан!");
+
 //     } catch (error) {
 //       console.error("Ошибка запроса:", error);
 //       alert("Ошибка при отправке запроса на сервер");
