@@ -331,149 +331,73 @@ btnTon.addEventListener('click', () => {
   });
 });
 
-// === Create CryptoBot Invoice через сервер ===
-async function createCryptoBotInvoice(amountTon, test = true) {
-  const response = await fetch("https://nftbot-4yi9.onrender.com/api/cryptobot/create-invoice", {
+// === Создание инвойса через сервер ===
+async function createCryptoBotInvoice(amount, test = true, telegramId) {
+  const response = await fetch("/api/cryptobot/create-invoice", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ amount: amountTon, test })
+    body: JSON.stringify({ amount, test, telegramId }),
   });
   const data = await response.json();
   if (!response.ok || !data.ok) {
-    throw new Error(data.error || data.description || "Ошибка создания счёта");
+    throw new Error(data.error || "Ошибка создания счёта");
   }
   return data.result;
 }
 
-// === CryptoBot Method Handler ===
-btnCryptoBot.addEventListener('click', () => {
-  btnTonContainer.innerHTML = ``;
-  btnCryptoBot.classList.toggle('btnActive');
+// === Проверка статуса инвойса ===
+async function checkInvoiceStatus(invoiceId) {
+  const response = await fetch(`/api/cryptobot/invoice/${invoiceId}`);
+  const data = await response.json();
+  if (!response.ok || !data.ok) {
+    throw new Error(data.error || "Ошибка проверки статуса инвойса");
+  }
+  return data.result.status;
+}
 
-  btnCryptoBotContainer.innerHTML = `
-    <form class="modal-form-cryptoBot"> 
-      <label class="label" for="sumPayCryptoBot">Сумма пополнения (TON)</label>
-      <input type="number" name="sumPay" id="sumPayCryptoBot" min="0.1" required />
-      <div class="modal-form-reqeired">
-        <span>Min: 0.1 TON</span>
-        <span>Max: 1000 TON</span> 
-      </div>
-      <button class="btn" type="submit">Создать счет CryptoBot</button>
-    </form>
-  `;
-
-  const modalFormCrypto = document.querySelector(".modal-form-cryptoBot");
-  const sumPayCrypto = document.getElementById("sumPayCryptoBot");
-
-  modalFormCrypto.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const amount = parseFloat(sumPayCrypto.value);
-    if (isNaN(amount) || amount <= 0) {
-      alert("Введите корректную сумму");
-      return;
-    }
-    try {
-      const invoice = await createCryptoBotInvoice(amount, false); // создаём реальный invoice
-      // Открываем ссылку на оплату в новой вкладке
-      window.open(invoice.pay_url, "_blank");
-      // Ждём 2 секунды и перенаправляем пользователя на эту же страницу с invoiceId
-      setTimeout(() => {
-        window.location.href = window.location.pathname + '?invoiceId=' + encodeURIComponent(invoice.invoice_id);
-      }, 2000);
-    } catch (err) {
-      alert("Ошибка при создании счёта: " + err.message);
-      console.error(err);
-    }
+// === Обновление статуса инвойса ===
+async function updateInvoiceStatus(invoiceId, status) {
+  const response = await fetch("/api/cryptobot/update-invoice", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ invoiceId, status }),
   });
-});
+  const data = await response.json();
+  if (!response.ok || !data.ok) {
+    throw new Error(data.error || "Ошибка обновления статуса инвойса");
+  }
+  return data.result;
+}
 
-// === Автоматическая проверка invoiceId и start из URL при загрузке ===
-window.addEventListener('DOMContentLoaded', async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const invoiceId = urlParams.get('invoiceId');
-  const startParam = urlParams.get('start');
-  const telegramId = getUserTelegramId();
-  // Приводим к числу и валидируем telegramId
-  const telegramIdNum = Number(telegramId);
-  if (!telegramIdNum || isNaN(telegramIdNum)) {
-    if (invoiceId || startParam === '12345') {
-      alert('Некорректный telegramId пользователя!');
-    }
-    return;
-  }
-  // --- Тестовый сценарий через start=12345 ---
-  if (startParam === '12345') {
+// === Автоматическая проверка последнего инвойса ===
+if (window.latestCryptoBotInvoiceId) {
+  async function checkInvoice() {
     try {
-      // Тестовый режим: начисляем баланс напрямую через PATCH (без обращения к /api/addbalance/cryptobot)
-      // Получаем текущий баланс
-      const balanceRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${telegramIdNum}`);
-      const userData = await balanceRes.json();
-      if (!balanceRes.ok || !userData.balance) throw new Error('Ошибка получения баланса');
-      const newBalance = userData.balance + 100; // Например, начисляем 100 TON (замени на нужное значение)
-      const updateRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${telegramIdNum}/balance`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ balance: newBalance })
-      });
-      if (!updateRes.ok) throw new Error('Ошибка начисления');
-      alert('Баланс успешно пополнен (тест, start)!');
-      updateBalance();
-      urlParams.delete('start');
-      window.history.replaceState({}, document.title, window.location.pathname);
-      return;
-    } catch (err) {
-      alert('Ошибка автоматического тестового начисления: ' + err.message);
-      return;
-    }
-  }
-  // --- Обычная и тестовая обработка invoiceId ---
-  if (invoiceId) {
-    try {
-      if (invoiceId.startsWith('test_invoice_')) {
-        // Тестовый режим: сразу начисляем баланс
-        const res2 = await fetch('https://nftbot-4yi9.onrender.com/api/addbalance/cryptobot', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ telegramId: telegramIdNum, invoiceId })
-        });
-        const data2 = await res2.json();
-        if (!res2.ok) throw new Error(data2.error || 'Ошибка начисления');
-        alert('Баланс успешно пополнен (тест)!');
+      const status = await checkInvoiceStatus(window.latestCryptoBotInvoiceId);
+      if (status === "paid") {
+        await updateInvoiceStatus(window.latestCryptoBotInvoiceId, "paid");
+        alert("Баланс успешно пополнен!");
         updateBalance();
-        urlParams.delete('invoiceId');
-        window.history.replaceState({}, document.title, window.location.pathname);
-        return;
-      }
-      // Обычный режим: проверяем статус инвойса через сервер
-      const res = await fetch(`https://nftbot-4yi9.onrender.com/api/cryptobot/invoice/${invoiceId}`);
-      const data = await res.json();
-      if (!res.ok || !data.ok) {
-        alert('Ошибка проверки оплаты: ' + (data.error || 'Не удалось проверить статус инвойса'));
-        return;
-      }
-      if (data.result.status === 'paid') {
-        // Если оплачен — начисляем баланс
-        const res2 = await fetch('https://nftbot-4yi9.onrender.com/api/addbalance/cryptobot', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ telegramId: telegramIdNum, invoiceId })
-        });
-        const data2 = await res2.json();
-        if (!res2.ok) throw new Error(data2.error || 'Ошибка начисления');
-        alert('Баланс успешно пополнен!');
-        updateBalance();
-        urlParams.delete('invoiceId');
-        window.history.replaceState({}, document.title, window.location.pathname);
+        window.latestCryptoBotInvoiceId = null;
+      } else if (status === "pending") {
+        setTimeout(checkInvoice, 3000);
       } else {
-        alert('Инвойс найден, но не оплачен. Попробуйте позже.');
+        alert("Инвойс отменён или недействителен.");
+        window.latestCryptoBotInvoiceId = null;
       }
     } catch (err) {
-      alert('Ошибка автоматической проверки оплаты: ' + err.message);
+      console.error("Ошибка проверки инвойса:", err);
     }
   }
-});
+  checkInvoice();
+}
+
+// === Глобальная переменная для хранения последнего invoiceId (устранение ошибки TS) ===
+if (typeof window.latestCryptoBotInvoiceId === 'undefined') window.latestCryptoBotInvoiceId = null;
 
 function toggleActive() {
   if (modal) {
