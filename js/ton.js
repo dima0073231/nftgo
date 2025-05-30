@@ -194,7 +194,9 @@ async function updateBalance() {
 // });
 
 function getUserTelegramId() {
-  return localStorage.getItem("telegramId"); // Замени на свою реалізацію, якщо треба
+  const telegramId = localStorage.getItem("telegramId");
+  console.log("Полученный telegramId:", telegramId); // Логирование значения telegramId
+  return telegramId;
 }
 
 // async function getBalance(address) {
