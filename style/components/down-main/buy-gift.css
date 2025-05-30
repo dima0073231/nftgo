@@ -367,10 +367,15 @@
   }
 }
 .inventory-down-main-item__cashout {
-  width: 68px;
+  text-transform: uppercase;
+  margin-top: 5px;
+  border-radius: 30px;
+  width: 74px;
   height: 30px;
   color: #fff;
   text-align: center;
+  font-size: 15px;
+  font-weight: 500;
   background-image: linear-gradient(90deg, #8845f5 42.65%, #4f288f 100%);
 }
 .inventory-item__wrapper {
