@@ -107,6 +107,42 @@ app.get('/api/cryptobot/invoice/:invoiceId', async (req, res) => {
   }
 });
 
+app.post("/api/cryptobot/create-invoice", async (req, res) => {
+  try {
+    const { amount } = req.body;
+    if (!amount || typeof amount !== "number" || amount <= 0) {
+      return res.status(400).json({ ok: false, error: "Некорректная сумма" });
+    }
+
+    const response = await axios.post(
+      "https://pay.crypt.bot/api/createInvoice",
+      {
+        asset: "TON",
+        amount,
+        description: "Пополнение через NFTGo",
+        hidden_message: "Спасибо за пополнение!",
+        paid_btn_name: "open_bot",
+        paid_btn_url: "https://t.me/nftgo_bot"
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Crypto-Pay-API-Token": process.env.CRYPTOBOT_TOKEN
+        }
+      }
+    );
+
+    if (!response.data.ok) {
+      return res.status(400).json({ ok: false, error: response.data.description || "Ошибка CryptoBot" });
+    }
+
+    res.json({ ok: true, result: response.data.result });
+  } catch (err) {
+    console.error("Ошибка при создании инвойса CryptoBot:", err);
+    res.status(500).json({ ok: false, error: "Ошибка сервера при создании инвойса" });
+  }
+});
+
 app.post('/api/users/:telegramId/history', async (req, res) => {
   const { telegramId } = req.params;
   const { date, betAmount, coefficient, result } = req.body;
