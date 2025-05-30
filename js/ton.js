@@ -348,28 +348,3 @@ if (window.Telegram?.WebApp) {
     console.error("Не удалось получить корректный Telegram ID из WebApp. Проверьте initDataUnsafe:", initData);
   }
 }
-
-// Проверка и логирование извлечения telegramId из localStorage
-function getUserTelegramId() {
-  const telegramId = localStorage.getItem("telegramId");
-  if (!telegramId || isNaN(Number(telegramId))) {
-    console.error("Telegram ID отсутствует или некорректен в localStorage.");
-    return null;
-  }
-  console.log("Извлечён Telegram ID из localStorage:", telegramId);
-  return telegramId;
-}
-
-// Извлечение telegramId из Telegram WebApp и сохранение в localStorage
-if (window.Telegram?.WebApp) {
-  const initData = window.Telegram.WebApp.initDataUnsafe;
-  console.log("initDataUnsafe содержимое:", initData);
-  const telegramId = initData?.user?.id;
-
-  if (telegramId && !isNaN(Number(telegramId))) {
-    localStorage.setItem("telegramId", telegramId.toString());
-    console.log("Telegram ID успешно сохранён в localStorage:", telegramId);
-  } else {
-    console.error("Не удалось получить корректный Telegram ID из WebApp. Проверьте initDataUnsafe:", initData);
-  }
-}
