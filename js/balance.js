@@ -244,7 +244,7 @@ new Swiper(".bet-count__swiper", {
 });
 new Swiper(".down-main-inventory__swiper", {
   direction: "horizontal",
-  slidesPerView: "auto",
+  slidesPerView: 1,
   freeMode: true,
   mousewheel: true,
 });
