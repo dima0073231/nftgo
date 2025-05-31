@@ -110,9 +110,13 @@ app.post('/api/cryptobot/create-invoice', async (req, res) => {
       paid_btn_url: 'https://t.me/nftgo_bot'
     });
 
+    if (!invoice || !invoice.invoice_id) {
+      throw new Error('Ошибка: сервер CryptoBot не вернул invoice_id');
+    }
+
     // Сохранение инвойса в базу данных
     const newInvoice = new Invoice({
-      invoiceId: invoice.invoice_id,
+      invoiceId: invoice.invoice_id, // Убедимся, что invoice_id передается
       telegramId,
       amount,
       status: 'pending'
