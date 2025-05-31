@@ -103,11 +103,11 @@ function changeBet(field, fixedBtns, changeBtns, selectBtn) {
   let currentOperation = "";
   let currentValue = Number(field.value) || 0;
 
-  // Обработка кнопок плюс/минус
   changeBtns.forEach((el) => {
     el.addEventListener("click", () => {
       if (getIsGameActive()) return;
       currentOperation = el.id;
+      currentValue = Number(field.value)
       if (currentOperation === "plus") {
         currentValue += 1;
       } else if (currentValue - 1 >= 0) {
