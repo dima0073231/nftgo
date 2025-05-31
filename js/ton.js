@@ -451,6 +451,7 @@ if (typeof window.latestCryptoBotInvoiceId === 'undefined') window.latestCryptoB
 function toggleActive() {
   if (modal) {
     modal.classList.toggle("activess");
+    console.log("Текущее состояние modal:", modal.classList);
   }
 }
 
