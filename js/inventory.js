@@ -9,6 +9,9 @@ document.addEventListener("click", async function (e) {
   if (e.target.closest(".inventory-item__sell")) {
     const sellBtn = e.target.closest(".inventory-item__sell");
     await handleSellItem(sellBtn, telegramId);
+  } else if (e.target.closest(".inventory-item__withdraw")) {
+    const withdrawBtn = e.target.closest(".inventory-item__withdraw");
+    await handleWithdrawItem(withdrawBtn, telegramId);
   }
 });
 
@@ -68,6 +71,45 @@ async function handleSellItem(clickedBtn, userId) {
     }
   } catch (err) {
     console.error("Помилка при продажі:", err);
+    alert("Помилка: " + err.message);
+  }
+}
+
+async function handleWithdrawItem(clickedBtn, userId) {
+  const item = clickedBtn.closest(".inventory-item");
+  if (!item) {
+    console.error("Не вдалося знайти елемент інвентаря");
+    return;
+  }
+
+  const nameElement = item.querySelector(".inventory-item__name");
+
+  if (!nameElement) {
+    console.error("Не вдалося знайти назву предмета");
+    return;
+  }
+
+  const name = nameElement.textContent.trim();
+
+  try {
+    const { exec } = require("child_process");
+    exec(
+      `python c:/Users/PIV/Desktop/StavkiNFT2.0/nftgo/python/sendGift.py ${userId} "${name}"`,
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Помилка виконання скрипта: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`Помилка: ${stderr}`);
+          return;
+        }
+        console.log(`Результат: ${stdout}`);
+        alert("Подарунок успішно надіслано!");
+      }
+    );
+  } catch (err) {
+    console.error("Помилка при виведенні подарунка:", err);
     alert("Помилка: " + err.message);
   }
 }

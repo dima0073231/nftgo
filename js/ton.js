@@ -235,6 +235,7 @@ btnCryptoBot.addEventListener('click', () => {
 
   const modalFormCrypto = document.querySelector(".modal-form-cryptoBot");
   const sumPayCrypto = document.getElementById("sumPayCryptoBot");
+  sumPayCrypto.setAttribute("step", "0.1"); // Разрешаем шаг в 0.1 для ввода дробных значений
 
   modalFormCrypto.addEventListener("submit", async (event) => {
     event.preventDefault();
