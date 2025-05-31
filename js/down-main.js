@@ -43,7 +43,7 @@ if (betToggle) {
 
 betBtn.forEach((btn, index) => {
   btn.addEventListener("click", () => {
-    const betValue = Number(fieldBet[index].textContent);
+    const betValue = Number(fieldBet[index].value);
     const userName = userNames.textContent.trim();
     const userAvatar = userProfImg.src;
 

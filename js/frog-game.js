@@ -266,7 +266,7 @@ function stopGame() {
       isWin = false;
 
       // Обнуляємо програну ставку
-      field.textContent = "0";
+      field.value = "0";
       field.dataset.bet = "0";
     }
   });

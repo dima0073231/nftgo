@@ -101,14 +101,21 @@ stopBtns.forEach((btn) => {
 
 function changeBet(field, fixedBtns, changeBtns, selectBtn) {
   let currentOperation = "";
-  let currentValue = Number(field.textContent) || 0;
+  let currentValue = Number(field.value) || 0;
 
   // Обработка кнопок плюс/минус
   changeBtns.forEach((el) => {
     el.addEventListener("click", () => {
       if (getIsGameActive()) return;
-      currentOperation = el.id; // например "plus" или "minus"
-      console.log("Текущая операция:", currentOperation);
+      currentOperation = el.id;
+      if (currentOperation === "plus") {
+        currentValue += 1;
+      } else if (currentValue - 1 >= 0) {
+        currentValue -= 1;
+      }
+      field.value = currentValue;
+
+      // console.log("Текущая операция:", currentOperation);
     });
   });
 
@@ -117,7 +124,7 @@ function changeBet(field, fixedBtns, changeBtns, selectBtn) {
 
     if (currentValue === 0) {
       alert("Сделайте ставку");
-      field.textContent = "0";
+      field.value = "0";
       bet = 0;
     } else if (currentValue <= balance.value) {
       bet = currentValue;
@@ -133,7 +140,7 @@ function changeBet(field, fixedBtns, changeBtns, selectBtn) {
     `;
       alert("Ставка сделана");
       field.dataset.bet = bet;
-      field.textContent = "0";
+      field.value = "0";
       currentValue = 0;
       bet = 0;
       window.dispatchEvent(
@@ -141,7 +148,7 @@ function changeBet(field, fixedBtns, changeBtns, selectBtn) {
       );
     } else {
       alert("Недостаточно средств на балансе");
-      field.textContent = "0";
+      field.value = "0";
       currentValue = 0;
       bet = 0;
     }
@@ -153,11 +160,11 @@ function changeBet(field, fixedBtns, changeBtns, selectBtn) {
       if (getIsGameActive()) return;
       const num = Number(el.textContent);
       if (currentOperation === "plus") {
-        currentValue += num;
-      } else if (currentOperation === "minus" && currentValue >= num) {
-        currentValue -= num;
+        currentValue = num;
+      } else {
+        currentValue = num;
       }
-      field.textContent = currentValue;
+      field.value = currentValue;
     });
   });
 }

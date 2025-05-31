@@ -432,7 +432,13 @@
   line-height: 0.92;
   text-align: center;
   color: #fff;
-  width: 66px;
+  width: 55px;
+  background-color: transparent;
+  outline: none;
+  border: none;
+}
+.select-bet-count__number:focus {
+  outline: none;
 }
 .select-bet-count__icon {
   width: 25px;
