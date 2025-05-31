@@ -445,4 +445,24 @@ async function handleCryptoBotPayment(amount, telegramId) {
   }
 }
 
+// === Глобальная переменная для хранения последнего invoiceId (устранение ошибки TS) ===Add commentMore actions
+if (typeof window.latestCryptoBotInvoiceId === 'undefined') window.latestCryptoBotInvoiceId = null;
 
+
+function toggleActive() {
+  if (modal) {
+    modal.classList.toggle("activess");
+
+  }
+}
+if (mainBalance) {
+  mainBalance.addEventListener("click", toggleActive);
+}
+if (closeBtn) {
+  closeBtn.addEventListener("click", toggleActive);
+}
+setInterval(() => {
+  if (tonConnect.wallet && tonConnect.wallet.account) {
+    updateBalance();
+  }
+}, 10000);
