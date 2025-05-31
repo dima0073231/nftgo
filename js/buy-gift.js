@@ -153,25 +153,15 @@ function initSwiper() {
 
   giftsSwiper = new Swiper(".grid", {
     direction: "vertical",
-    freeMode: {
-      enabled: true,
-      sticky: true, // Додає "пружинний" ефект в кінці
-      momentumBounce: false, // Вимкнення відскоку за межі
-    },
-    mousewheel: {
-      releaseOnEdges: true, // Вимкнення скролу за межі
-      forceToAxis: true,
-    },
+    freeMode: true,
+    mousewheel: true,
     slidesPerView: "auto",
     spaceBetween: 10,
     scrollbar: {
       el: ".buy-gift__swiper-scrollbar",
       draggable: true,
-      snapOnRelease: true,
     },
-    watchOverflow: false,
-    resistance: false, // Вимкнення ефекту опору
-    resistanceRatio: 0, // Повне вимкнення опору
+
     breakpoints: {
       0: {
         slidesPerColumn: 2,
@@ -280,7 +270,9 @@ const addToInventory = async function (userId, itemId, count, price) {
       throw new Error("Не удалось получить список пользователей");
     }
     const usersData = await usersRes.json();
-    const user = usersData.find(u => u.id === Number(userId) || u.telegramId === Number(userId));
+    const user = usersData.find(
+      (u) => u.id === Number(userId) || u.telegramId === Number(userId)
+    );
     if (!user) {
       throw new Error("Пользователь не найден");
     }
@@ -311,11 +303,14 @@ const addToInventory = async function (userId, itemId, count, price) {
     }
 
     // Списываем деньги с баланса
-    const deductRes = await fetch(`https://nftbot-4yi9.onrender.com/api/users/${Number(userId)}/balance`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ balance: currentBalance - price }),
-    });
+    const deductRes = await fetch(
+      `https://nftbot-4yi9.onrender.com/api/users/${Number(userId)}/balance`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ balance: currentBalance - price }),
+      }
+    );
 
     if (!deductRes.ok) {
       throw new Error("Не удалось списать средства с баланса");

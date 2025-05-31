@@ -95,7 +95,7 @@ setInterval(updateButtonsState, 100);
 stopBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
     if (getIsGameActive()) return;
-    fieldBet.forEach((field) => (field.textContent = "0"));
+    fieldBet.forEach((field) => (field.value = "0"));
   });
 });
 
