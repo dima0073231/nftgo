@@ -260,10 +260,14 @@ btnCryptoBot.addEventListener('click', () => {
       link.href = invoice.pay_url;
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
+      link.style.display = 'none'; // Скрываем элемент для предотвращения визуального воздействия
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.latestCryptoBotInvoiceId = invoice.invoice_id;
+
+      // Перенаправляем пользователя на ссылку бота
+      window.location.href = invoice.pay_url;
 
       // Проверяем статус счета каждые 5 секунд
       const intervalId = setInterval(async () => {
