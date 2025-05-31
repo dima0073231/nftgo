@@ -461,6 +461,10 @@ if (mainBalance) {
 if (closeBtn) {
   closeBtn.addEventListener("click", toggleActive);
 }
+// Добавляем обработчик для кнопки открытия модального окна
+if (openBtn) {
+  openBtn.addEventListener("click", toggleActive);
+}
 setInterval(() => {
   if (tonConnect.wallet && tonConnect.wallet.account) {
     updateBalance();
