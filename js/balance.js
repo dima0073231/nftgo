@@ -107,7 +107,7 @@ function changeBet(field, fixedBtns, changeBtns, selectBtn) {
     el.addEventListener("click", () => {
       if (getIsGameActive()) return;
       currentOperation = el.id;
-      currentValue = Number(field.value)
+      currentValue = Number(field.value);
       if (currentOperation === "plus") {
         currentValue += 1;
       } else if (currentValue - 1 >= 0) {
@@ -121,7 +121,7 @@ function changeBet(field, fixedBtns, changeBtns, selectBtn) {
 
   selectBtn.addEventListener("click", () => {
     if (getIsGameActive()) return;
-
+    currentValue = Number(field.value);
     if (currentValue === 0) {
       alert("Сделайте ставку");
       field.value = "0";
