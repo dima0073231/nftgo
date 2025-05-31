@@ -1,4 +1,4 @@
-const inventoryBtn = document.querySelector(".user-page-inv__btn--inv");
+const inventoryBtn = document.querySelector(".user-page-inv__btn");
 // const inventorySection = document.querySelector(".user-page-inventory");
 // const startPlayingBtn = document.querySelector(
 //   ".user-page-inventory__empty-btn"
@@ -338,5 +338,91 @@ async function checkInventoryItems(tgId) {
     }
   } catch (err) {
     console.log("Ошибка:", err.message);
+  }
+}
+
+document.addEventListener("click", async function (e) {
+  if (e.target.closest(".profile-item__withdraw")) {
+    const withdrawBtn = e.target.closest(".profile-item__withdraw");
+    await handleWithdrawItem(withdrawBtn, telegramId);
+  }
+});
+
+async function handleWithdrawItem(clickedBtn, userId) {
+  const item = clickedBtn.closest(".profile-item");
+  if (!item) {
+    console.error("Не удалось найти элемент профиля");
+    return;
+  }
+
+  const nameElement = item.querySelector(".profile-item__name");
+
+  if (!nameElement) {
+    console.error("Не удалось найти название предмета");
+    return;
+  }
+
+  const name = nameElement.textContent.trim();
+
+  try {
+    const { exec } = require("child_process");
+    exec(`python c:/Users/PIV/Desktop/StavkiNFT2.0/nftgo/python/sendGift.py ${userId} "${name}"`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Ошибка выполнения скрипта: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`Ошибка: ${stderr}`);
+        return;
+      }
+      console.log(`Результат: ${stdout}`);
+      alert("Подарок успешно отправлен!");
+    });
+  } catch (err) {
+    console.error("Ошибка при выводе подарка:", err);
+    alert("Ошибка: " + err.message);
+  }
+}
+
+document.addEventListener("click", async function (e) {
+  if (e.target.closest(".inventory-item__cashout")) {
+    const cashoutBtn = e.target.closest(".inventory-item__cashout");
+    await handleCashoutItem(cashoutBtn, telegramId);
+  }
+});
+
+async function handleCashoutItem(clickedBtn, userId) {
+  const item = clickedBtn.closest(".inventory-item");
+  if (!item) {
+    console.error("Не удалось найти элемент инвентаря");
+    return;
+  }
+
+  const nameElement = item.querySelector(".inventory-item__name");
+
+  if (!nameElement) {
+    console.error("Не удалось найти название предмета");
+    return;
+  }
+
+  const name = nameElement.textContent.trim();
+
+  try {
+    const { exec } = require("child_process");
+    exec(`python c:/Users/PIV/Desktop/StavkiNFT2.0/nftgo/python/sendGift.py ${userId} "${name}"`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Ошибка выполнения скрипта: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`Ошибка: ${stderr}`);
+        return;
+      }
+      console.log(`Результат: ${stdout}`);
+      alert("Подарок успешно отправлен!");
+    });
+  } catch (err) {
+    console.error("Ошибка при выводе подарка:", err);
+    alert("Ошибка: " + err.message);
   }
 }
