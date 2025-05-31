@@ -175,8 +175,13 @@ btnTon.addEventListener('click', () => {
       return;
     }
     // Открываем ссылку на оплату
-    const url = `https://tonhub.com/transfer/${TON_RECEIVER_WALLET}?amount=${amountTon * 1e9}`;
-    window.open(url, "_blank");
+    const link = document.createElement('a');
+    link.href = `https://tonhub.com/transfer/${TON_RECEIVER_WALLET}?amount=${amountTon * 1e9}`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     // Показываем форму для ввода хеша
     modalFormTon.style.display = 'none';
     modalFormTonHash.style.display = '';
@@ -251,7 +256,13 @@ btnCryptoBot.addEventListener('click', () => {
         throw new Error("Ошибка: сервер не вернул ссылку на оплату. Попробуйте позже.");
       }
       // Открываем ссылку на оплату в новой вкладке
-      window.open(invoice.pay_url, "_blank");
+      const link = document.createElement('a');
+      link.href = invoice.pay_url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       window.latestCryptoBotInvoiceId = invoice.invoice_id;
 
       // Проверяем статус счета каждые 5 секунд
