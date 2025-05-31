@@ -6,6 +6,7 @@ const path = require('path');
 const http = require('http');
 const WebSocket = require('ws');
 const CryptoBotAPI = require('crypto-bot-api');
+const axios = require('axios');
 
 const User = require('./api/users'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
@@ -94,38 +95,47 @@ app.get('/api/ton/transaction/:txHash', async (req, res) => {
 
 // === Создание инвойса ===
 app.post('/api/cryptobot/create-invoice', async (req, res) => {
+  let { amount } = req.body;
+  amount = Number(amount);
+  if (!amount || isNaN(amount) || amount < 1) {
+    return res.status(400).json({ ok: false, error: 'Минимальная сумма — 1 TON' });
+  }
+
   try {
-    let { amount, telegramId } = req.body;
-    amount = Number(amount);
-    if (!amount || isNaN(amount) || amount < 1) {
-      return res.status(400).json({ ok: false, error: 'Минимальная сумма — 1 TON' });
-    }
+    const response = await axios.post(
+      'https://pay.crypt.bot/api/createInvoice',
+      {
+        asset: 'TON',
+        amount: amount.toString(), // CryptoBot API требует строку
+        description: 'Пополнение через NFTGo',
+        hidden_message: 'Спасибо за пополнение!',
+        paid_btn_name: 'openBot', // исправлено на валидное значение
+        paid_btn_url: 'https://t.me/nftgo_bot'
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Crypto-Pay-API-Token': process.env.CRYPTOBOT_TOKEN
+        }
+      }
+    );
 
-    const invoice = await cryptoBotClient.createInvoice({
-      asset: 'TON',
-      amount: amount.toString(),
-      description: 'Пополнение через NFTGo',
-      hidden_message: 'Спасибо за пополнение!',
-      paid_btn_name: 'openBot',
-      paid_btn_url: 'https://t.me/nftgo_bot'
-    });
-
-    if (!invoice || !invoice.invoice_id) {
-      throw new Error('Ошибка: сервер CryptoBot не вернул invoice_id');
+    if (!response.data.ok || !response.data.result?.invoice_id) {
+      return res.status(400).json({ ok: false, error: response.data.description || 'Ошибка CryptoBot' });
     }
 
     // Сохранение инвойса в базу данных
     const newInvoice = new Invoice({
-      invoiceId: invoice.invoice_id, // Убедимся, что invoice_id передается
-      telegramId,
-      amount,
-      status: 'pending'
+      invoiceId: response.data.result.invoice_id, // Убедимся, что invoice_id передается
+      telegramId: req.body.telegramId, // Telegram ID пользователя
+      amount, // Сумма инвойса
+      status: 'pending' // Статус инвойса
     });
     await newInvoice.save();
 
-    res.json({ ok: true, result: invoice });
+    res.json({ ok: true, result: response.data.result });
   } catch (err) {
-    console.error('Ошибка при создании инвойса CryptoBot:', err);
+    console.error('Ошибка при создании инвойса CryptoBot:', err?.response?.data || err);
     res.status(500).json({ ok: false, error: 'Ошибка сервера при создании инвойса' });
   }
 });
@@ -333,6 +343,7 @@ const Transaction = require('./models/Transaction');
 
 // Обновленный роут /addbalance
 app.post('/addbalance', async (req, res) => {
+    let txRecord;
     try {
         const { address, transactionHash } = req.body;
         
@@ -343,7 +354,7 @@ app.post('/addbalance', async (req, res) => {
         }
         
         // Создаем запись о транзакции
-        const txRecord = new Transaction({
+        txRecord = new Transaction({
             userAddress: address.toLowerCase(),
             txHash: transactionHash,
             status: 'pending'
