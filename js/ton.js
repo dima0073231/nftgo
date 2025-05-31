@@ -68,8 +68,6 @@ async function updateBalance() {
 
 
 
-
-
 // // Проверка и логирование извлечения telegramId из localStorage
 // function getTelegramUserId() {
 //   // Проверяем, запущено ли в Telegram WebApp
@@ -255,8 +253,23 @@ btnCryptoBot.addEventListener('click', () => {
       // Открываем ссылку на оплату в новой вкладке
       window.open(invoice.pay_url, "_blank");
       window.latestCryptoBotInvoiceId = invoice.invoice_id;
+
+      // Проверяем статус счета каждые 5 секунд
+      const intervalId = setInterval(async () => {
+        try {
+          const status = await checkInvoiceStatus(invoice.invoice_id);
+          if (status === "paid") {
+            clearInterval(intervalId); // Останавливаем проверку
+            await updateInvoiceStatus(invoice.invoice_id); // Обновляем статус и баланс
+            alert("Баланс успешно пополнен!");
+            updateBalance(); // Обновляем баланс на клиенте
+          }
+        } catch (err) {
+          console.error("Ошибка проверки статуса счета:", err);
+        }
+      }, 5000);
     } catch (err) {
-      alert("Ошибка при создании счёта: " + (err.message || err));
+      alert("Ошибка при создании счета: " + (err.message || err));
       console.error(err);
     }
   });
@@ -289,88 +302,147 @@ async function createCryptoBotInvoice(amount, telegramId) {
   }
 }
 
-// === Проверка статуса инвойса ===
-async function checkInvoiceStatus(invoiceId) {
-  const response = await fetch(`/api/cryptobot/invoice/${invoiceId}`);
-  const data = await response.json();
-  if (!response.ok || !data.ok) {
-    throw new Error(data.error || "Ошибка проверки статуса инвойса");
-  }
-  return data.result.status;
-}
-
-// === Обновление статуса инвойса ===
-async function updateInvoiceStatus(invoiceId, status) {
-  const response = await fetch("/api/cryptobot/update-invoice", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ invoiceId, status }),
-  });
-  const data = await response.json();
-  if (!response.ok || !data.ok) {
-    throw new Error(data.error || "Ошибка обновления статуса инвойса");
-  }
-  return data.result;
-}
-
-// === Автоматическая проверка последнего инвойса ===
-if (window.latestCryptoBotInvoiceId) {
-  async function checkInvoice() {
-    try {
-      const status = await checkInvoiceStatus(window.latestCryptoBotInvoiceId);
-      if (status === "paid") {
-        await updateInvoiceStatus(window.latestCryptoBotInvoiceId, "paid");
-        alert("Баланс успешно пополнен!");
-        updateBalance();
-        window.latestCryptoBotInvoiceId = null;
-      } else if (status === "pending") {
-        setTimeout(checkInvoice, 3000);
-      } else {
-        alert("Инвойс отменён или недействителен.");
-        window.latestCryptoBotInvoiceId = null;
+// Обновление функции для проверки статуса инвойса с использованием правильного URL
+async function checkCryptoBotInvoiceStatus(invoiceId) {
+  try {
+    const response = await fetch(
+      `https://nftbot-4yi9.onrender.com/api/cryptobot/invoice/${invoiceId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
-    } catch (err) {
-      console.error("Ошибка проверки инвойса:", err);
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || 'Ошибка проверки статуса инвойса');
     }
-  }
-  checkInvoice();
-}
 
-// === Глобальная переменная для хранения последнего invoiceId (устранение ошибки TS) ===
-if (typeof window.latestCryptoBotInvoiceId === 'undefined') window.latestCryptoBotInvoiceId = null;
-
-function toggleActive() {
-  if (modal) {
-    modal.classList.toggle("activess");
+    return data.result.status;
+  } catch (err) {
+    console.error('Ошибка проверки статуса инвойса:', err);
+    throw err;
   }
 }
 
-if (mainBalance) {
-  mainBalance.addEventListener("click", toggleActive);
-}
+// Проверка оплаты инвойса
+async function verifyInvoicePayment(invoiceId) {
+  try {
+    const status = await checkCryptoBotInvoiceStatus(invoiceId);
 
-if (closeBtn) {
-  closeBtn.addEventListener("click", toggleActive);
-}
-
-setInterval(() => {
-  if (tonConnect.wallet && tonConnect.wallet.account) {
-    updateBalance();
+    if (status === 'paid') {
+      alert('Инвойс успешно оплачен!');
+      return true;
+    } else if (status === 'pending') {
+      alert('Инвойс ещё не оплачен. Попробуйте позже.');
+      return false;
+    } else {
+      alert(`Инвойс имеет статус: ${status}`);
+      return false;
+    }
+  } catch (err) {
+    alert('Ошибка при проверке оплаты инвойса.');
+    return false;
   }
-}, 10000);
+}
 
-// // Извлечение telegramId из Telegram WebApp и сохранение в localStorage
-// if (window.Telegram?.WebApp) {
-//   const initData = window.Telegram.WebApp.initDataUnsafe;
-//   console.log("initDataUnsafe содержимое:", initData);
-//   const telegramId = initData?.user?.id;
+// === Создание счета и добавление в БД ===
+async function createInvoice(amount, telegramId) {
+  try {
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/cryptobot/create-invoice", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount, telegramId }),
+    });
 
-//   if (telegramId && !isNaN(Number(telegramId))) {
-//     localStorage.setItem("telegramId", telegramId.toString());
-//     console.log("Telegram ID успешно сохранён в localStorage:", telegramId);
-//   } else {
-//     console.error("Не удалось получить корректный Telegram ID из WebApp. Проверьте initDataUnsafe:", initData);
-//   }
-// }
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "Ошибка создания счета");
+    }
+
+    return data.result; // Возвращаем данные счета
+  } catch (err) {
+    console.error("Ошибка при создании счета:", err);
+    throw err;
+  }
+}
+
+// === Проверка статуса счета ===
+async function checkInvoiceStatus(invoiceId) {
+  try {
+    const response = await fetch(`https://nftbot-4yi9.onrender.com/api/cryptobot/invoice/${invoiceId}`);
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "Ошибка проверки статуса счета");
+    }
+
+    return data.result.status; // Возвращаем статус счета
+  } catch (err) {
+    console.error("Ошибка проверки статуса счета:", err);
+    throw err;
+  }
+}
+
+// === Обновление статуса счета и начисление баланса ===
+async function updateInvoiceStatusAndBalance(invoiceId) {
+  try {
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/cryptobot/update-invoice", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ invoiceId, status: "paid" }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "Ошибка обновления статуса счета");
+    }
+
+    return data.result; // Возвращаем результат обновления
+  } catch (err) {
+    console.error("Ошибка обновления статуса счета:", err);
+    throw err;
+  }
+}
+
+// === Пример использования ===
+async function handleCryptoBotPayment(amount, telegramId) {
+  try {
+    // Создаем счет
+    const invoice = await createInvoice(amount, telegramId);
+    console.log("Счет создан:", invoice);
+
+    // Проверяем статус счета каждые 5 секунд
+    const intervalId = setInterval(async () => {
+      try {
+        const status = await checkInvoiceStatus(invoice.invoice_id);
+        console.log("Статус счета:", status);
+
+        if (status === "paid") {
+          clearInterval(intervalId); // Останавливаем проверку статуса
+
+          // Обновляем статус счета и начисляем баланс
+          const result = await updateInvoiceStatusAndBalance(invoice.invoice_id);
+          console.log("Баланс обновлен:", result);
+          alert("Баланс успешно пополнен!");
+        }
+      } catch (err) {
+        console.error("Ошибка при проверке статуса счета:", err);
+      }
+    }, 5000);
+  } catch (err) {
+    console.error("Ошибка обработки платежа через CryptoBot:", err);
+    alert("Ошибка: " + err.message);
+  }
+}
+
+

@@ -5,12 +5,16 @@ const cors = require('cors');
 const path = require('path');
 const http = require('http');
 const WebSocket = require('ws');
+const CryptoBotAPI = require('crypto-bot-api');
 
 const User = require('./api/users'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
 const Invoice = require('./api/invoice'); // Подключение модели Invoice
 
 const app = express();
+
+// Инициализация клиента CryptoBotAPI
+const cryptoBotClient = new CryptoBotAPI(process.env.CRYPTOBOT_TOKEN);
 
 // ✅ CORS
 app.use(cors({
@@ -86,121 +90,106 @@ app.get('/api/ton/transaction/:txHash', async (req, res) => {
   }
 });
 
-// Проверка статуса CryptoBot invoice по invoiceId с улучшенным логированием
-app.get('/api/cryptobot/invoice/:invoiceId', async (req, res) => {
-  try {
-    const invoiceId = req.params.invoiceId;
-    if (!invoiceId) return res.status(400).json({ ok: false, error: "invoiceId required" });
-
-    const response = await axios.get(
-      `https://pay.crypt.bot/api/getInvoice?invoice_id=${invoiceId}`,
-      {
-        headers: {
-          "Crypto-Pay-API-Token": process.env.CRYPTOBOT_TOKEN
-        }
-      }
-    );
-
-    if (response.data.ok && response.data.result) {
-      return res.json({ ok: true, result: response.data.result });
-    }
-
-    console.error("Invoice not found or invalid response:", response.data);
-    return res.status(404).json({ ok: false, error: "Invoice not found" });
-  } catch (error) {
-    console.error("Error verifying CryptoBot invoice:", error.response?.data || error.message);
-    res.status(500).json({ ok: false, error: "Server error" });
-  }
-});
-
 
 
 // === Создание инвойса ===
 app.post('/api/cryptobot/create-invoice', async (req, res) => {
   try {
-    let { amount } = req.body;
+    let { amount, telegramId } = req.body;
     amount = Number(amount);
     if (!amount || isNaN(amount) || amount < 1) {
       return res.status(400).json({ ok: false, error: 'Минимальная сумма — 1 TON' });
     }
 
-    const response = await axios.post(
-      'https://pay.crypt.bot/api/createInvoice',
-      {
-        asset: 'TON',
-        amount: amount.toString(), // CryptoBot API требует строку
-        description: 'Пополнение через NFTGo',
-        hidden_message: 'Спасибо за пополнение!',
-        paid_btn_name: 'openBot', // исправлено на валидное значение
-        paid_btn_url: 'https://t.me/nftgo_bot'
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Crypto-Pay-API-Token': process.env.CRYPTOBOT_TOKEN
-        }
-      }
-    );
+    const invoice = await cryptoBotClient.createInvoice({
+      asset: 'TON',
+      amount: amount.toString(),
+      description: 'Пополнение через NFTGo',
+      hidden_message: 'Спасибо за пополнение!',
+      paid_btn_name: 'openBot',
+      paid_btn_url: 'https://t.me/nftgo_bot'
+    });
 
-    if (!response.data.ok) {
-      return res.status(400).json({ ok: false, error: response.data.description || 'Ошибка CryptoBot' });
-    }
+    // Сохранение инвойса в базу данных
+    const newInvoice = new Invoice({
+      invoiceId: invoice.invoice_id,
+      telegramId,
+      amount,
+      status: 'pending'
+    });
+    await newInvoice.save();
 
-    res.json({ ok: true, result: response.data.result });
+    res.json({ ok: true, result: invoice });
   } catch (err) {
-    console.error('Ошибка при создании инвойса CryptoBot:', err?.response?.data || err);
+    console.error('Ошибка при создании инвойса CryptoBot:', err);
     res.status(500).json({ ok: false, error: 'Ошибка сервера при создании инвойса' });
   }
 });
 
-// === Проверка статуса инвойса ===
-// app.get('/api/cryptobot/invoice/:id', async (req, res) => {
-//   const { id } = req.params;
-
-//   try {
-//     const invoice = await Invoice.findOne({ invoiceId: id });
-//     if (!invoice) {
-//       return res.status(404).json({ ok: false, error: 'Инвойс не найден' });
-//     }
-
-//     res.json({ ok: true, result: { status: invoice.status } });
-//   } catch (err) {
-//     console.error('Ошибка проверки инвойса:', err);
-//     res.status(500).json({ ok: false, error: 'Ошибка сервера' });
-//   }
-// });
-
-// === Обновление статуса инвойса и пополнение баланса ===
-app.post('/api/cryptobot/update-invoice', async (req, res) => {
-  const { invoiceId, status } = req.body;
-
-  if (!invoiceId || !status) {
-    return res.status(400).json({ ok: false, error: 'Не указаны обязательные параметры' });
-  }
-
+// Обновление маршрута для проверки статуса инвойса с использованием библиотеки crypto-bot-api
+app.get('/api/cryptobot/invoice/:invoiceId', async (req, res) => {
   try {
+    const { invoiceId } = req.params;
+    if (!invoiceId) return res.status(400).json({ ok: false, error: 'invoiceId required' });
+
+    const invoice = await cryptoBotClient.getInvoice(invoiceId);
+    res.json({ ok: true, result: invoice });
+  } catch (err) {
+    console.error('Ошибка при проверке статуса инвойса:', err);
+    res.status(500).json({ ok: false, error: 'Ошибка сервера при проверке статуса инвойса' });
+  }
+});
+
+
+
+// Централизованная функция обновления инвойса
+async function updateInvoice(invoiceId) {
+  try {
+    // Проверяем наличие инвойса в базе данных
     const invoice = await Invoice.findOne({ invoiceId });
     if (!invoice) {
-      return res.status(404).json({ ok: false, error: 'Инвойс не найден' });
+      return { ok: false, error: 'Инвойс не найден' };
     }
 
-    invoice.status = status;
-    await invoice.save();
+    // Проверяем статус инвойса через библиотеку crypto-bot-api
+    const invoiceData = await cryptoBotClient.getInvoice(invoiceId);
 
-    if (status === 'paid') {
-      // Пополнение баланса пользователя
+    if (invoiceData.status === 'paid') {
+      // Обновляем статус инвойса в базе данных
+      invoice.status = 'paid';
+      await invoice.save();
+
+      // Пополняем баланс пользователя
       const user = await User.findOne({ telegramId: invoice.telegramId });
       if (user) {
         user.balance += invoice.amount;
         await user.save();
       }
-    }
 
-    res.json({ ok: true, result: { message: 'Статус обновлён' } });
+      return { ok: true, message: 'Инвойс оплачен, баланс обновлён' };
+    } else {
+      return { ok: true, message: `Инвойс имеет статус: ${invoiceData.status}` };
+    }
   } catch (err) {
-    console.error('Ошибка обновления инвойса:', err);
-    res.status(500).json({ ok: false, error: 'Ошибка сервера' });
+    console.error('Ошибка при обновлении инвойса:', err);
+    return { ok: false, error: 'Ошибка сервера' };
   }
+}
+
+// === Обновление статуса инвойса и пополнение баланса ===
+app.post('/api/cryptobot/update-invoice', async (req, res) => {
+  const { invoiceId } = req.body;
+
+  if (!invoiceId) {
+    return res.status(400).json({ ok: false, error: 'Не указан invoiceId' });
+  }
+
+  const result = await updateInvoice(invoiceId);
+  if (!result.ok) {
+    return res.status(400).json(result);
+  }
+
+  res.json(result);
 });
 
 
@@ -252,57 +241,25 @@ app.post('/api/addbalance/cryptobot', async (req, res) => {
     let { telegramId, invoiceId } = req.body;
     telegramId = Number(telegramId);
     if (!telegramId || isNaN(telegramId) || !invoiceId) {
-      return res.status(400).json({ error: "Неверные данные (telegramId или invoiceId)" });
+      return res.status(400).json({ error: 'Неверные данные (telegramId или invoiceId)' });
     }
 
     // Проверка: использовался ли уже этот invoiceId
     const existingInvoice = await Invoice.findOne({ invoiceId });
     if (existingInvoice) {
-      return res.status(400).json({ error: "Инвойс уже использован" });
+      return res.status(400).json({ error: 'Инвойс уже использован' });
     }
 
-    // Тестовый режим
-    if (invoiceId.startsWith('test_invoice_')) {
-      const user = await User.findOne({ telegramId });
-      if (!user) return res.status(404).json({ error: "Пользователь не найден" });
+    // Проверяем статус инвойса через библиотеку crypto-bot-api
+    const invoice = await cryptoBotClient.getInvoice(invoiceId);
 
-      const amount = 10;
-      user.balance += amount;
-      await user.save();
-
-      // Сохраняем тестовый инвойс
-      await Invoice.create({
-        invoiceId,
-        telegramId,
-        amount,
-        status: 'paid'
-      });
-
-      return res.json({ message: "Тестовое пополнение успешно!", balance: user.balance });
-    }
-
-    // Реальная проверка через CryptoBot
-    const response = await axios.get(
-      `https://pay.crypt.bot/api/getInvoice?invoice_id=${invoiceId}`,
-      {
-        headers: {
-          "Crypto-Pay-API-Token": process.env.CRYPTOBOT_TOKEN
-        }
-      }
-    );
-
-    if (!response.data.ok || !response.data.result) {
-      return res.status(400).json({ error: "Инвойс не найден или ошибка CryptoBot" });
-    }
-
-    const invoice = response.data.result;
     if (invoice.status !== 'paid') {
-      return res.status(400).json({ error: "Инвойс не оплачен" });
+      return res.status(400).json({ error: 'Инвойс не оплачен' });
     }
 
     const user = await User.findOne({ telegramId });
     if (!user) {
-      return res.status(404).json({ error: "Пользователь не найден" });
+      return res.status(404).json({ error: 'Пользователь не найден' });
     }
 
     const amount = Number(invoice.amount);
@@ -317,11 +274,10 @@ app.post('/api/addbalance/cryptobot', async (req, res) => {
       status: invoice.status
     });
 
-    res.json({ message: "Баланс успешно пополнен", balance: user.balance });
-
+    res.json({ message: 'Баланс успешно пополнен', balance: user.balance });
   } catch (err) {
-    console.error("Ошибка при начислении баланса через CryptoBot:", err?.response?.data || err);
-    res.status(500).json({ error: "Ошибка сервера при начислении баланса" });
+    console.error('Ошибка при начислении баланса через CryptoBot:', err);
+    res.status(500).json({ error: 'Ошибка сервера при начислении баланса' });
   }
 });
 
@@ -489,3 +445,4 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`✅ Сервер запущен на порту ${PORT}`);
 });
+
