@@ -10,6 +10,7 @@ const userInv = document.querySelector(".user-page-inv");
 const lockIcon = document.querySelector(".user-page-inv__icon--lock");
 const iconInv = document.querySelector(".user-page-inv__icon--inv");
 
+import { changeBalance } from "./addUserBalance.js";
 import { telegramId } from "./profile.js";
 
 async function enterPromo(tgId, code) {
@@ -29,6 +30,7 @@ async function enterPromo(tgId, code) {
 
     if (response.ok) {
       alert(result.message || "Промокод применен!");
+      changeBalance()
     } else {
       alert(result.error || "Не удалось применить промокод");
     }
