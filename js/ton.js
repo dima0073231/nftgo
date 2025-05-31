@@ -1,4 +1,4 @@
-const mainBalance = document.querySelector(".main-balance");
+const mainBalance = document.querySelector(".main-balance.flex") || document.querySelector(".main-balance");
 const mainConnectWallet = document.querySelector(".main-connect-wallet");
 const modal = document.getElementById("modal");
 const openBtn = document.getElementById("openModalBtn");
@@ -445,28 +445,42 @@ async function handleCryptoBotPayment(amount, telegramId) {
   }
 }
 
-// === Глобальная переменная для хранения последнего invoiceId (устранение ошибки TS) ===Add commentMore actions
+// === Глобальная переменная для хранения последнего invoiceId (устранение ошибки TS) ===
 if (typeof window.latestCryptoBotInvoiceId === 'undefined') window.latestCryptoBotInvoiceId = null;
-
 
 function toggleActive() {
   if (modal) {
     modal.classList.toggle("activess");
-
   }
 }
+
 if (mainBalance) {
   mainBalance.addEventListener("click", toggleActive);
 }
+
 if (closeBtn) {
   closeBtn.addEventListener("click", toggleActive);
 }
-// Добавляем обработчик для кнопки открытия модального окна
-if (openBtn) {
-  openBtn.addEventListener("click", toggleActive);
-}
+
 setInterval(() => {
   if (tonConnect.wallet && tonConnect.wallet.account) {
     updateBalance();
   }
 }, 10000);
+
+// Извлечение telegramId из Telegram WebApp и сохранение в localStorage
+if (window.Telegram?.WebApp) {
+  const initData = window.Telegram.WebApp.initDataUnsafe;
+  console.log("initDataUnsafe содержимое:", initData);
+  const telegramId = initData?.user?.id;
+
+
+  if (telegramId && !isNaN(Number(telegramId))) {
+    localStorage.setItem("telegramId", telegramId.toString());
+    console.log("Telegram ID успешно сохранён в localStorage:", telegramId);
+  } else {
+    console.error("Не удалось получить корректный Telegram ID из WebApp. Проверьте initDataUnsafe:", initData);
+  }
+
+
+}
