@@ -102,6 +102,15 @@ app.post('/api/cryptobot/create-invoice', async (req, res) => {
   }
 
   try {
+    console.log('Запрос к CryptoBot API:', {
+      asset: 'TON',
+      amount: amount.toString(),
+      description: 'Пополнение через NFTGo',
+      hidden_message: 'Спасибо за пополнение!',
+      paid_btn_name: 'openBot',
+      paid_btn_url: 'https://t.me/nftgo_bot'
+    });
+
     const response = await axios.post(
       'https://pay.crypt.bot/api/createInvoice',
       {
@@ -119,6 +128,8 @@ app.post('/api/cryptobot/create-invoice', async (req, res) => {
         }
       }
     );
+
+    console.log('Ответ от CryptoBot API:', response.data);
 
     if (!response.data.ok || !response.data.result?.invoice_id) {
       return res.status(400).json({ ok: false, error: response.data.description || 'Ошибка CryptoBot' });
