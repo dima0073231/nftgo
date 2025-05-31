@@ -24,7 +24,7 @@ import { telegramId } from "./profile.js";
 
 const isUserAdmin = async function (tgId) {
   try {
-    const response = await fetch('https://nftbot-4yi9.onrender.com/api/users')
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
     const users = await response.json();
 
     const user = users.find((user) => String(user.telegramId) === String(tgId));
@@ -43,7 +43,7 @@ const isUserAdmin = async function (tgId) {
 // Додати адміністратора
 const addAdmins = async function (userId) {
   try {
-    const response = await fetch('https://nftbot-4yi9.onrender.com/api/users')
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/users");
     if (!response.ok)
       throw new Error("Не удалось получить список пользователей");
 
@@ -208,17 +208,18 @@ const showPromocodes = async function () {
       promoContainer.textContent = "❗️Промокоды отсутствуют.";
       return;
     }
-
-    promoContainer.innerHTML = promocodes
-      .map(
-        (promo) => `
-          <div class="swiper-slide admin-promo-list__card">
-            <strong class="admin-promo-list__strong">${promo.code}</strong> : ${promo.reward}
+    promocodes.forEach((el) => {
+      promoContainer.innerHTML = "";
+      promoContainer.insertAdjacentHTML(
+        "beforeend",
+        `
+        <div class="swiper-slide admin-promo-list__card">
+            <strong class="admin-promo-list__strong">${el.code}</strong> : ${el.reward}
             <img src="web/images/inventory/ton.svg" alt="ton" />
           </div>
         `
-      )
-      .join("");
+      );
+    });
   } catch (err) {
     console.error(err);
     promoContainer.textContent = "❌ Помилка при отриманні промокодів.";
@@ -285,7 +286,7 @@ openAdminPage.addEventListener("click", () => {
 
 new Swiper(".admin-promo-list", {
   direction: "vertical",
-  slidesPerView: 4,
+  slidesPerView: 2,
   freeMode: true,
   mousewheel: true,
 });
