@@ -52,8 +52,15 @@ async function updateBalance() {
   if (tonConnect.wallet && tonConnect.wallet.account) {
     try {
       const address = tonConnect.wallet.account.address;
-      const balanceNano = await getBalance(address);
-      const balanceTon = (balanceNano / 1e9).toFixed(2);
+      // const balanceNano = await getBalance(address);
+      // const balanceTon = (balanceNano / 1e9).toFixed(2);
+
+      // Получаем баланс из базы данных
+      const response = await fetch(`https://nftbotserver.onrender.com/api/users/${telegramId}/balance`);
+      if (!response.ok) throw new Error("Ошибка получения баланса из БД");
+      const data = await response.json();
+      const balanceTon = data.balance.toFixed(2);
+
       if (mainBalance) {
         mainBalance.innerHTML = `
           ${balanceTon} <img src="web/images/main/ton-icon.svg" alt="Token" class="main-balance__token">
