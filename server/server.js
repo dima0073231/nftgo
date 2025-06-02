@@ -7,11 +7,12 @@ const http = require('http');
 const WebSocket = require('ws');
 const CryptoBotAPI = require('crypto-bot-api');
 const axios = require('axios');
+const cron = require('node-cron');
 
 const User = require('./api/users'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
 const Invoice = require('./api/invoice'); // Подключение модели Invoice
-const TonTransaction = require('./api/ton'); // Подключение модели TonTransaction
+const TonTransaction = require('./api/tonTransaction'); // Подключение модели TonTransaction
 
 const app = express();
 
@@ -447,6 +448,90 @@ app.get('/transactions/:address', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+// === Сохранение TON-транзакций при пополнении ===
+app.post('/api/ton/add-transaction', async (req, res) => {
+  try {
+    const { txHash, telegramId, amount } = req.body;
+    if (!txHash || !telegramId || !amount) {
+      return res.status(400).json({ error: 'Необходимы txHash, telegramId и amount' });
+    }
+    // Проверка на дублирование
+    const exists = await TonTransaction.findOne({ txHash });
+    if (exists) {
+      return res.status(400).json({ error: 'Транзакция уже сохранена' });
+    }
+    const tx = new TonTransaction({ txHash, telegramId, amount, status: 'pending' });
+    await tx.save();
+    res.json({ ok: true, message: 'TON-транзакция сохранена', tx });
+  } catch (err) {
+    console.error('Ошибка при сохранении TON-транзакции:', err);
+    res.status(500).json({ error: 'Ошибка сервера при сохранении TON-транзакции' });
+  }
+});
+
+
+
+// === CRON: Периодическая проверка и обновление статусов инвойсов CryptoBot ===
+cron.schedule('*/2 * * * *', async () => {
+  try {
+    const invoices = await Invoice.find({ status: 'pending' });
+    for (const invoice of invoices) {
+      try {
+        // Получаем актуальный статус инвойса через CryptoBot API
+        const invoiceData = await cryptoBotClient.getInvoice(invoice.invoiceId);
+        if (invoiceData.status === 'paid') {
+          invoice.status = 'paid';
+          await invoice.save();
+          // Пополняем баланс пользователя
+          const user = await User.findOne({ telegramId: invoice.telegramId });
+          if (user) {
+            user.balance += invoice.amount;
+            await user.save();
+            console.log(`Баланс пользователя ${invoice.telegramId} пополнен на ${invoice.amount} TON`);
+          }
+        }
+      } catch (err) {
+        console.error(`Ошибка проверки инвойса ${invoice.invoiceId}:`, err?.response?.data || err);
+      }
+    }
+  } catch (err) {
+    console.error('Ошибка периодической проверки инвойсов CryptoBot:', err);
+  }
+});
+
+// === CRON: Периодическая проверка и обновление статусов TON-транзакций ===
+cron.schedule('*/2 * * * *', async () => {
+  try {
+    const pendingTxs = await TonTransaction.find({ status: 'pending' });
+    for (const tx of pendingTxs) {
+      try {
+        // Проверяем статус транзакции через toncenter
+        const response = await axios.get(
+          `https://toncenter.com/api/v2/getTransaction?hash=${tx.txHash}&api_key=${process.env.TONCENTER_API_TOKEN}`
+        );
+        if (response.data.ok && response.data.result) {
+          tx.status = 'confirmed';
+          await tx.save();
+          // Пополняем баланс пользователя
+          const user = await User.findOne({ telegramId: tx.telegramId });
+          if (user) {
+            user.balance += tx.amount;
+            await user.save();
+            console.log(`TON: Баланс пользователя ${tx.telegramId} пополнен на ${tx.amount} TON`);
+          }
+        }
+      } catch (err) {
+        console.error(`TON: Ошибка проверки транзакции ${tx.txHash}:`, err?.response?.data || err);
+      }
+    }
+  } catch (err) {
+    console.error('TON: Ошибка периодической проверки транзакций:', err);
+  }
+});
+
+
+
 // ✅ Создаём HTTP-сервер вручную (для WebSocket)
 const server = http.createServer(app); // ✅ оборачиваем express в http-сервер
 const wss = new WebSocket.Server({ server });

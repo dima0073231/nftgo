@@ -185,7 +185,7 @@ btnTon.addEventListener('click', () => {
       alert("Введите корректную сумму");
       return;
     }
-    // Открываем ссылку на оплату
+    // Открываем ссылку на оплату в новой вкладке
     const paymentUrl = `https://tonhub.com/transfer/${TON_RECEIVER_WALLET}?amount=${amountTon * 1e9}`;
     const link = document.createElement('a');
     link.href = paymentUrl
@@ -196,25 +196,26 @@ btnTon.addEventListener('click', () => {
     link.click();
     document.body.removeChild(link);
     // Показываем форму для ввода хеша
-    // modalFormTon.style.display = 'none';
-    // modalFormTonHash.style.display = '';
+    modalFormTon.style.display = 'none';
+    modalFormTonHash.style.display = '';
     // Перенаправляем пользователя на оплату через TON
-    
-    window.location.href = paymentUrl;
+    // window.location.href = paymentUrl;
   });
 
   modalFormTonHash.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const amount = parseFloat(sumPayCrypto.value);
-    if (isNaN(amount) || amount <= 0) {
-      alert("Введите корректную сумму");
+    const txHash = txHashInput.value.trim();
+    const amountTon = parseFloat(sumPayTon.value);
+    if (!txHash || isNaN(amountTon) || amountTon <= 0) {
+      alert("Введите корректные данные для пополнения");
       return;
     }
     try {
-      const res = await fetch('https://nftbot-4yi9.onrender.com/api/addbalance/ton', {
+      // Сохраняем транзакцию в базе данных
+      const saveRes = await fetch('https://nftbotserver.onrender.com/api/ton/add-transaction', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address, transactionHash: txHash })
+        body: JSON.stringify({ txHash, telegramId, amount: amountTon })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Ошибка пополнения');
