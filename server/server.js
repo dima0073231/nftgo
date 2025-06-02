@@ -159,13 +159,19 @@ app.get('/api/cryptobot/invoice/:invoiceId', async (req, res) => {
     const { invoiceId } = req.params;
     if (!invoiceId) return res.status(400).json({ ok: false, error: 'invoiceId required' });
 
-    const invoice = await cryptoBotClient.getInvoice(invoiceId);
+    // Новый способ получения инвойса через getInvoices
+    const invoicesData = await cryptoBotClient.getInvoices({ invoice_ids: [invoiceId] });
+    const invoice = invoicesData.items?.[0];
+    if (!invoice) {
+      return res.status(404).json({ ok: false, error: 'Инвойс не найден' });
+    }
     res.json({ ok: true, result: invoice });
   } catch (err) {
     console.error('Ошибка при проверке статуса инвойса:', err);
     res.status(500).json({ ok: false, error: 'Ошибка сервера при проверке статуса инвойса' });
   }
 });
+
 
 app.get('/api/cryptobot/invoice', async (req, res) => {
   try {
