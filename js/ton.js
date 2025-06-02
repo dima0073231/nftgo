@@ -9,7 +9,7 @@ const btnCryptoBot = document.querySelector('.modal-btn-container-cryptoBot')
 const btnTonContainer = document.querySelector('.modal-container-ton')
 const btnCryptoBotContainer = document.querySelector('.modal-container-cryptoBot')
 import { telegramId } from "./profile.js";
-const TON_RECEIVER_WALLET =  "UQBbEo60L7OU5bSFFpo9t10whVNDqtyo2lsvRJzIBhI-0l75";
+const TON_RECEIVER_WALLET = "UQBbEo60L7OU5bSFFpo9t10whVNDqtyo2lsvRJzIBhI-0l75";
 
 
 const tonConnect = new TON_CONNECT_UI.TonConnectUI({
