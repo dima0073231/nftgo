@@ -57,6 +57,7 @@ async function updateBalance() {
 
       // Получаем баланс из базы данных
       // const check = await verifyInvoicePayment
+      const updateRes = await verifyAndUpdateInvoices();
       const response = await fetch(`https://nftbotserver.onrender.com/api/users/${telegramId}/balance`);
       if (!response.ok) throw new Error("Ошибка получения баланса из БД");
       const data = await response.json();
@@ -217,8 +218,22 @@ btnTon.addEventListener('click', () => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Ошибка пополнения');
-      alert('Баланс успешно пополнен!');
-      updateBalance();
+
+      // Проверяем статус пополнения каждые 5 секунд
+      const intervalId = setInterval(async () => {
+        try {
+          const statusRes = await fetch(`https://nftbot-4yi9.onrender.com/api/checkbalance/${transactionHash}`);
+          const statusData = await statusRes.json();
+
+          if (statusData.status === 'confirmed') {
+            clearInterval(intervalId); // Останавливаем проверку
+            alert('Баланс успешно пополнен!');
+            await updateBalance(); // Обновляем баланс на клиенте
+          }
+        } catch (err) {
+          console.error('Ошибка проверки статуса пополнения:', err);
+        }
+      }, 5000);
     } catch (err) {
       alert('Ошибка: ' + err.message);
     }
