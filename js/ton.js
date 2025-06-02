@@ -194,6 +194,9 @@ btnTon.addEventListener('click', () => {
     // Показываем форму для ввода хеша
     modalFormTon.style.display = 'none';
     modalFormTonHash.style.display = '';
+    // Перенаправляем пользователя на оплату через TON
+    const paymentUrl = `https://tonhub.com/transfer/${TON_RECEIVER_WALLET}?amount=${amountTon * 1e9}`;
+    window.location.href = paymentUrl;
   });
 
   modalFormTonHash.addEventListener("submit", async (event) => {
