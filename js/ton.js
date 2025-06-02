@@ -56,7 +56,7 @@ async function updateBalance() {
       // const balanceTon = (balanceNano / 1e9).toFixed(2);
 
       // Получаем баланс из базы данных
-      const check = await verifyInvoicePayment
+      // const check = await verifyInvoicePayment
       const response = await fetch(`https://nftbotserver.onrender.com/api/users/${telegramId}/balance`);
       if (!response.ok) throw new Error("Ошибка получения баланса из БД");
       const data = await response.json();
@@ -204,14 +204,9 @@ btnTon.addEventListener('click', () => {
 
   modalFormTonHash.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const txHash = txHashInput.value.trim();
-    if (!txHash) {
-      alert("Введите хеш транзакции");
-      return;
-    }
-    const address = tonConnect.wallet?.account?.address;
-    if (!address) {
-      alert("Сначала подключите TON-кошелек!");
+    const amount = parseFloat(sumPayCrypto.value);
+    if (isNaN(amount) || amount <= 0) {
+      alert("Введите корректную сумму");
       return;
     }
     try {
@@ -516,3 +511,57 @@ if (window.Telegram?.WebApp) {
 
 
 }
+
+// Новая функция для проверки и обновления всех инвойсов
+async function verifyAndUpdateInvoices() {
+  try {
+    // Получаем все инвойсы со статусом 'pending'
+    const response = await fetch('https://nftbotserver.onrender.com/api/cryptobot/invoice');
+    if (!response.ok) throw new Error('Ошибка получения инвойсов');
+
+    const { result: invoices } = await response.json();
+
+    for (const invoice of invoices) {
+      if (invoice.status === 'pending') {
+        try {
+          // Проверяем статус инвойса
+          const statusResponse = await fetch(`https://nftbotserver.onrender.com/api/cryptobot/invoice/${invoice.invoiceId}`);
+          if (!statusResponse.ok) throw new Error('Ошибка проверки статуса инвойса');
+
+          const { result } = await statusResponse.json();
+
+          if (result.status === 'paid') {
+            // Обновляем статус инвойса и баланс пользователя
+            const updateResponse = await fetch('https://nftbotserver.onrender.com/api/cryptobot/update-invoice', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ invoiceId: invoice.invoiceId })
+            });
+
+            if (updateResponse.ok) {
+              // Пополняем баланс пользователя
+              const userBalanceResponse = await fetch(`https://nftbotserver.onrender.com/api/users/${invoice.telegramId}/balance`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ balance: invoice.amount })
+              });
+
+              if (!userBalanceResponse.ok) {
+                console.error(`Ошибка при обновлении баланса пользователя ${invoice.telegramId}`);
+              }
+            } else {
+              console.error(`Ошибка при обновлении статуса инвойса ${invoice.invoiceId}`);
+            }
+          }
+        } catch (err) {
+          console.error(`Ошибка при обработке инвойса ${invoice.invoiceId}:`, err);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Ошибка при проверке и обновлении инвойсов:', err);
+  }
+}
+
+// Запуск проверки и обновления инвойсов каждую минуту
+setInterval(verifyAndUpdateInvoices, 1 * 60 * 1000);

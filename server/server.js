@@ -11,6 +11,7 @@ const axios = require('axios');
 const User = require('./api/users'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
 const Invoice = require('./api/invoice'); // Подключение модели Invoice
+const TonTransaction = require('./api/ton'); // Подключение модели TonTransaction
 
 const app = express();
 
