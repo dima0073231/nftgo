@@ -173,6 +173,8 @@ btnTon.addEventListener('click', () => {
   const sumPayTon = document.getElementById("sumPay-ton");
   const modalFormTonHash = document.querySelector(".modal-form-ton-hash");
   const txHashInput = document.getElementById("txHash-ton");
+  sumPayTon.setAttribute("step", "0.1"); // Разрешаем шаг в 0.1 для ввода дробных значений
+
 
   modalFormTon.addEventListener("submit", (event) => {
     event.preventDefault();
