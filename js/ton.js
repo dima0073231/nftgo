@@ -56,6 +56,7 @@ async function updateBalance() {
       // const balanceTon = (balanceNano / 1e9).toFixed(2);
 
       // Получаем баланс из базы данных
+      const check = await verifyInvoicePayment
       const response = await fetch(`https://nftbotserver.onrender.com/api/users/${telegramId}/balance`);
       if (!response.ok) throw new Error("Ошибка получения баланса из БД");
       const data = await response.json();
@@ -184,18 +185,20 @@ btnTon.addEventListener('click', () => {
       return;
     }
     // Открываем ссылку на оплату
+    const paymentUrl = `https://tonhub.com/transfer/${TON_RECEIVER_WALLET}?amount=${amountTon * 1e9}`;
     const link = document.createElement('a');
-    link.href = `https://tonhub.com/transfer/${TON_RECEIVER_WALLET}?amount=${amountTon * 1e9}`;
+    link.href = paymentUrl
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
+    link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     // Показываем форму для ввода хеша
-    modalFormTon.style.display = 'none';
-    modalFormTonHash.style.display = '';
+    // modalFormTon.style.display = 'none';
+    // modalFormTonHash.style.display = '';
     // Перенаправляем пользователя на оплату через TON
-    const paymentUrl = `https://tonhub.com/transfer/${TON_RECEIVER_WALLET}?amount=${amountTon * 1e9}`;
+    
     window.location.href = paymentUrl;
   });
 

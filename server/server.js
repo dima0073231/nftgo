@@ -165,6 +165,16 @@ app.get('/api/cryptobot/invoice/:invoiceId', async (req, res) => {
   }
 });
 
+app.get('/api/cryptobot/invoice', async (req, res) => {
+  try {
+    const invoices = await Invoice.find(); // Получаем все инвойсы из базы данных
+    res.json({ ok: true, result: invoices });
+  } catch (err) {
+    console.error('Ошибка при получении инвойсов:', err);
+    res.status(500).json({ ok: false, error: 'Ошибка сервера при получении инвойсов' });
+  }
+});
+
 
 
 // Централизованная функция обновления инвойса
