@@ -185,21 +185,12 @@ btnTon.addEventListener('click', () => {
       alert("Введите корректную сумму");
       return;
     }
-    // Открываем ссылку на оплату в новой вкладке
+    // Переход на оплату через TON в новой вкладке
     const paymentUrl = `https://tonhub.com/transfer/${TON_RECEIVER_WALLET}?amount=${amountTon * 1e9}`;
-    const link = document.createElement('a');
-    link.href = paymentUrl
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    window.open(paymentUrl, '_blank');
     // Показываем форму для ввода хеша
     modalFormTon.style.display = 'none';
     modalFormTonHash.style.display = '';
-    // Перенаправляем пользователя на оплату через TON
-    // window.location.href = paymentUrl;
   });
 
   modalFormTonHash.addEventListener("submit", async (event) => {
