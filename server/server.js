@@ -194,8 +194,12 @@ async function updateInvoice(invoiceId) {
       return { ok: false, error: 'Инвойс не найден' };
     }
 
-    // Проверяем статус инвойса через библиотеку crypto-bot-api
-    const invoiceData = await cryptoBotClient.getInvoice(invoiceId);
+    // Получаем инвойс через getInvoices (crypto-bot-api)
+    const invoicesData = await cryptoBotClient.getInvoices({ invoice_ids: [invoiceId] });
+    const invoiceData = invoicesData.items?.[0];
+    if (!invoiceData) {
+      return { ok: false, error: 'Инвойс не найден в CryptoBot' };
+    }
 
     if (invoiceData.status === 'paid') {
       // Обновляем статус инвойса в базе данных
@@ -502,8 +506,9 @@ cron.schedule('*/2 * * * *', async () => {
     for (const invoice of invoices) {
       try {
         // Получаем актуальный статус инвойса через CryptoBot API
-        const invoiceData = await cryptoBotClient.getInvoice(invoice.invoiceId);
-        if (invoiceData.status === 'paid') {
+        const invoicesData = await cryptoBotClient.getInvoices({ invoice_ids: [invoice.invoiceId] });
+        const invoiceData = invoicesData.items?.[0];
+        if (invoiceData && invoiceData.status === 'paid') {
           invoice.status = 'paid';
           await invoice.save();
           // Пополняем баланс пользователя
