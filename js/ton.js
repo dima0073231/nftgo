@@ -153,83 +153,78 @@ tonConnect.onStatusChange(async (walletInfo) => {
 
 // === TON Method Handler ===
 btnTon.addEventListener('click', () => {
-  btnCryptoBotContainer.innerHTML = ``;
+  btnCryptoBotContainer.innerHTML = '';
   btnTon.classList.toggle('btnActive');
 
   btnTonContainer.innerHTML = `
     <form class="modal-form-ton"> 
       <label class="label" for="sumPay">Сумма пополнения (TON)</label>
-      <input type="number" name="sumPay" id="sumPay-ton" min="0.1" required />
+      <input type="number" name="sumPay" id="sumPay-ton" min="0.1" step="0.1" required />
       <div class="modal-form-reqeired">
         <span>Min: 0.1 TON</span>
         <span>Max: 1000 TON</span> 
       </div>
-      <button class="btn-ton" type="submit">Перейти к оплате TON</button>
+      <button class="btn-ton" type="submit">Оплатить через TonConnect</button>
     </form>
-    <form class="modal-form-ton-hash" style="margin-top:20px;display:none;"> 
-      <label class="label" for="txHash">Вставьте хеш вашей TON-транзакции</label>
-      <input type="text" name="txHash" id="txHash-ton" required />
-      <button class="btn-ton" type="submit">Подтвердить пополнение</button>
-    </form>
+    <div class="ton-status-message" style="margin-top:10px;"></div>
   `;
 
-  const modalFormTon = document.querySelector(".modal-form-ton");
-  const sumPayTon = document.getElementById("sumPay-ton");
-  const modalFormTonHash = document.querySelector(".modal-form-ton-hash");
-  const txHashInput = document.getElementById("txHash-ton");
-  sumPayTon.setAttribute("step", "0.1"); // Разрешаем шаг в 0.1 для ввода дробных значений
+  const modalFormTon = document.querySelector('.modal-form-ton');
+  const sumPayTon = document.getElementById('sumPay-ton');
+  const statusMessage = document.querySelector('.ton-status-message');
 
-
-  modalFormTon.addEventListener("submit", (event) => {
+  modalFormTon.addEventListener('submit', async (event) => {
     event.preventDefault();
     const amountTon = parseFloat(sumPayTon.value);
-    if (isNaN(amountTon) || amountTon <= 0) {
-      alert("Введите корректную сумму");
+    if (isNaN(amountTon) || amountTon < 0.1) {
+      statusMessage.textContent = 'Введите корректную сумму (от 0.1 TON)';
       return;
     }
-    // Переход на оплату через TON в новой вкладке
-    const paymentUrl = `https://tonhub.com/transfer/${TON_RECEIVER_WALLET}?amount=${amountTon * 1e9}`;
-    window.open(paymentUrl, '_blank');
-    // Показываем форму для ввода хеша
-    modalFormTon.style.display = 'none';
-    modalFormTonHash.style.display = '';
-  });
-
-  modalFormTonHash.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const txHash = txHashInput.value.trim();
-    const amountTon = parseFloat(sumPayTon.value);
-    if (!txHash || isNaN(amountTon) || amountTon <= 0) {
-      alert("Введите корректные данные для пополнения");
+    if (!tonConnect.wallet || !tonConnect.wallet.account) {
+      statusMessage.textContent = 'Сначала подключите TON-кошелек';
       return;
     }
+    const toAddress = TON_RECEIVER_WALLET;
+    const amountNano = Math.floor(amountTon * 1e9);
     try {
-      // Сохраняем транзакцию в базе данных
-      const saveRes = await fetch('https://nftbotserver.onrender.com/api/ton/add-transaction', {
+      // Отправка TON через TonConnectUI
+      const txResult = await tonConnect.sendTransaction({
+        validUntil: Math.floor(Date.now() / 1000) + 600,
+        messages: [{
+          address: toAddress,
+          amount: amountNano.toString(),
+        }],
+      });
+      if (!txResult || !txResult.boc) {
+        statusMessage.textContent = 'Ошибка отправки транзакции через TonConnect.';
+        return;
+      }
+      statusMessage.textContent = 'Транзакция отправлена! Ожидание подтверждения...';
+      // Сохраняем транзакцию на сервере
+      const txHash = txResult.boc;
+      const telegramId = localStorage.getItem('telegramId');
+      const saveRes = await fetch("https://nftbot-4yi9.onrender.com/api/ton/add-transaction", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ txHash, telegramId, amount: amountTon })
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Ошибка пополнения');
-
+      const saveData = await saveRes.json();
+      if (!saveRes.ok) {
+        statusMessage.textContent = saveData.error || 'Ошибка сохранения транзакции.';
+        return;
+      }
       // Проверяем статус пополнения каждые 5 секунд
       const intervalId = setInterval(async () => {
-        try {
-          const statusRes = await fetch(`https://nftbot-4yi9.onrender.com/api/checkbalance/${transactionHash}`);
-          const statusData = await statusRes.json();
-
-          if (statusData.status === 'confirmed') {
-            clearInterval(intervalId); // Останавливаем проверку
-            alert('Баланс успешно пополнен!');
-            await updateBalance(); // Обновляем баланс на клиенте
-          }
-        } catch (err) {
-          console.error('Ошибка проверки статуса пополнения:', err);
+        const res = await fetch(`https://nftbot-4yi9.onrender.com/api/ton/check-status/${txHash}`);
+        const data = await res.json();
+        if (data.status === 'confirmed') {
+          statusMessage.textContent = 'Баланс успешно пополнен!';
+          await updateBalance();
+          clearInterval(intervalId);
         }
       }, 5000);
     } catch (err) {
-      alert('Ошибка: ' + err.message);
+      statusMessage.textContent = 'Ошибка: ' + (err.message || err);
     }
   });
 });

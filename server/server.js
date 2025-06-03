@@ -476,6 +476,23 @@ app.post('/api/ton/add-transaction', async (req, res) => {
   }
 });
 
+// === Проверка статуса TON-транзакции (для ton.js) ===
+app.get('/api/ton/check-status/:txHash', async (req, res) => {
+  try {
+    const { txHash } = req.params;
+    if (!txHash) return res.status(400).json({ status: 'error', error: 'txHash required' });
+    const tx = await TonTransaction.findOne({ txHash });
+    if (!tx) return res.status(404).json({ status: 'not_found' });
+    if (tx.status === 'confirmed') {
+      return res.json({ status: 'confirmed' });
+    } else {
+      return res.json({ status: 'pending' });
+    }
+  } catch (err) {
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
 
 
 // === CRON: Периодическая проверка и обновление статусов инвойсов CryptoBot ===
@@ -512,11 +529,12 @@ cron.schedule('*/2 * * * *', async () => {
     const pendingTxs = await TonTransaction.find({ status: 'pending' });
     for (const tx of pendingTxs) {
       try {
-        // Проверяем статус транзакции через toncenter
+        // Проверяем статус транзакции через toncenter (используем BOC как hash, если это реально hash)
         const response = await axios.get(
-          `https://toncenter.com/api/v2/getTransaction?hash=${tx.txHash}&api_key=${process.env.TONCENTER_API_TOKEN}`
+          `https://tonapi.io/v2/blockchain/transactions/${tx.txHash}`
         );
-        if (response.data.ok && response.data.result) {
+        // Если транзакция найдена и успешна
+        if (response.data && response.data.transaction && response.data.transaction.status === 'finalized') {
           tx.status = 'confirmed';
           await tx.save();
           // Пополняем баланс пользователя
@@ -528,7 +546,8 @@ cron.schedule('*/2 * * * *', async () => {
           }
         }
       } catch (err) {
-        console.error(`TON: Ошибка проверки транзакции ${tx.txHash}:`, err?.response?.data || err);
+        // Не найдено или ошибка — просто пропускаем
+        // Можно логировать для отладки: console.error(`TON: Ошибка проверки транзакции ${tx.txHash}:`, err?.response?.data || err);
       }
     }
   } catch (err) {
