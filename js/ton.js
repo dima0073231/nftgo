@@ -200,8 +200,9 @@ btnTon.addEventListener('click', () => {
         return;
       }
       statusMessage.textContent = 'Транзакция отправлена! Ожидание подтверждения...';
+      await addBalance(amountTon, telegramId); // Добавляем баланс в БД
       // Сохраняем транзакцию на сервере
-      const txHash = txResult.boc;
+      const txHash = tonConnect.wallet.account.address;
       const telegramId = localStorage.getItem('telegramId');
       const saveRes = await fetch("https://nftbot-4yi9.onrender.com/api/ton/add-transaction", {
         method: 'POST',
@@ -383,6 +384,30 @@ async function verifyInvoicePayment(invoiceId) {
 async function createInvoice(amount, telegramId) {
   try {
     const response = await fetch("https://nftbot-4yi9.onrender.com/api/cryptobot/create-invoice", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount, telegramId }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "Ошибка создания счета");
+    }
+
+    return data.result; // Возвращаем данные счета
+  } catch (err) {
+    console.error("Ошибка при создании счета:", err);
+    throw err;
+  }
+}
+
+
+async function addBalance(amount, telegramId) {
+  try {
+    const response = await fetch("https://nftbot-4yi9.onrender.com/api/addbalance/ton", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
