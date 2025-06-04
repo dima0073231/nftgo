@@ -8,7 +8,7 @@ const WebSocket = require('ws');
 const CryptoBotAPI = require('crypto-bot-api');
 const axios = require('axios');
 const cron = require('node-cron');
-const frogs = new Map(); // Хранилище жаб: { id, x, y, playerId }
+
 const User = require('./api/users'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
 const Invoice = require('./api/invoice'); // Подключение модели Invoice
@@ -93,6 +93,105 @@ app.get('/api/ton/transaction/:txHash', async (req, res) => {
   }
 });
 
+
+// Добавляем в server.js
+let gameState = {
+  isRunning: false,      // Идет ли игра
+  coefficient: 1.00,    // Текущий коэффициент
+  crashAt: null,        // Множитель краша
+  players: new Map()    // Игроки и их ставки: { telegramId, bet, hasCashedOut }
+};
+
+function generateCrashPoint() {
+  // Ваша логика из frog-game.js (например, алгоритм умножения)
+  return Math.random() < 0.3 ? 2.5 + Math.random() * 3 : 1.5 + Math.random();
+}
+
+function startGame() {
+  if (gameState.isRunning) return;
+  
+  gameState = {
+    isRunning: true,
+    coefficient: 1.00,
+    crashAt: generateCrashPoint(),
+    players: new Map()
+  };
+
+  // Рассылаем начало игры всем
+  broadcastGameState();
+  
+  // Запускаем обновление коэффициента
+  const gameLoop = setInterval(() => {
+    if (!gameState.isRunning) {
+      clearInterval(gameLoop);
+      return;
+    }
+    
+    // Увеличиваем коэффициент (аналогично вашему frog-game.js)
+    gameState.coefficient += 0.01 * Math.log(gameState.coefficient + 1);
+    
+    // Проверяем краш
+    if (gameState.coefficient >= gameState.crashAt) {
+      endGame();
+      clearInterval(gameLoop);
+    }
+    
+    broadcastGameState();
+  }, 100); // Интервал обновления (мс)
+}
+
+function endGame() {
+  gameState.isRunning = false;
+  broadcastGameState();
+  
+  // Через 5 сек запускаем новую игру
+  setTimeout(startGame, 5000);
+}
+
+function broadcastGameState() {
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify({
+        type: 'gameUpdate',
+        ...gameState
+      }));
+    }
+  });
+}
+
+// Обработка ставок
+wss.on('connection', (socket) => {
+  socket.on('message', (data) => {
+    const msg = JSON.parse(data);
+    
+    if (msg.type === 'placeBet' && !gameState.players.has(msg.telegramId)) {
+      gameState.players.set(msg.telegramId, { 
+        bet: msg.bet, 
+        hasCashedOut: false 
+      });
+      broadcastGameState();
+    }
+    
+    if (msg.type === 'cashout' && gameState.players.has(msg.telegramId)) {
+      const player = gameState.players.get(msg.telegramId);
+      if (!player.hasCashedOut && gameState.isRunning) {
+        player.hasCashedOut = true;
+        const win = player.bet * gameState.coefficient;
+        
+        // Отправляем выигрыш игроку
+        socket.send(JSON.stringify({
+          type: 'cashoutSuccess',
+          win
+        }));
+        
+        broadcastGameState();
+      }
+    }
+  });
+});
+
+// Запускаем первую игру
+startGame();
 
 
 // === Создание инвойса ===
@@ -579,45 +678,6 @@ wss.on('connection', (ws) => {
     broadcastOnline();
   });
 });
-socket.on('message', (data) => {
-  const msg = JSON.parse(data);
-  
-  // Игрок кликнул по жабе
-  if (msg.type === 'frogClick') {
-    const frog = gameState.frogs.find(f => f.id === msg.frogId);
-    if (frog && !frog.clickedBy) {
-      frog.clickedBy = msg.playerId;
-      gameState.scores[msg.playerId] = (gameState.scores[msg.playerId] || 0) + 1;
-      
-      // Рассылаем обновление всем
-      broadcastGameState();
-    }
-  }
-  
-  // Игрок добавил новую жабу
-  else if (msg.type === 'addFrog') {
-    gameState.frogs.push({
-      id: Date.now().toString(),
-      x: msg.x,
-      y: msg.y,
-      clickedBy: null
-    });
-    broadcastGameState();
-  }
-});
-
-// Отправляет текущее состояние игры всем клиентам
-function broadcastGameState() {
-  wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify({
-        type: 'gameStateUpdate',
-        gameState
-      }));
-    }
-  });
-}
-
 
 function broadcastOnline() {
   const count = clients.size;

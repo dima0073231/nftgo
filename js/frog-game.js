@@ -65,7 +65,6 @@ if (bars.length > 0) {
 
 // Переменные игры
 let currentCoefficient = 1.0;
-let gameInterval;
 let isGameActive = false;
 let seriesQueue = [];
 let seriesIndex = 0;
@@ -135,31 +134,31 @@ export function getIsGameActive() {
   return isGameActive;
 }
 
-function generateCrashCoefficient() {
-  if (seriesIndex >= seriesQueue.length) {
-    seriesQueue = [];
-    const seriesTypeRoll = Math.random();
+// function generateCrashCoefficient() {
+//   if (seriesIndex >= seriesQueue.length) {
+//     seriesQueue = [];
+//     const seriesTypeRoll = Math.random();
 
-    if (seriesTypeRoll < 0.6) {
-      const length = Math.floor(Math.random() * 3) + 2;
-      for (let i = 0; i < length; i++) {
-        const coef = 1 + Math.random() * 1.5 * Math.pow(Math.random(), 2);
-        seriesQueue.push(parseFloat(coef.toFixed(2)));
-      }
-    } else {
-      const length = Math.floor(Math.random() * 5) + 1;
-      for (let i = 0; i < length; i++) {
-        let coef =
-          Math.random() < 0.3
-            ? 3.5 + Math.random() * 11.5
-            : 2.0 + Math.random() * 2.0;
-        seriesQueue.push(parseFloat(coef.toFixed(2)));
-      }
-    }
-    seriesIndex = 0;
-  }
-  return seriesQueue[seriesIndex++];
-}
+//     if (seriesTypeRoll < 0.6) {
+//       const length = Math.floor(Math.random() * 3) + 2;
+//       for (let i = 0; i < length; i++) {
+//         const coef = 1 + Math.random() * 1.5 * Math.pow(Math.random(), 2);
+//         seriesQueue.push(parseFloat(coef.toFixed(2)));
+//       }
+//     } else {
+//       const length = Math.floor(Math.random() * 5) + 1;
+//       for (let i = 0; i < length; i++) {
+//         let coef =
+//           Math.random() < 0.3
+//             ? 3.5 + Math.random() * 11.5
+//             : 2.0 + Math.random() * 2.0;
+//         seriesQueue.push(parseFloat(coef.toFixed(2)));
+//       }
+//     }
+//     seriesIndex = 0;
+//   }
+//   return seriesQueue[seriesIndex++];
+// }
 
 function getSpeedByCoefficient(coef) {
   if (coef < 2) return 0.01;
@@ -169,129 +168,129 @@ function getSpeedByCoefficient(coef) {
 }
 
 // Игровой процесс
-function startGame() {
-  if (gameInterval) clearInterval(gameInterval);
+// function startGame() {
+//   if (gameInterval) clearInterval(gameInterval);
 
-  if (localStorage.getItem("activeGiftBet")) {
-    return;
-  }
-  coefficientDisplay.classList.remove("crash-glow");
-  coefficientDisplay.style.color = "#ffffff";
-  coefficientDisplay.style.opacity = "1";
+//   if (localStorage.getItem("activeGiftBet")) {
+//     return;
+//   }
+//   coefficientDisplay.classList.remove("crash-glow");
+//   coefficientDisplay.style.color = "#ffffff";
+//   coefficientDisplay.style.opacity = "1";
 
-  if (progressLine) {
-    progressLine.style.backgroundImage =
-      "linear-gradient(135deg, #6a0dad, #b366ff)";
-    progressLine.style.opacity = "1";
-    progressLine.style.width = "0%";
-    progressLine.style.transform = "rotate(0deg)";
-  }
+//   if (progressLine) {
+//     progressLine.style.backgroundImage =
+//       "linear-gradient(135deg, #6a0dad, #b366ff)";
+//     progressLine.style.opacity = "1";
+//     progressLine.style.width = "0%";
+//     progressLine.style.transform = "rotate(0deg)";
+//   }
 
-  if (frogGif) {
-    frogGif.style.opacity = "1";
-    frogGif.style.left = "0%";
-    frogGif.style.transform = "translateX(-50%) scale(0.7)";
-  }
+//   if (frogGif) {
+//     frogGif.style.opacity = "1";
+//     frogGif.style.left = "0%";
+//     frogGif.style.transform = "translateX(-50%) scale(0.7)";
+//   }
 
-  currentCoefficient = 1.0;
-  coefficientDisplay.innerText = `x${currentCoefficient.toFixed(2)}`;
+//   currentCoefficient = 1.0;
+//   coefficientDisplay.innerText = `x${currentCoefficient.toFixed(2)}`;
 
-  setGameActive(true);
+//   setGameActive(true);
 
-  const crashAt = generateCrashCoefficient();
-  gameInterval = setInterval(() => updateGameState(crashAt), BASE_GAME_SPEED);
-  updateBalanceDisplay();
-}
+//   const crashAt = generateCrashCoefficient();
+//   gameInterval = setInterval(() => updateGameState(crashAt), BASE_GAME_SPEED);
+//   updateBalanceDisplay();
+// }
 
-function updateGameState(crashAt) {
-  updateBalanceDisplay();
-  if (!isGameActive) return;
-  const speed = getSpeedByCoefficient(currentCoefficient);
-  currentCoefficient = parseFloat((currentCoefficient + speed).toFixed(2));
-  coefficientDisplay.innerText = `x${currentCoefficient.toFixed(2)}`;
+// function updateGameState(crashAt) {
+//   updateBalanceDisplay();
+//   if (!isGameActive) return;
+//   const speed = getSpeedByCoefficient(currentCoefficient);
+//   currentCoefficient = parseFloat((currentCoefficient + speed).toFixed(2));
+//   coefficientDisplay.innerText = `x${currentCoefficient.toFixed(2)}`;
 
-  if (progressLine && frogGif) {
-    if (currentCoefficient >= 1.0 && currentCoefficient <= 1.4) {
-      const progress = (currentCoefficient - 1) / 0.4;
-      progressLine.style.width = `${progress * 100}%`;
-      frogGif.style.left = `100%`;
-      frogGif.style.opacity = "1";
-    } else if (currentCoefficient > 1.4) {
-      const liftProgress = Math.min((currentCoefficient - 1.4) / 0.25, 1);
-      progressLine.style.width = "100%";
-      progressLine.style.transform = `rotate(-${liftProgress * 15}deg)`;
-      frogGif.style.left = `${100 + liftProgress * 25}%`;
-      frogGif.style.transform = `translateX(-50%) scale(${
-        0.7 - liftProgress * 0.1
-      })`;
-    } else {
-      progressLine.style.width = "0%";
-      frogGif.style.opacity = "0";
-    }
-  }
+//   if (progressLine && frogGif) {
+//     if (currentCoefficient >= 1.0 && currentCoefficient <= 1.4) {
+//       const progress = (currentCoefficient - 1) / 0.4;
+//       progressLine.style.width = `${progress * 100}%`;
+//       frogGif.style.left = `100%`;
+//       frogGif.style.opacity = "1";
+//     } else if (currentCoefficient > 1.4) {
+//       const liftProgress = Math.min((currentCoefficient - 1.4) / 0.25, 1);
+//       progressLine.style.width = "100%";
+//       progressLine.style.transform = `rotate(-${liftProgress * 15}deg)`;
+//       frogGif.style.left = `${100 + liftProgress * 25}%`;
+//       frogGif.style.transform = `translateX(-50%) scale(${
+//         0.7 - liftProgress * 0.1
+//       })`;
+//     } else {
+//       progressLine.style.width = "0%";
+//       frogGif.style.opacity = "0";
+//     }
+//   }
 
-  if (currentCoefficient >= crashAt) {
-    stopGame();
-  }
-}
+//   if (currentCoefficient >= crashAt) {
+//     stopGame();
+//   }
+// }
 
-function stopGame() {
-  setGameActive(false);
-  updateBalanceDisplay();
-  clearInterval(gameInterval);
+// function stopGame() {
+//   setGameActive(false);
+//   updateBalanceDisplay();
+//   clearInterval(gameInterval);
 
-  const giftBetEvent = new CustomEvent("checkGiftBet");
-  document.dispatchEvent(giftBetEvent);
+//   const giftBetEvent = new CustomEvent("checkGiftBet");
+//   document.dispatchEvent(giftBetEvent);
 
-  coefficientDisplay.classList.add("crash-glow");
-  coefficientDisplay.style.color = "#ff0000";
-  if (progressLine) {
-    progressLine.style.backgroundImage =
-      "linear-gradient(135deg, #ff0000, #ff6b6b)";
-  }
+//   coefficientDisplay.classList.add("crash-glow");
+//   coefficientDisplay.style.color = "#ff0000";
+//   if (progressLine) {
+//     progressLine.style.backgroundImage =
+//       "linear-gradient(135deg, #ff0000, #ff6b6b)";
+//   }
 
-  addToHistory(currentCoefficient, true);
+//   addToHistory(currentCoefficient, true);
 
-  const gameCrashEvent = new Event("gameCrash");
-  document.dispatchEvent(gameCrashEvent);
+//   const gameCrashEvent = new Event("gameCrash");
+//   document.dispatchEvent(gameCrashEvent);
 
-  // Определяем результат игры (выигрыш или проигрыш)
-  let isWin = false;
-  let totalBet = 0;
-  fieldBet.forEach((field) => {
-    const bet = parseFloat(field.dataset.bet || "0");
+//   // Определяем результат игры (выигрыш или проигрыш)
+//   let isWin = false;
+//   let totalBet = 0;
+//   fieldBet.forEach((field) => {
+//     const bet = parseFloat(field.dataset.bet || "0");
 
-    if (bet > 0) {
-      totalBet += bet;
-      isWin = false;
+//     if (bet > 0) {
+//       totalBet += bet;
+//       isWin = false;
 
-      // Обнуляємо програну ставку
-      field.value = "0";
-      field.dataset.bet = "0";
-    }
-  });
+//       // Обнуляємо програну ставку
+//       field.value = "0";
+//       field.dataset.bet = "0";
+//     }
+//   });
 
-  window.dispatchEvent(
-    new CustomEvent("betResult", {
-      detail: {
-        isWin: isWin,
-        coefficient: currentCoefficient,
-        totalBet: totalBet.toFixed(2),
-      },
-    })
-  );
+//   window.dispatchEvent(
+//     new CustomEvent("betResult", {
+//       detail: {
+//         isWin: isWin,
+//         coefficient: currentCoefficient,
+//         totalBet: totalBet.toFixed(2),
+//       },
+//     })
+//   );
 
-  if (telegramId) {
-    setBalanceToBd(telegramId);
-  }
+//   if (telegramId) {
+//     setBalanceToBd(telegramId);
+//   }
 
-  setTimeout(() => {
-    coefficientDisplay.classList.remove("crash-glow");
-    coefficientDisplay.style.opacity = "0";
-    if (progressLine) progressLine.style.opacity = "0";
-    if (frogGif) frogGif.style.opacity = "0";
-  }, 2000);
-}
+//   setTimeout(() => {
+//     coefficientDisplay.classList.remove("crash-glow");
+//     coefficientDisplay.style.opacity = "0";
+//     if (progressLine) progressLine.style.opacity = "0";
+//     if (frogGif) frogGif.style.opacity = "0";
+//   }, 2000);
+// }
 function addToHistory(coef, isCrash) {
   const div = document.createElement("div");
   div.classList.add("main-coefficients__coefficient");
