@@ -185,34 +185,56 @@ function withdrawFunds() {
 
 if (inviteMainButton) {
     inviteMainButton.addEventListener("click", async function () {
-        const telegramDeepLink = "https://t.me/nftgo_bot";
-        const shareMessage = `
-🚀 *Привет!*  
-🌟 Я приглашаю тебя в *эксклюзивного Telegram-бота*!  
+        const currentUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+        let baseUsernameToUse = null;
 
-💰 *Бонус:* Получи *10%* от депозита друга!  
-🔗 [Открыть бота](https://t.me/nftgo_bot)  
+        let referralId = null;
+        if (currentUser?.id) {
+            try {
+                const response = await fetch("https://nftbotserver.onrender.com/api/users");
+                if (response.ok) {
+                    const users = await response.json();
+                    const userData = users.find(user => user.telegramId == currentUser.id);
 
-🔥 *Присоединяйся прямо сейчас!*  
-`;
+                    if (userData) {
+                        referralId = `${userData.telegramId}`;
+                    }
+                }
+            } catch (error) {
+                console.error("Ошибка при получении данных пользователя:", error);
+            }
+        }
+
+        // Если не найден, делаем временный ID
+        if (!referralId) {
+            referralId = `sim_ref_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+        }
+
+        const telegramDeepLink = `https://t.me/nftgo_bot?start=${referralId}`;
+
+        const shareMessage =
+`🚀 Привет!
+Я приглашаю тебя в эксклюзивного Telegram-бота!
+
+💰 Бонус: Получи 10% от депозита друга!
+🔗 ${telegramDeepLink}
+
+🔥 Присоединяйся прямо сейчас!`;
+
         window.open(
             `https://t.me/share/url?url=${encodeURIComponent(telegramDeepLink)}&text=${encodeURIComponent(shareMessage)}`,
             "_blank"
         );
 
-        let referralIdToProcess;
         if (!isInvitationActive) {
-            currentSimulatedReferralId = `sim_ref_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+            currentSimulatedReferralId = referralId;
             isInvitationActive = true;
-            referralIdToProcess = currentSimulatedReferralId;
-        } else {
-            referralIdToProcess = currentSimulatedReferralId;
         }
-        
-        if (referralIdToProcess) {
+
+        if (referralId) {
             setTimeout(async () => {
-                await simulateFriendJoining(referralIdToProcess);
-            }, 750); 
+                await simulateFriendJoining(referralId);
+            }, 750);
         }
     });
 }
