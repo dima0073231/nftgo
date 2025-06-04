@@ -8,7 +8,7 @@ const WebSocket = require('ws');
 const CryptoBotAPI = require('crypto-bot-api');
 const axios = require('axios');
 const cron = require('node-cron');
-
+const frogs = new Map(); // Хранилище жаб: { id, x, y, playerId }
 const User = require('./api/users'); // Модель
 const connectDB = require('./db/db'); // Подключение к MongoDB
 const Invoice = require('./api/invoice'); // Подключение модели Invoice
@@ -579,6 +579,45 @@ wss.on('connection', (ws) => {
     broadcastOnline();
   });
 });
+socket.on('message', (data) => {
+  const msg = JSON.parse(data);
+  
+  // Игрок кликнул по жабе
+  if (msg.type === 'frogClick') {
+    const frog = gameState.frogs.find(f => f.id === msg.frogId);
+    if (frog && !frog.clickedBy) {
+      frog.clickedBy = msg.playerId;
+      gameState.scores[msg.playerId] = (gameState.scores[msg.playerId] || 0) + 1;
+      
+      // Рассылаем обновление всем
+      broadcastGameState();
+    }
+  }
+  
+  // Игрок добавил новую жабу
+  else if (msg.type === 'addFrog') {
+    gameState.frogs.push({
+      id: Date.now().toString(),
+      x: msg.x,
+      y: msg.y,
+      clickedBy: null
+    });
+    broadcastGameState();
+  }
+});
+
+// Отправляет текущее состояние игры всем клиентам
+function broadcastGameState() {
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify({
+        type: 'gameStateUpdate',
+        gameState
+      }));
+    }
+  });
+}
+
 
 function broadcastOnline() {
   const count = clients.size;
