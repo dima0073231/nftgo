@@ -15,3 +15,33 @@ async function addBalance() {
         alert('Ошибка: ' + error.response?.data || error.message);
     }
 }
+socket.addEventListener('message', (event) => {
+  const msg = JSON.parse(event.data);
+  
+  if (msg.type === 'gameStateUpdate') {
+    // Обновляем локальное состояние игры
+    updateGameState(msg.gameState);
+  }
+});
+
+// Отправка действия "клик по жабе" на сервер
+function sendFrogClick(frogId) {
+  if (socket.readyState === WebSocket.OPEN) {
+    socket.send(JSON.stringify({
+      type: 'frogClick',
+      frogId,
+      playerId: getCurrentPlayerId() // Ваш метод получения ID игрока
+    }));
+  }
+}
+
+// Отправка действия "добавить жабу" на сервер
+function sendAddFrog(x, y) {
+  if (socket.readyState === WebSocket.OPEN) {
+    socket.send(JSON.stringify({
+      type: 'addFrog',
+      x,
+      y
+    }));
+  }
+}
